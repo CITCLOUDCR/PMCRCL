@@ -8,7 +8,7 @@ import org.springframework.web.client.RestTemplate;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
-
+// comentario prueba
 public class test {
 
 //    private RestTemplate restTemplate = new RestTemplate();
