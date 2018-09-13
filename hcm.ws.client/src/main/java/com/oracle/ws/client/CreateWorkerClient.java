@@ -1,5 +1,6 @@
 package com.oracle.ws.client;
 
+import com.oracle.ws.client.DTOs.ResponseListEmployee;
 import com.oracle.ws.handlers.WSSESOAPHandler;
 import com.oracle.ws.handlers.WSSESOAPHandlerResolver;
 import com.oracle.xmlns.apps.hcm.employment.core.flex.baseworkerassignmentdff.BaseWorkerAsgDFF;
@@ -40,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -52,10 +54,16 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebServiceException;
+
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestTemplate;
 
 public class CreateWorkerClient
 {
@@ -90,7 +98,9 @@ public class CreateWorkerClient
     String respuesta = "";
     String metodo = "";
     String xmlGenerado1 = null;String xmlGenerado2 = null;String xmlGenerado3 = null;
-    try
+
+
+      try
     {
       Class.forName(properties.getProperty("db.driver"));
       cn = DriverManager.getConnection(properties.getProperty("db.url"), properties.getProperty("db.user"), properties.getProperty("db.password"));
@@ -115,18 +125,22 @@ public class CreateWorkerClient
 
       Worker w = null;
       ActionsList al = null;
-      
+
+      //new code
+      RestTemplate restTemplate = new RestTemplate();
+      HttpEntity authenticationHeader = new HttpEntity(createHeaders());
 
       while (rs.next())
       {
 
-    	  boolean NuevaRelacion = true;
-    	  id_number = rs.getInt("id_number"); 
+    	  id_number = rs.getInt("id_number");
           if (rs.getString("accion").equals("HIRE"))
           {
-            wsse = new WSSESOAPHandler();
-            wsse.setWSSE(properties.getProperty("ws.user"), properties.getProperty("ws.password"));
-            wsseHR = new WSSESOAPHandlerResolver(wsse);
+              String getEmpEndpoint = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps?q=PersonNumber="+rs.getString("no_persona");
+
+//            wsse = new WSSESOAPHandler();
+//            wsse.setWSSE(properties.getProperty("ws.user"), properties.getProperty("ws.password"));
+//            wsseHR = new WSSESOAPHandlerResolver(wsse);
             Service service = Service.create(new URL(properties.getProperty("ws.endpoint")), new QName(properties.getProperty("ws.qname"), properties.getProperty("ws.name")));
             service.setHandlerResolver(wsseHR);
             WorkerService port = (WorkerService)service.getPort(WorkerService.class);
@@ -134,29 +148,27 @@ public class CreateWorkerClient
          
             LOGGER.info("### Ejecutando el metodo: getWorkerInformationByPersonNumber");
             
-            informationResponse = new GetWorkerInformationByPersonNumberResponse();
+//            informationResponse = new GetWorkerInformationByPersonNumberResponse();
            
-            informationResponse.setResult(port.getWorkerInformationByPersonNumber(rs.getString("no_persona"), null));
-            xmlGenerado1 = wsse.getXml_generated();
-            
-            
-            if ((informationResponse.getResult() != null))
-            {
-              LOGGER.info("Se ejecuto con exito el metodo");
-              LOGGER.info("Relación Laboral existente");
-              LOGGER.info("AssignmentId: " + ((WorkerDetails)informationResponse.getResult().getValue().get(0)).getAssignmentId());
-              respuesta = respuesta + " / AssignmentId: " + ((WorkerDetails)informationResponse.getResult().getValue().get(0)).getAssignmentId();
-              NuevaRelacion = false;
-            }  
+//            informationResponse.setResult(port.getWorkerInformationByPersonNumber(rs.getString("no_persona"), null));
+//            xmlGenerado1 = wsse.getXml_generated();
+
+
+//
+//            if ((informationResponse.getResult() != null))
+//            {
+//              LOGGER.info("Se ejecuto con exito el metodo");
+//              LOGGER.info("Relación Laboral existente");
+//              LOGGER.info("AssignmentId: " + ((WorkerDetails)informationResponse.getResult().getValue().get(0)).getAssignmentId());
+//              respuesta = respuesta + " / AssignmentId: " + ((WorkerDetails)informationResponse.getResult().getValue().get(0)).getAssignmentId();
+//            }
   
-            response = new CreateWorkerResponse();  
+//            response = new CreateWorkerResponse();
             
             w = new Worker();
             al = new ActionsList();
-        	
-        
-          
-       if(NuevaRelacion)
+
+       if(restTemplate.exchange(getEmpEndpoint, HttpMethod.GET, authenticationHeader, ResponseListEmployee.class).getBody().getItems().size()!=0)
        {
     	   
     	   LOGGER.info("Proceso de creacion de un trabajador");
@@ -1093,5 +1105,15 @@ public class CreateWorkerClient
     else
       return false;
   }
+
+  private HttpHeaders createHeaders(){
+        return new HttpHeaders() {{
+            String auth = "SOIN" + ":" + "Admin1234";
+            byte[] encodedAuth = Base64.encodeBase64(
+                    auth.getBytes(Charset.forName("US-ASCII")) );
+            String authHeader = "Basic " + new String( encodedAuth );
+            set( "Authorization", authHeader );
+        }};
+    }
   
 }

@@ -2,9 +2,7 @@ package com.oracle.ws.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oracle.ws.client.DTOs.Photo;
-import com.oracle.ws.client.DTOs.RequestAssignment;
-import com.oracle.ws.client.DTOs.RequestEmployee;
+import com.oracle.ws.client.DTOs.*;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
@@ -20,79 +18,85 @@ public class test {
 //    private RestTemplate restTemplate = new RestTemplate();
 
     public static void main (String[] args){
-//        RestTemplate restTemplate = new RestTemplate();
-//        String url = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps?q=PersonId=300000001619709";
-//        HttpEntity entity = new HttpEntity(createHeaders("SOIN", "Admin1234"));
-//        HttpEntity response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        RestTemplate restTemplate = new RestTemplate();
+        String url = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps?q=PersonNumber="+"34056000";
+        String url2 = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps?q=PersonNumber="+"34056";
+        HttpEntity entity = new HttpEntity(createHeaders());
+        HttpEntity response = restTemplate.exchange(url, HttpMethod.GET, entity, ResponseListEmployee.class);
 
-//        response.toString();
+        response.toString();
+
+        HttpEntity response2 = restTemplate.exchange(url2, HttpMethod.GET, entity, ResponseListEmployee.class);
+
+        response2.toString();
+
 
 //        POST!
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps";
+//        RestTemplate restTemplate = new RestTemplate();
+//        String url = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps";
+//
+//        HttpHeaders httpHeaders = createHeaders();
+//        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+////        HttpEntity<String> request = new HttpEntity<String>(requestJson,httpHeaders);
+//
+//
+//
+//
+//        RequestEmployee emp = new RequestEmployee();
+//        emp.setFirstName("Jimmi");
+//        emp.setLastName("Rest");
+//        emp.setPreviousLastName("Jack");
+//        emp.setDisplayName("Rest Client Working");
+//        emp.setPersonNumber("190505");
+//        emp.setAddressLine1("Zapote");
+//        emp.setCountry("CR");
+//        emp.setDateOfBirth("1994-05-05");
+//        //
+//        emp.setLegalEntityId("300000001545611");
+//        //
+//        emp.setGender("M");
+//        emp.setMaritalStatus("S");
+//        emp.setNationalIdType("C");
+//        emp.setNationalId("190515");
+//        emp.setNationalIdCountry("CR");
+//        emp.setEffectiveStartDate("2018-09-13");
+//        emp.setUserName("JavaRest");
+//
+//        RequestAssignment assignment = new RequestAssignment();
+//
+//        assignment.setAssignmentName("rest_assignment");
+//        assignment.setBusinessUnitId("300000001543620");
+//        assignment.setWorkerCategory("WC");
+//        assignment.setAssignmentCategory("FR");
+//        assignment.setWorkingAtHome("N");
+//        assignment.setWorkingAsManager("N");
+//        assignment.setSalaryCode("H");
+//        assignment.setWorkingHours("12");
+//        assignment.setFrequency("D");
+//        assignment.setSalaryAmount("350000");
+//        assignment.setSalaryBasisId("300000001590736");
+//        assignment.setActionCode("HIRE");
+//        assignment.setActionReasonCode("NEWHIRE");
+//        assignment.setAssignmentStatus("ACTIVE");
+//
+//        List<RequestAssignment> assignments = new ArrayList<RequestAssignment>();
+//        assignments.add(assignment);
+//        emp.setAssignments(assignments);
+//
+//        HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(emp,httpHeaders);
+//
+//        try {
+//            String json = new ObjectMapper().writeValueAsString(emp);
+//            System.out.println(json);
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//        }
+//
+//
+//        ResponseEntity response = restTemplate.exchange(url,HttpMethod.POST,request,String.class);
+//        System.out.println(response.toString());
 
-        HttpHeaders httpHeaders = createHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-//        HttpEntity<String> request = new HttpEntity<String>(requestJson,httpHeaders);
-
-
-
-
-        RequestEmployee emp = new RequestEmployee();
-        emp.setFirstName("Jimmi");
-        emp.setLastName("RestClient");
-        emp.setPreviousLastName("Jack");
-        emp.setDisplayName("Rest Client Working");
-        emp.setPersonNumber("190519");
-        emp.setAddressLine1("Zapote");
-        emp.setCountry("CR");
-        emp.setDateOfBirth("1994-05-05");
-        //
-        emp.setLegalEntityId("300000001545611");
-        //
-        emp.setGender("M");
-        emp.setMaritalStatus("S");
-        emp.setNationalIdType("C");
-        emp.setNationalId("19051");
-        emp.setNationalIdCountry("CR");
-        emp.setEffectiveStartDate("2018-09-13");
-        emp.setUserName("JavaRestClient");
-
-        RequestAssignment assignment = new RequestAssignment();
-
-        assignment.setAssignmentName("rest_assignment");
-        assignment.setBusinessUnitId("300000001543620");
-        assignment.setWorkerCategory("WC");
-        assignment.setAssignmentCategory("FR");
-        assignment.setWorkingAtHome("N");
-        assignment.setWorkingAsManager("N");
-        assignment.setSalaryCode("H");
-        assignment.setWorkingHours("12");
-        assignment.setFrequency("D");
-        assignment.setSalaryAmount("350000");
-        assignment.setSalaryBasisId("300000001590736");
-        assignment.setActionCode("HIRE");
-        assignment.setActionReasonCode("NEWHIRE");
-        assignment.setAssignmentStatus("ACTIVE");
-
-        List<RequestAssignment> assignments = new ArrayList<RequestAssignment>();
-        assignments.add(assignment);
-        emp.setAssignments(assignments);
-
-        HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(emp,httpHeaders);
-
-        try {
-            String json = new ObjectMapper().writeValueAsString(emp);
-            System.out.println(json);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-
-        ResponseEntity response = restTemplate.exchange(url,HttpMethod.POST,request,String.class);
-        System.out.println(response.toString());
-
-
+//END POST
 //        HttpEntity<Employee> request = new HttpEntity<Employee>(emp,createHeaders("SOIN","Admin1234"));
 //        ResponseEntity<Employee> response = restTemplate.exchange(url,HttpMethod.POST,request,Employee.class);
 //
