@@ -156,7 +156,7 @@ public class CreateWorkerClient
         	
         
           
-       if(NuevaRelacion == true) 
+       if(NuevaRelacion)
        {
     	   
     	   LOGGER.info("Proceso de creacion de un trabajador");
