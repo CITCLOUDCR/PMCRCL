@@ -1,6 +1,10 @@
 package com.oracle.ws.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oracle.ws.client.DTOs.Photo;
+import com.oracle.ws.client.DTOs.RequestAssignment;
+import com.oracle.ws.client.DTOs.RequestEmployee;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
@@ -8,6 +12,8 @@ import org.springframework.web.client.RestTemplate;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 public class test {
 
@@ -22,49 +28,71 @@ public class test {
 //        response.toString();
 
 //        POST!
-//        RestTemplate restTemplate = new RestTemplate();
-//        String url = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps";
-//        Employee emp = new Employee();
-//        emp.setSalutation("MS.");
-//        emp.setLegalEntityId("300100003448002");
-//        emp.setFirstName("Mirando");
-//        emp.setMiddleName("Ky");
-//        emp.setLastName("Rachell");
-//        emp.setDisplayName("Mirando Ky Ra");
-//        emp.setWorkPhoneCountryCode("1");
-//        emp.setWorkPhoneAreaCode("1");
-//        emp.setWorkPhoneNumber("506-993-0001");
-//        emp.setHomePhoneCountryCode("1");
-//        emp.setHomePhoneAreaCode("1");
-//        emp.setHomePhoneNumber("506-993-0001");
-//        emp.setHomeFaxCountryCode("1");
-//        emp.setHomeFaxAreaCode("1");
-//        emp.setHomeFaxNumber("11111111");
-//        emp.setNameSuffix("Jr.");
-//        emp.setNationalIdExpirationDate("4712-12-31");
-//        emp.setWorkEmail("mirando@oracle.com");
-//        emp.setAddressLine1("Oracle");
-//        emp.setAddressLine2("500 Park");
-//
-//        emp.setCity("San Francisco");
-//        emp.setRegion("California");
-//        emp.setCountry("US");
-//        emp.setPostalCode("94061");
-//        emp.setCitizenshipLegislationCode("CR");
-//        emp.setPassportNumber("11551155");
-//        emp.setPassportIssueDate("2002-12-31");
-//        emp.setReligion("Christian");
-//        emp.setLicenseNumber("9988998899");
-//        emp.setCreationDate("2016-04-13T21:44:24-07:00");
-//        emp.setLastUpdateDate("2016-04-13T21:44:25-07:00");
-//        emp.setGender("F");
-//        emp.setDateOfBirth("1990-09-09");
-//        emp.setNationalId("80808080");
-//        emp.setMaritalStatus("S");
-//        emp.setNationalIdCountry("US");
-//        emp.setNationalIdType("SSN");
-//        emp.setUserName("rachelll");
-//
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps";
+
+        HttpHeaders httpHeaders = createHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+//        HttpEntity<String> request = new HttpEntity<String>(requestJson,httpHeaders);
+
+
+
+
+        RequestEmployee emp = new RequestEmployee();
+        emp.setFirstName("Jimmi");
+        emp.setLastName("RestClient");
+        emp.setPreviousLastName("Jack");
+        emp.setDisplayName("Rest Client Working");
+        emp.setPersonNumber("190519");
+        emp.setAddressLine1("Zapote");
+        emp.setCountry("CR");
+        emp.setDateOfBirth("1994-05-05");
+        //
+        emp.setLegalEntityId("300000001545611");
+        //
+        emp.setGender("M");
+        emp.setMaritalStatus("S");
+        emp.setNationalIdType("C");
+        emp.setNationalId("19051");
+        emp.setNationalIdCountry("CR");
+        emp.setEffectiveStartDate("2018-09-13");
+        emp.setUserName("JavaRestClient");
+
+        RequestAssignment assignment = new RequestAssignment();
+
+        assignment.setAssignmentName("rest_assignment");
+        assignment.setBusinessUnitId("300000001543620");
+        assignment.setWorkerCategory("WC");
+        assignment.setAssignmentCategory("FR");
+        assignment.setWorkingAtHome("N");
+        assignment.setWorkingAsManager("N");
+        assignment.setSalaryCode("H");
+        assignment.setWorkingHours("12");
+        assignment.setFrequency("D");
+        assignment.setSalaryAmount("350000");
+        assignment.setSalaryBasisId("300000001590736");
+        assignment.setActionCode("HIRE");
+        assignment.setActionReasonCode("NEWHIRE");
+        assignment.setAssignmentStatus("ACTIVE");
+
+        List<RequestAssignment> assignments = new ArrayList<RequestAssignment>();
+        assignments.add(assignment);
+        emp.setAssignments(assignments);
+
+        HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(emp,httpHeaders);
+
+        try {
+            String json = new ObjectMapper().writeValueAsString(emp);
+            System.out.println(json);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+
+        ResponseEntity response = restTemplate.exchange(url,HttpMethod.POST,request,String.class);
+        System.out.println(response.toString());
+
+
 //        HttpEntity<Employee> request = new HttpEntity<Employee>(emp,createHeaders("SOIN","Admin1234"));
 //        ResponseEntity<Employee> response = restTemplate.exchange(url,HttpMethod.POST,request,Employee.class);
 //
@@ -79,29 +107,29 @@ public class test {
 //            "PrimaryFlag" : "Y",
 //            "Image":"Test"
 //    }
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://hdes-test.fa.us2.oraclecloud.com:443/hcmRestApi/resources/11.13.18.05/emps/00020000000EACED00057708000110D931C4B2130000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B5974190300007870770800000165B67A680078/child/photo";
-        Photo photo = new Photo();
-        photo.setImage("test");
-        photo.setImageName("Imageprofile");
-        photo.setPrimaryFlag("Y");
-
-//        String requestJson = "{\"Image\":\"test\",\"ImageName\":\"Imageprofile\",\"PrimaryFlag\":\"Y\"}";
-
-
-        HttpHeaders httpHeaders= createHeaders("SOIN","Admin1234");
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-//        HttpEntity<String> request = new HttpEntity<String>(requestJson,httpHeaders);
-        HttpEntity<Photo> request = new HttpEntity<Photo>(photo,httpHeaders);
-
-        ResponseEntity<Photo> response = restTemplate.exchange(url,HttpMethod.POST,request,Photo.class);
-        System.out.println(response.toString());
+//        RestTemplate restTemplate = new RestTemplate();
+//        String url = "https://hdes-test.fa.us2.oraclecloud.com:443/hcmRestApi/resources/11.13.18.05/emps/00020000000EACED00057708000110D931C4B2130000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B5974190300007870770800000165B67A680078/child/photo";
+//        Photo photo = new Photo();
+//        photo.setImage("test");
+//        photo.setImageName("Imageprofile");
+//        photo.setPrimaryFlag("Y");
+//
+////        String requestJson = "{\"Image\":\"test\",\"ImageName\":\"Imageprofile\",\"PrimaryFlag\":\"Y\"}";
+//
+//
+//        HttpHeaders httpHeaders= createHeaders("SOIN","Admin1234");
+//        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+////        HttpEntity<String> request = new HttpEntity<String>(requestJson,httpHeaders);
+//        HttpEntity<Photo> request = new HttpEntity<Photo>(photo,httpHeaders);
+//
+//        ResponseEntity<Photo> response = restTemplate.exchange(url,HttpMethod.POST,request,Photo.class);
+//        System.out.println(response.toString());
 
 	}
 
-    static HttpHeaders createHeaders(final String username, final String password){
+    static HttpHeaders createHeaders(){
         return new HttpHeaders() {{
-            String auth = username + ":" + password;
+            String auth = "SOIN" + ":" + "Admin1234";
             byte[] encodedAuth = Base64.encodeBase64(
                     auth.getBytes(Charset.forName("US-ASCII")) );
             String authHeader = "Basic " + new String( encodedAuth );
