@@ -1,5 +1,8 @@
 package com.oracle.ws.client;
 
+import com.oracle.ws.client.DTOs.RequestAssignment;
+import com.oracle.ws.client.DTOs.RequestEmployee;
+import com.oracle.ws.client.DTOs.ResponseListEmployee;
 import com.oracle.ws.handlers.WSSESOAPHandler;
 import com.oracle.ws.handlers.WSSESOAPHandlerResolver;
 import com.oracle.xmlns.apps.hcm.employment.core.flex.baseworkerassignmentdff.BaseWorkerAsgDFF;
@@ -40,22 +43,29 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebServiceException;
+
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
+import org.springframework.http.*;
+import org.springframework.web.client.RestTemplate;
 
 public class CreateWorkerClient
 {
@@ -63,6 +73,16 @@ public class CreateWorkerClient
   DateTimeZone dateTimeZone = DateTimeZone.forID(DateTimeZone.getDefault().getID());
   
   private Properties properties;
+
+  private HashMap<String,String> BussinesUnitCodes = new HashMap<String, String>()
+  {{
+      put("Purdy Carrocería y Pintura BU", "300000001543620");
+  }};
+
+    private HashMap<String,String> LegalEntitiesIds = new HashMap<String, String>()
+    {{
+        put("Purdy Carrocería y Pintura", "300000001545611");
+    }};
   
   Connection cn = null;
   PreparedStatement ps = null;
@@ -90,7 +110,9 @@ public class CreateWorkerClient
     String respuesta = "";
     String metodo = "";
     String xmlGenerado1 = null;String xmlGenerado2 = null;String xmlGenerado3 = null;
-    try
+
+
+      try
     {
       Class.forName(properties.getProperty("db.driver"));
       cn = DriverManager.getConnection(properties.getProperty("db.url"), properties.getProperty("db.user"), properties.getProperty("db.password"));
@@ -113,20 +135,27 @@ public class CreateWorkerClient
       rs = ps.executeQuery();
       
 
-      Worker w = null;
+//      Worker w = null;
       ActionsList al = null;
-      
+
+      //new code
+      RestTemplate restTemplate = new RestTemplate();
+        HttpEntity authenticationHeaders = new HttpEntity(createHeaders());
+
+        HttpHeaders postHeaders = createHeaders();
+      postHeaders.setContentType(MediaType.APPLICATION_JSON);
 
       while (rs.next())
       {
 
-    	  boolean NuevaRelacion = true;
-    	  id_number = rs.getInt("id_number"); 
+    	  id_number = rs.getInt("id_number");
           if (rs.getString("accion").equals("HIRE"))
           {
-            wsse = new WSSESOAPHandler();
-            wsse.setWSSE(properties.getProperty("ws.user"), properties.getProperty("ws.password"));
-            wsseHR = new WSSESOAPHandlerResolver(wsse);
+              String getEmpEndpoint = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps?q=PersonNumber="+rs.getString("no_persona");
+
+//            wsse = new WSSESOAPHandler();
+//            wsse.setWSSE(properties.getProperty("ws.user"), properties.getProperty("ws.password"));
+//            wsseHR = new WSSESOAPHandlerResolver(wsse);
             Service service = Service.create(new URL(properties.getProperty("ws.endpoint")), new QName(properties.getProperty("ws.qname"), properties.getProperty("ws.name")));
             service.setHandlerResolver(wsseHR);
             WorkerService port = (WorkerService)service.getPort(WorkerService.class);
@@ -134,268 +163,320 @@ public class CreateWorkerClient
          
             LOGGER.info("### Ejecutando el metodo: getWorkerInformationByPersonNumber");
             
-            informationResponse = new GetWorkerInformationByPersonNumberResponse();
+//            informationResponse = new GetWorkerInformationByPersonNumberResponse();
            
-            informationResponse.setResult(port.getWorkerInformationByPersonNumber(rs.getString("no_persona"), null));
-            xmlGenerado1 = wsse.getXml_generated();
-            
-            
-            if ((informationResponse.getResult() != null))
-            {
-              LOGGER.info("Se ejecuto con exito el metodo");
-              LOGGER.info("Relación Laboral existente");
-              LOGGER.info("AssignmentId: " + ((WorkerDetails)informationResponse.getResult().getValue().get(0)).getAssignmentId());
-              respuesta = respuesta + " / AssignmentId: " + ((WorkerDetails)informationResponse.getResult().getValue().get(0)).getAssignmentId();
-              NuevaRelacion = false;
-            }  
+//            informationResponse.setResult(port.getWorkerInformationByPersonNumber(rs.getString("no_persona"), null));
+//            xmlGenerado1 = wsse.getXml_generated();
+
+
+//
+//            if ((informationResponse.getResult() != null))
+//            {
+//              LOGGER.info("Se ejecuto con exito el metodo");
+//              LOGGER.info("Relación Laboral existente");
+//              LOGGER.info("AssignmentId: " + ((WorkerDetails)informationResponse.getResult().getValue().get(0)).getAssignmentId());
+//              respuesta = respuesta + " / AssignmentId: " + ((WorkerDetails)informationResponse.getResult().getValue().get(0)).getAssignmentId();
+//            }
   
-            response = new CreateWorkerResponse();  
+//            response = new CreateWorkerResponse();
             
-            w = new Worker();
+//            w = new Worker();
+              RequestEmployee newEmp = new RequestEmployee();
+
+
             al = new ActionsList();
-        	
-        
-          
-       if(NuevaRelacion == true) 
+
+       if(restTemplate.exchange(getEmpEndpoint, HttpMethod.GET, authenticationHeaders, ResponseListEmployee.class).getBody().getItems().size()!=0)
        {
     	   
     	   LOGGER.info("Proceso de creacion de un trabajador");
-           response = new CreateWorkerResponse();
-           
+//           response = new CreateWorkerResponse();
+
            LOGGER.info("Obteniendo datos del trabajador: " + rs.getString("nombre"));
        
-           w.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
-          
+//           w.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
+           newEmp.setEffectiveStartDate(rs.getString("fecha_contratacion"));
 
-          w.setPersonNumber(DocumentUtil.getXMLString("PersonNumber", rs.getString("no_persona")));
-          
+//          w.setPersonNumber(DocumentUtil.getXMLString("PersonNumber", rs.getString("no_persona")));
+           newEmp.setPersonNumber(rs.getString("no_persona"));
 
-          w.setStartDate(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
-          
-
-          w.setDateOfBirth(DocumentUtil.getXMLGregorianCalendar("DateOfBirth", rs.getString("fecha_nacimiento")));
-          
-
-          w.setBloodType(DocumentUtil.getXMLString("BloodType", rs.getString("tipo_sangre")));
-          
-
-          
-          WorkRelationship workRelationship = new WorkRelationship();
-          workRelationship.setDateStart(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
-          workRelationship.setLegalEmployerName(DocumentUtil.getXMLString("LegalEmployerName", rs.getString("entidad_legal")));
-          workRelationship.setWorkerType(rs.getString("tipo_trabajador"));
-          
-
-          WorkTerms workTerms = new WorkTerms();
-          workTerms.setBusinessUnitShortCode(DocumentUtil.getXMLString("BusinessUnitShortCode", rs.getString("unidad_negocio")));
-          workTerms.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
-          workTerms.setAssignmentName(DocumentUtil.getXMLString("AssignmentName", rs.getString("nombre_asignacion")));
-          workTerms.setAssignmentType("ET");
-          workTerms.setAssignmentNumber(DocumentUtil.getXMLString("AssignmentNumber", rs.getString("NumeroAsignacion")));
-          
-          Assignment assignment = new Assignment();
-          assignment.setBusinessUnitShortCode(DocumentUtil.getXMLString("BusinessUnitShortCode", rs.getString("unidad_negocio")));
-          assignment.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
-          assignment.setAssignmentName(DocumentUtil.getXMLString("AssignmentName", rs.getString("nombre_asignacion")));
-          assignment.setDepartmentName(DocumentUtil.getXMLString("DepartmentName", rs.getString("departamento")));
-          assignment.setPositionCode(DocumentUtil.getXMLString("PositionCode", rs.getString("codigo_posicion")));
-         
-
-          BaseWorkerAsgDFF baseWorkerAsgDFF = new BaseWorkerAsgDFF();
-          baseWorkerAsgDFF.setBanco(DocumentUtil.getXMLStringBas("banco", rs.getString("nombre_banco")));
-          baseWorkerAsgDFF.setCuenta(DocumentUtil.getXMLStringBas("cuenta", rs.getString("cuenta_bco")));
-          baseWorkerAsgDFF.setTipoCuenta(DocumentUtil.getXMLStringBas("tipoCuenta", rs.getString("tipo_cuenta_bco")));
-          baseWorkerAsgDFF.setCuentaCliente(DocumentUtil.getXMLStringBas("cuentaCliente", rs.getString("cuenta_cliente_bco")));
-          baseWorkerAsgDFF.setCentroFuncionalDepartamento(DocumentUtil.getXMLStringBas("centroFuncionalDepartamento", rs.getString("centro_funcional_dep")));
-          baseWorkerAsgDFF.setCentroFuncionalContable(DocumentUtil.getXMLStringBas("centroFuncionalContable", rs.getString("centro_funcional_cont")));
-          assignment.setBaseWorkerAsgDFF(baseWorkerAsgDFF);
-          
-
-          workTerms.getAssignment().add(assignment);
-          
-
-          workRelationship.getWorkTerms().add(workTerms);
-          
-
-          w.getWorkRelationship().add(workRelationship);
-          
+//          w.setStartDate(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
 
 
-          PersonLegislativeData personLegislativeData = new PersonLegislativeData();
-          personLegislativeData.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
-          personLegislativeData.setLegislationCode(rs.getString("codigo_legislacion"));
-          personLegislativeData.setSex(DocumentUtil.getXMLString("Sex", rs.getString("sexo")));
-          personLegislativeData.setMaritalStatus(DocumentUtil.getXMLString("MaritalStatus", rs.getString("estado_civil")));
-          w.getWorkerLegislativeData().add(personLegislativeData);
-          
+//          w.setDateOfBirth(DocumentUtil.getXMLGregorianCalendar("DateOfBirth", rs.getString("fecha_nacimiento")));
+           newEmp.setDateOfBirth(rs.getString("fecha_nacimiento"));
 
-          PersonEmail personEmailTrabajo = new PersonEmail();
-          personEmailTrabajo.setDateFrom(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
-          personEmailTrabajo.setEmailType("W1");
-          personEmailTrabajo.setEmailAddress(rs.getString("correo_empre"+ "sa"));
-          
-
-          PersonEmail personEmailParticular = new PersonEmail();
-          personEmailParticular.setDateFrom(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
-          personEmailParticular.setEmailType("H1");
-          personEmailParticular.setEmailAddress(rs.getString("correo_personal"));
-         
+//          w.setBloodType(DocumentUtil.getXMLString("BloodType", rs.getString("tipo_sangre")));
 
 
+           newEmp.setUserName(rs.getString("usuario"));
 
-          if (isNotNullOrEmpty(rs.getString("correo_empresa"))) w.getWorkerEmail().add(personEmailTrabajo);
+           newEmp.setFirstName(rs.getString("nombre"));
+//           newEmp.middlename(rs.getString("segundo_nombre"));
+           newEmp.setLastName(rs.getString("apellido_paterno"));
+           newEmp.setPreviousLastName(rs.getString("apellido_paterno"));
+
+           newEmp.setDisplayName(newEmp.getFirstName()+" "+newEmp.getLastName());
+
+           newEmp.setAddressLine1(rs.getString("direccion"));
+           newEmp.setCountry(rs.getString("pais"));
+           //
+           newEmp.setLegalEntityId(LegalEntitiesIds.get(rs.getString("entidad_legal")));
+           //
+           newEmp.setGender(rs.getString("sexo"));
+           newEmp.setMaritalStatus(rs.getString("estado_civil"));
+           newEmp.setNationalIdType(rs.getString("tipo_identificador1"));
+           newEmp.setNationalId(rs.getString("numero_identificador1"));
+           newEmp.setNationalIdCountry(rs.getString("pais"));
+
+
           
-          if (isNotNullOrEmpty(rs.getString("correo_personal"))) { w.getWorkerEmail().add(personEmailParticular);}
+//          WorkRelationship workRelationship = new WorkRelationship();
+//          workRelationship.setDateStart(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
+//          workRelationship.setLegalEmployerName(DocumentUtil.getXMLString("LegalEmployerName", rs.getString("entidad_legal")));
+//          workRelationship.setWorkerType(rs.getString("tipo_trabajador"));
+//
+
+//          WorkTerms workTerms = new WorkTerms();
+//          workTerms.setBusinessUnitShortCode(DocumentUtil.getXMLString("BusinessUnitShortCode", rs.getString("unidad_negocio")));
+//          workTerms.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
+//          workTerms.setAssignmentName(DocumentUtil.getXMLString("AssignmentName", rs.getString("nombre_asignacion")));
+//          workTerms.setAssignmentType("ET");
+//          workTerms.setAssignmentNumber(DocumentUtil.getXMLString("AssignmentNumber", rs.getString("NumeroAsignacion")));
+//
+//          Assignment assignment = new Assignment();
+//          assignment.setBusinessUnitShortCode(DocumentUtil.getXMLString("BusinessUnitShortCode", rs.getString("unidad_negocio")));
+
+//##          assignment.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
+
+//          assignment.setAssignmentName(DocumentUtil.getXMLString("AssignmentName", rs.getString("nombre_asignacion")));
+//##          assignment.setDepartmentName(DocumentUtil.getXMLString("DepartmentName", rs.getString("departamento")));
+//##          assignment.setPositionCode(DocumentUtil.getXMLString("PositionCode", rs.getString("codigo_posicion")));
+//
+           RequestAssignment assignment = new RequestAssignment();
+           assignment.setBusinessUnitId(BussinesUnitCodes.get(rs.getString("unidad_negocio")));
+//           assignment.setAssignmentName(rs.getString("nombre_asignacion"));
+
+//++           assignment.setWorkerType(rs.getString(""));
+           assignment.setWorkerCategory("WC");
+           assignment.setAssignmentCategory("FR");
+           assignment.setWorkingAtHome("N");
+           assignment.setWorkingAsManager("N");
+           assignment.setSalaryCode("H");
+           assignment.setSalaryAmount(rs.getString("salario"));
+           assignment.setWorkingHours("8");
+           assignment.setFrequency("D");
+//           assignment.setSalaryBasisId("tabla");
+           assignment.setActionCode(rs.getString("accion"));
+           assignment.setActionReasonCode(rs.getString("estado"));
+           assignment.setAssignmentStatus("Active - Payroll Eligible");
+
+           List<RequestAssignment> assignments = new ArrayList<RequestAssignment>();
+           assignments.add(assignment);
+           newEmp.setAssignments(assignments);
+
+           HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(newEmp,postHeaders);
+
+           String urlPostEmp = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps";
+
+           ResponseEntity resp = restTemplate.exchange(urlPostEmp,HttpMethod.POST,request,String.class);
+           System.out.println(resp.toString());
+
+//          BaseWorkerAsgDFF baseWorkerAsgDFF = new BaseWorkerAsgDFF();
+//          baseWorkerAsgDFF.setBanco(DocumentUtil.getXMLStringBas("banco", rs.getString("nombre_banco")));
+//          baseWorkerAsgDFF.setCuenta(DocumentUtil.getXMLStringBas("cuenta", rs.getString("cuenta_bco")));
+//          baseWorkerAsgDFF.setTipoCuenta(DocumentUtil.getXMLStringBas("tipoCuenta", rs.getString("tipo_cuenta_bco")));
+//          baseWorkerAsgDFF.setCuentaCliente(DocumentUtil.getXMLStringBas("cuentaCliente", rs.getString("cuenta_cliente_bco")));
+//          baseWorkerAsgDFF.setCentroFuncionalDepartamento(DocumentUtil.getXMLStringBas("centroFuncionalDepartamento", rs.getString("centro_funcional_dep")));
+//          baseWorkerAsgDFF.setCentroFuncionalContable(DocumentUtil.getXMLStringBas("centroFuncionalContable", rs.getString("centro_funcional_cont")));
+//          assignment.setBaseWorkerAsgDFF(baseWorkerAsgDFF);
           
 
-          PersonAddress personAddress = new PersonAddress();
-          personAddress.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
-          personAddress.setAddressType(rs.getString("tipo_direccion"));
-          personAddress.setCountry(rs.getString("pais"));
-          personAddress.setAddressLine1(DocumentUtil.getXMLString("AddressLine1", rs.getString("direccion")));
-          w.getWorkerAddress().add(personAddress);
+//          workTerms.getAssignment().add(assignment);
           
-          PersonPhone personPhone1 = new PersonPhone();
-          personPhone1.setDateFrom(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
-          personPhone1.setPhoneType("H1");
-          personPhone1.setPhoneNumber(rs.getString("telefono_particular1"));
+
+//          workRelationship.getWorkTerms().add(workTerms);
           
-          PersonPhone personPhone2 = new PersonPhone();
-          personPhone2.setDateFrom(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
-          personPhone2.setPhoneType("H2");
-          personPhone2.setPhoneNumber(rs.getString("telefono_particular2"));
-          
-          PersonPhone personPhone3 = new PersonPhone();
-          personPhone3.setDateFrom(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
-          personPhone3.setPhoneType("H3");
-          personPhone3.setPhoneNumber(rs.getString("telefono_particular3"));
-          
-          PersonPhone personPhone4 = new PersonPhone();
-          personPhone4.setDateFrom(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
-          personPhone4.setPhoneType("HM");
-          personPhone4.setPhoneNumber(rs.getString("movil_particular1"));
-          
-          
-          PersonPhone personPhone5 = new PersonPhone();
-          personPhone5.setDateFrom(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
-          personPhone5.setPhoneType("HM2");
-          personPhone5.setPhoneNumber(rs.getString("movil_particular2"));
-          
-          PersonPhone personPhone6 = new PersonPhone();
-          personPhone6.setDateFrom(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
-          personPhone6.setPhoneType("HM3");
-          personPhone6.setPhoneNumber(rs.getString("movil_particular3"));
+
+//          w.getWorkRelationship().add(workRelationship);
           
 
 
-          if (isNotNullOrEmpty(rs.getString("telefono_particular1"))) w.getWorkerPhone().add(personPhone1);
-          if (isNotNullOrEmpty(rs.getString("telefono_particular2"))) w.getWorkerPhone().add(personPhone2);
-          if (isNotNullOrEmpty(rs.getString("telefono_particular3"))) w.getWorkerPhone().add(personPhone3);
-          if (isNotNullOrEmpty(rs.getString("movil_particular1"))) w.getWorkerPhone().add(personPhone4);
-          if (isNotNullOrEmpty(rs.getString("movil_particular2"))) w.getWorkerPhone().add(personPhone5);
-          if (isNotNullOrEmpty(rs.getString("movil_particular3"))) { w.getWorkerPhone().add(personPhone6);
-          }
+//          PersonLegislativeData personLegislativeData = new PersonLegislativeData();
+//          personLegislativeData.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
+//          personLegislativeData.setLegislationCode(rs.getString("codigo_legislacion"));
+//          personLegislativeData.setSex(DocumentUtil.getXMLString("Sex", rs.getString("sexo")));
+//          personLegislativeData.setMaritalStatus(DocumentUtil.getXMLString("MaritalStatus", rs.getString("estado_civil")));
+//          w.getWorkerLegislativeData().add(personLegislativeData);
           
 
+//          PersonEmail personEmailTrabajo = new PersonEmail();
+//          personEmailTrabajo.setDateFrom(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
+//          personEmailTrabajo.setEmailType("W1");
+//          personEmailTrabajo.setEmailAddress(rs.getString("correo_empre"+ "sa"));
+//
 
-          PersonName personName = new PersonName();
-          personName.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
-          personName.setNameType("GLOBAL");
-          personName.setFirstName(DocumentUtil.getXMLString("FirstName", rs.getString("nombre")));
-          personName.setMiddleNames(DocumentUtil.getXMLString("MiddleNames", rs.getString("segundo_nombre")));
-          personName.setLastName(rs.getString("apellido_paterno"));
-          personName.setNameInformation1(DocumentUtil.getXMLString("NameInformation1", rs.getString("apellido_materno")));
-          personName.setTitle(DocumentUtil.getXMLString("Title", "MR."));
-          w.getWorkerName().add(personName);
-                   
-
-          PersonNationalIdentifier personNationalIdentifier1 = new PersonNationalIdentifier();
-          personNationalIdentifier1.setLegislationCode(rs.getString("codigo_legislacion"));
-          personNationalIdentifier1.setIssueDate(DocumentUtil.getXMLGregorianCalendar("IssueDate", rs.getString("fecha_contratacion")));
-          personNationalIdentifier1.setExpirationDate(DocumentUtil.getXMLGregorianCalendar("ExpirationDate", "4712-12-31"));
-          personNationalIdentifier1.setPlaceOfIssue(DocumentUtil.getXMLString("PlaceOfIssue", rs.getString("codigo_legislacion")));
-          personNationalIdentifier1.setNationalIdentifierType(rs.getString("tipo_identificador1"));
-          personNationalIdentifier1.setNationalIdentifierNumber(rs.getString("numero_identificador1"));
-          personNationalIdentifier1.setPrimaryFlag(DocumentUtil.getXMLBoolean("PrimaryFlag", Boolean.valueOf(true)));
-          
-          PersonNationalIdentifier personNationalIdentifier2 = new PersonNationalIdentifier();
-          personNationalIdentifier2.setLegislationCode(rs.getString("codigo_legislacion"));
-          personNationalIdentifier2.setIssueDate(DocumentUtil.getXMLGregorianCalendar("IssueDate", rs.getString("fecha_contratacion")));
-          personNationalIdentifier2.setExpirationDate(DocumentUtil.getXMLGregorianCalendar("ExpirationDate", "4712-12-31"));
-          personNationalIdentifier2.setPlaceOfIssue(DocumentUtil.getXMLString("PlaceOfIssue", rs.getString("codigo_legislacion")));
-          personNationalIdentifier2.setNationalIdentifierType(rs.getString("tipo_identificador2"));
-          personNationalIdentifier2.setNationalIdentifierNumber(rs.getString("numero_identificador2"));
-          personNationalIdentifier2.setPrimaryFlag(DocumentUtil.getXMLBoolean("PrimaryFlag", Boolean.valueOf(true)));
-          
-
-          if ((isNotNullOrEmpty(rs.getString("tipo_identificador1"))) && (isNotNullOrEmpty(rs.getString("numero_identificador1")))) {
-            w.getWorkerNationalIdentifier().add(personNationalIdentifier1);
-          }
-          if ((isNotNullOrEmpty(rs.getString("tipo_identificador2"))) && (isNotNullOrEmpty(rs.getString("numero_identificador2")))) {
-            w.getWorkerNationalIdentifier().add(personNationalIdentifier2);
-          }
-          
+//          PersonEmail personEmailParticular = new PersonEmail();
+//          personEmailParticular.setDateFrom(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
+//          personEmailParticular.setEmailType("H1");
+//          personEmailParticular.setEmailAddress(rs.getString("correo_personal"));
+//
 
 
-          PersonDriversLicence personDriversLicence1 = new PersonDriversLicence();
-          personDriversLicence1.setLegislationCode(rs.getString("codigo_legislacion"));
-          if (isNotNullOrEmpty(rs.getString("categoria_licencia1"))) personDriversLicence1.setLicenseNumber(DocumentUtil.getXMLString("LicenseNumber", rs.getString("categoria_licencia1")));
-          if (isNotNullOrEmpty(rs.getString("fecha_licencia1"))) personDriversLicence1.setDateFrom(DocumentUtil.getXMLGregorianCalendar("DateFrom", rs.getString("fecha_licencia1")));
-          DriversLicenseTypeDFF driversLicenseTypeDFF = new DriversLicenseTypeDFF();
-          driversLicenseTypeDFF.setCategoria(DocumentUtil.getXMLStringDff("categoria", rs.getString("categoria_licencia1")));
-          if (isNotNullOrEmpty(rs.getString("categoria_licencia1"))) { personDriversLicence1.setDriversLicenseTypeDFF(driversLicenseTypeDFF);
-          }
-          PersonDriversLicence personDriversLicence2 = new PersonDriversLicence();
-          personDriversLicence2.setLegislationCode(rs.getString("codigo_legislacion"));
-          if (isNotNullOrEmpty(rs.getString("categoria_licencia2"))) personDriversLicence2.setLicenseNumber(DocumentUtil.getXMLString("LicenseNumber", rs.getString("categoria_licencia2")));
-          if (isNotNullOrEmpty(rs.getString("fecha_licencia2"))) personDriversLicence2.setDateFrom(DocumentUtil.getXMLGregorianCalendar("DateFrom", rs.getString("fecha_licencia2")));
-          DriversLicenseTypeDFF driversLicenseTypeDFF2 = new DriversLicenseTypeDFF();
-          driversLicenseTypeDFF2.setCategoria(DocumentUtil.getXMLStringDff("categoria", rs.getString("categoria_licencia2")));
-          if (isNotNullOrEmpty(rs.getString("categoria_licencia2"))) { personDriversLicence2.setDriversLicenseTypeDFF(driversLicenseTypeDFF2);
-          }
-          PersonDriversLicence personDriversLicence3 = new PersonDriversLicence();
-          personDriversLicence3.setLegislationCode(rs.getString("codigo_legislacion"));
-          if (isNotNullOrEmpty(rs.getString("categoria_licencia3"))) personDriversLicence3.setLicenseNumber(DocumentUtil.getXMLString("LicenseNumber", rs.getString("categoria_licencia3")));
-          if (isNotNullOrEmpty(rs.getString("fecha_licencia3"))) personDriversLicence3.setDateFrom(DocumentUtil.getXMLGregorianCalendar("DateFrom", rs.getString("fecha_licencia3")));
-          DriversLicenseTypeDFF driversLicenseTypeDFF3 = new DriversLicenseTypeDFF();
-          driversLicenseTypeDFF3.setCategoria(DocumentUtil.getXMLStringDff("categoria", rs.getString("categoria_licencia3")));
-          if (isNotNullOrEmpty(rs.getString("categoria_licencia3"))) { personDriversLicence3.setDriversLicenseTypeDFF(driversLicenseTypeDFF3);
-          }
-          if ((isNotNullOrEmpty(rs.getString("fecha_licencia1"))) || (isNotNullOrEmpty(rs.getString("categoria_licencia1")))) w.getWorkerDriversLicence().add(personDriversLicence1);
-          if ((isNotNullOrEmpty(rs.getString("fecha_licencia2"))) || (isNotNullOrEmpty(rs.getString("categoria_licencia2")))) w.getWorkerDriversLicence().add(personDriversLicence2);
-          if ((isNotNullOrEmpty(rs.getString("fecha_licencia3"))) || (isNotNullOrEmpty(rs.getString("categoria_licencia3")))) { w.getWorkerDriversLicence().add(personDriversLicence3);
-          }
-          
 
-          PersonUserInformation personUserInformation = new PersonUserInformation();
-          personUserInformation.setUserName(DocumentUtil.getXMLString("UserName", rs.getString("usuario")));
-          personUserInformation.setSendCredentialsEmailFlag(DocumentUtil.getXMLBoolean("SendCredentialsEmailFlag", Boolean.valueOf(Boolean.parseBoolean(rs.getString("envia_credenciales")))));
-          personUserInformation.setEmailAddress(DocumentUtil.getXMLString("EmailAddress", rs.getString("correo_empresa")));
-          w.setWorkerUserInformation(personUserInformation);
-
-
-          al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));  /* comportamiento */
-          al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "NOM"));  /* accion  estado? */
-          
+//          if (isNotNullOrEmpty(rs.getString("correo_empresa"))) w.getWorkerEmail().add(personEmailTrabajo);
+//
+//          if (isNotNullOrEmpty(rs.getString("correo_personal"))) { w.getWorkerEmail().add(personEmailParticular);}
+//
+//
+//          PersonAddress personAddress = new PersonAddress();
+//          personAddress.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
+//          personAddress.setAddressType(rs.getString("tipo_direccion"));
+//          personAddress.setCountry(rs.getString("pais"));
+//          personAddress.setAddressLine1(DocumentUtil.getXMLString("AddressLine1", rs.getString("direccion")));
+//          w.getWorkerAddress().add(personAddress);
+//
+//          PersonPhone personPhone1 = new PersonPhone();
+//          personPhone1.setDateFrom(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
+//          personPhone1.setPhoneType("H1");
+//          personPhone1.setPhoneNumber(rs.getString("telefono_particular1"));
+//
+//          PersonPhone personPhone2 = new PersonPhone();
+//          personPhone2.setDateFrom(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
+//          personPhone2.setPhoneType("H2");
+//          personPhone2.setPhoneNumber(rs.getString("telefono_particular2"));
+//
+//          PersonPhone personPhone3 = new PersonPhone();
+//          personPhone3.setDateFrom(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
+//          personPhone3.setPhoneType("H3");
+//          personPhone3.setPhoneNumber(rs.getString("telefono_particular3"));
+//
+//          PersonPhone personPhone4 = new PersonPhone();
+//          personPhone4.setDateFrom(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
+//          personPhone4.setPhoneType("HM");
+//          personPhone4.setPhoneNumber(rs.getString("movil_particular1"));
+//
+//
+//          PersonPhone personPhone5 = new PersonPhone();
+//          personPhone5.setDateFrom(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
+//          personPhone5.setPhoneType("HM2");
+//          personPhone5.setPhoneNumber(rs.getString("movil_particular2"));
+//
+//          PersonPhone personPhone6 = new PersonPhone();
+//          personPhone6.setDateFrom(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
+//          personPhone6.setPhoneType("HM3");
+//          personPhone6.setPhoneNumber(rs.getString("movil_particular3"));
+//
+//
+//
+//          if (isNotNullOrEmpty(rs.getString("telefono_particular1"))) w.getWorkerPhone().add(personPhone1);
+//          if (isNotNullOrEmpty(rs.getString("telefono_particular2"))) w.getWorkerPhone().add(personPhone2);
+//          if (isNotNullOrEmpty(rs.getString("telefono_particular3"))) w.getWorkerPhone().add(personPhone3);
+//          if (isNotNullOrEmpty(rs.getString("movil_particular1"))) w.getWorkerPhone().add(personPhone4);
+//          if (isNotNullOrEmpty(rs.getString("movil_particular2"))) w.getWorkerPhone().add(personPhone5);
+//          if (isNotNullOrEmpty(rs.getString("movil_particular3"))) { w.getWorkerPhone().add(personPhone6);
+//          }
+//
+//
+//
+//          PersonName personName = new PersonName();
+//          personName.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
+//          personName.setNameType("GLOBAL");
+//          personName.setFirstName(DocumentUtil.getXMLString("FirstName", rs.getString("nombre")));
+//          personName.setMiddleNames(DocumentUtil.getXMLString("MiddleNames", rs.getString("segundo_nombre")));
+//          personName.setLastName(rs.getString("apellido_paterno"));
+//          personName.setNameInformation1(DocumentUtil.getXMLString("NameInformation1", rs.getString("apellido_materno")));
+//          personName.setTitle(DocumentUtil.getXMLString("Title", "MR."));
+//          w.getWorkerName().add(personName);
+//
+//
+//          PersonNationalIdentifier personNationalIdentifier1 = new PersonNationalIdentifier();
+//          personNationalIdentifier1.setLegislationCode(rs.getString("codigo_legislacion"));
+//          personNationalIdentifier1.setIssueDate(DocumentUtil.getXMLGregorianCalendar("IssueDate", rs.getString("fecha_contratacion")));
+//          personNationalIdentifier1.setExpirationDate(DocumentUtil.getXMLGregorianCalendar("ExpirationDate", "4712-12-31"));
+//          personNationalIdentifier1.setPlaceOfIssue(DocumentUtil.getXMLString("PlaceOfIssue", rs.getString("codigo_legislacion")));
+//          personNationalIdentifier1.setNationalIdentifierType(rs.getString("tipo_identificador1"));
+//          personNationalIdentifier1.setNationalIdentifierNumber(rs.getString("numero_identificador1"));
+//          personNationalIdentifier1.setPrimaryFlag(DocumentUtil.getXMLBoolean("PrimaryFlag", Boolean.valueOf(true)));
+//
+//          PersonNationalIdentifier personNationalIdentifier2 = new PersonNationalIdentifier();
+//          personNationalIdentifier2.setLegislationCode(rs.getString("codigo_legislacion"));
+//          personNationalIdentifier2.setIssueDate(DocumentUtil.getXMLGregorianCalendar("IssueDate", rs.getString("fecha_contratacion")));
+//          personNationalIdentifier2.setExpirationDate(DocumentUtil.getXMLGregorianCalendar("ExpirationDate", "4712-12-31"));
+//          personNationalIdentifier2.setPlaceOfIssue(DocumentUtil.getXMLString("PlaceOfIssue", rs.getString("codigo_legislacion")));
+//          personNationalIdentifier2.setNationalIdentifierType(rs.getString("tipo_identificador2"));
+//          personNationalIdentifier2.setNationalIdentifierNumber(rs.getString("numero_identificador2"));
+//          personNationalIdentifier2.setPrimaryFlag(DocumentUtil.getXMLBoolean("PrimaryFlag", Boolean.valueOf(true)));
+//
+//
+//          if ((isNotNullOrEmpty(rs.getString("tipo_identificador1"))) && (isNotNullOrEmpty(rs.getString("numero_identificador1")))) {
+//            w.getWorkerNationalIdentifier().add(personNationalIdentifier1);
+//          }
+//          if ((isNotNullOrEmpty(rs.getString("tipo_identificador2"))) && (isNotNullOrEmpty(rs.getString("numero_identificador2")))) {
+//            w.getWorkerNationalIdentifier().add(personNationalIdentifier2);
+//          }
+//
+//
+//
+//          PersonDriversLicence personDriversLicence1 = new PersonDriversLicence();
+//          personDriversLicence1.setLegislationCode(rs.getString("codigo_legislacion"));
+//          if (isNotNullOrEmpty(rs.getString("categoria_licencia1"))) personDriversLicence1.setLicenseNumber(DocumentUtil.getXMLString("LicenseNumber", rs.getString("categoria_licencia1")));
+//          if (isNotNullOrEmpty(rs.getString("fecha_licencia1"))) personDriversLicence1.setDateFrom(DocumentUtil.getXMLGregorianCalendar("DateFrom", rs.getString("fecha_licencia1")));
+//          DriversLicenseTypeDFF driversLicenseTypeDFF = new DriversLicenseTypeDFF();
+//          driversLicenseTypeDFF.setCategoria(DocumentUtil.getXMLStringDff("categoria", rs.getString("categoria_licencia1")));
+//          if (isNotNullOrEmpty(rs.getString("categoria_licencia1"))) { personDriversLicence1.setDriversLicenseTypeDFF(driversLicenseTypeDFF);
+//          }
+//          PersonDriversLicence personDriversLicence2 = new PersonDriversLicence();
+//          personDriversLicence2.setLegislationCode(rs.getString("codigo_legislacion"));
+//          if (isNotNullOrEmpty(rs.getString("categoria_licencia2"))) personDriversLicence2.setLicenseNumber(DocumentUtil.getXMLString("LicenseNumber", rs.getString("categoria_licencia2")));
+//          if (isNotNullOrEmpty(rs.getString("fecha_licencia2"))) personDriversLicence2.setDateFrom(DocumentUtil.getXMLGregorianCalendar("DateFrom", rs.getString("fecha_licencia2")));
+//          DriversLicenseTypeDFF driversLicenseTypeDFF2 = new DriversLicenseTypeDFF();
+//          driversLicenseTypeDFF2.setCategoria(DocumentUtil.getXMLStringDff("categoria", rs.getString("categoria_licencia2")));
+//          if (isNotNullOrEmpty(rs.getString("categoria_licencia2"))) { personDriversLicence2.setDriversLicenseTypeDFF(driversLicenseTypeDFF2);
+//          }
+//          PersonDriversLicence personDriversLicence3 = new PersonDriversLicence();
+//          personDriversLicence3.setLegislationCode(rs.getString("codigo_legislacion"));
+//          if (isNotNullOrEmpty(rs.getString("categoria_licencia3"))) personDriversLicence3.setLicenseNumber(DocumentUtil.getXMLString("LicenseNumber", rs.getString("categoria_licencia3")));
+//          if (isNotNullOrEmpty(rs.getString("fecha_licencia3"))) personDriversLicence3.setDateFrom(DocumentUtil.getXMLGregorianCalendar("DateFrom", rs.getString("fecha_licencia3")));
+//          DriversLicenseTypeDFF driversLicenseTypeDFF3 = new DriversLicenseTypeDFF();
+//          driversLicenseTypeDFF3.setCategoria(DocumentUtil.getXMLStringDff("categoria", rs.getString("categoria_licencia3")));
+//          if (isNotNullOrEmpty(rs.getString("categoria_licencia3"))) { personDriversLicence3.setDriversLicenseTypeDFF(driversLicenseTypeDFF3);
+//          }
+//          if ((isNotNullOrEmpty(rs.getString("fecha_licencia1"))) || (isNotNullOrEmpty(rs.getString("categoria_licencia1")))) w.getWorkerDriversLicence().add(personDriversLicence1);
+//          if ((isNotNullOrEmpty(rs.getString("fecha_licencia2"))) || (isNotNullOrEmpty(rs.getString("categoria_licencia2")))) w.getWorkerDriversLicence().add(personDriversLicence2);
+//          if ((isNotNullOrEmpty(rs.getString("fecha_licencia3"))) || (isNotNullOrEmpty(rs.getString("categoria_licencia3")))) { w.getWorkerDriversLicence().add(personDriversLicence3);
+//          }
+//
+//
+//          PersonUserInformation personUserInformation = new PersonUserInformation();
+//          personUserInformation.setUserName(DocumentUtil.getXMLString("UserName", rs.getString("usuario")));
+//          personUserInformation.setSendCredentialsEmailFlag(DocumentUtil.getXMLBoolean("SendCredentialsEmailFlag", Boolean.valueOf(Boolean.parseBoolean(rs.getString("envia_credenciales")))));
+//          personUserInformation.setEmailAddress(DocumentUtil.getXMLString("EmailAddress", rs.getString("correo_empresa")));
+//          w.setWorkerUserInformation(personUserInformation);
+//
+//
+//          al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));  /* comportamiento */
+//          al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "NOM"));  /* accion  estado? */
+//
           LOGGER.info("Enviando datos al web service.");
           LOGGER.info("### Ejecutando el metodo: createWorker");
           metodo = "createWorker";
           
           if (rs.getString("estado").equals("CT"))  // Nombramiento temporal.
           {
-        	  /* Fecha_Final */
-        	   w.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
-        	   workTerms.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
-        	   assignment.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
-        	   /* Accion estado? */
-        	   al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "NOT"));  
+//        	  /* Fecha_Final */
+//        	   w.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
+//        	   workTerms.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
+//        	   assignment.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
+//        	   /* Accion estado? */
+//        	   al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "NOT"));
           }
           
           /*     w = new Worker();
                  al = new ActionsList();  */
 
-          response.setResult(port.createWorker(w, al));
-          xmlGenerado1 = wsse.getXml_generated();
+//          response.setResult(port.createWorker(w, al));
+//          xmlGenerado1 = wsse.getXml_generated();
           
           
           if ((response.getResult() != null) && (response.getResult().getValue().size() > 0))
@@ -1093,5 +1174,15 @@ public class CreateWorkerClient
     else
       return false;
   }
+
+  private HttpHeaders createHeaders(){
+        return new HttpHeaders() {{
+            String auth = "SOIN" + ":" + "Admin1234";
+            byte[] encodedAuth = Base64.encodeBase64(
+                    auth.getBytes(Charset.forName("US-ASCII")) );
+            String authHeader = "Basic " + new String( encodedAuth );
+            set( "Authorization", authHeader );
+        }};
+    }
   
 }
