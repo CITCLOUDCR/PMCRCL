@@ -1,5 +1,7 @@
 package com.oracle.ws.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oracle.ws.client.DTOs.RequestAssignment;
 import com.oracle.ws.client.DTOs.RequestEmployee;
 import com.oracle.ws.client.DTOs.ResponseListEmployee;
@@ -76,12 +78,12 @@ public class CreateWorkerClient
 
   private HashMap<String,String> BussinesUnitCodes = new HashMap<String, String>()
   {{
-      put("Purdy Carrocería y Pintura BU", "300000001543620");
+      put("Purdy Motor S.A. BU", "300000001543620");
   }};
 
     private HashMap<String,String> LegalEntitiesIds = new HashMap<String, String>()
     {{
-        put("Purdy Carrocería y Pintura", "300000001545611");
+        put("Purdy Motor S.A.", "300000001545611");
     }};
   
   Connection cn = null;
@@ -100,7 +102,7 @@ public class CreateWorkerClient
     
 
     CreateWorkRelationshipResponse WRresponse = null;
-    CreateWorkerResponse response = null;
+   // CreateWorkerResponse response = null;
     MergePersonResponse mergeResponse = null;
     GetWorkerInformationByPersonNumberResponse informationResponse = null;
     UpdateAssignmentResponse updateAssignmentResponse = null;
@@ -139,11 +141,20 @@ public class CreateWorkerClient
       ActionsList al = null;
 
       //new code
-      RestTemplate restTemplate = new RestTemplate();
-        HttpEntity authenticationHeaders = new HttpEntity(createHeaders());
+      //RestTemplate restTemplate = new RestTemplate();
+      //  HttpEntity authenticationHeaders = new HttpEntity(createHeaders());
 
-        HttpHeaders postHeaders = createHeaders();
-      postHeaders.setContentType(MediaType.APPLICATION_JSON);
+      //  HttpHeaders postHeaders = createHeaders();
+      //  postHeaders.setContentType(MediaType.APPLICATION_JSON);
+      
+      
+      RestTemplate restTemplate = new RestTemplate();
+      String url = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps";
+      HttpEntity authenticationHeaders = new HttpEntity(createHeaders());
+
+      HttpHeaders httpHeaders = createHeaders();
+      httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+      
 
       while (rs.next())
       {
@@ -151,14 +162,14 @@ public class CreateWorkerClient
     	  id_number = rs.getInt("id_number");
           if (rs.getString("accion").equals("HIRE"))
           {
-              String getEmpEndpoint = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps?q=PersonNumber="+rs.getString("no_persona");
+            String getEmpEndpoint = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps?q=PersonNumber="+rs.getString("no_persona");
 
 //            wsse = new WSSESOAPHandler();
 //            wsse.setWSSE(properties.getProperty("ws.user"), properties.getProperty("ws.password"));
 //            wsseHR = new WSSESOAPHandlerResolver(wsse);
-            Service service = Service.create(new URL(properties.getProperty("ws.endpoint")), new QName(properties.getProperty("ws.qname"), properties.getProperty("ws.name")));
-            service.setHandlerResolver(wsseHR);
-            WorkerService port = (WorkerService)service.getPort(WorkerService.class);
+            //Service service = Service.create(new URL(properties.getProperty("ws.endpoint")), new QName(properties.getProperty("ws.qname"), properties.getProperty("ws.name")));
+            //service.setHandlerResolver(wsseHR);
+            //WorkerService port = (WorkerService)service.getPort(WorkerService.class);
             
          
             LOGGER.info("### Ejecutando el metodo: getWorkerInformationByPersonNumber");
@@ -185,52 +196,48 @@ public class CreateWorkerClient
 
 
             al = new ActionsList();
+            
+            boolean existe = restTemplate.exchange(getEmpEndpoint, HttpMethod.GET, authenticationHeaders, ResponseListEmployee.class).getBody().getItems().size()!=0;
 
-       if(restTemplate.exchange(getEmpEndpoint, HttpMethod.GET, authenticationHeaders, ResponseListEmployee.class).getBody().getItems().size()!=0)
+       if(!existe)
        {
     	   
     	   LOGGER.info("Proceso de creacion de un trabajador");
 //           response = new CreateWorkerResponse();
 
            LOGGER.info("Obteniendo datos del trabajador: " + rs.getString("nombre"));
+           
+         
+
+           RequestEmployee emp = new RequestEmployee();
+           emp.setFirstName(rs.getString("nombre"));
+           emp.setLastName(rs.getString("apellido_paterno"));
+           emp.setPreviousLastName(rs.getString("apellido_materno"));
+           emp.setDisplayName(rs.getString("nombre")+" "+rs.getString("apellido_paterno")); /* devuelve null */
+           emp.setPersonNumber(rs.getString("no_persona"));
+           emp.setAddressLine1(rs.getString("direccion"));
+           emp.setCountry(rs.getString("pais"));
+           emp.setDateOfBirth(rs.getString("fecha_nacimiento"));
+           
+           String legalenti = rs.getString("entidad_legal"); 
+           
+           emp.setLegalEntityId(LegalEntitiesIds.get(rs.getString("entidad_legal"))); /* devuelve null */
+           emp.setGender(rs.getString("sexo"));
+           emp.setMaritalStatus(rs.getString("estado_civil"));
+           emp.setNationalIdType(rs.getString("tipo_identificador1"));
+           emp.setNationalId(rs.getString("numero_identificador1"));
+           emp.setNationalIdCountry(rs.getString("pais"));
+           emp.setEffectiveStartDate("2018-09-14");
+           emp.setUserName(rs.getString("usuario"));
+           
        
-//           w.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
-           newEmp.setEffectiveStartDate(rs.getString("fecha_contratacion"));
-
+//          w.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
 //          w.setPersonNumber(DocumentUtil.getXMLString("PersonNumber", rs.getString("no_persona")));
-           newEmp.setPersonNumber(rs.getString("no_persona"));
-
 //          w.setStartDate(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
-
-
 //          w.setDateOfBirth(DocumentUtil.getXMLGregorianCalendar("DateOfBirth", rs.getString("fecha_nacimiento")));
-           newEmp.setDateOfBirth(rs.getString("fecha_nacimiento"));
-
 //          w.setBloodType(DocumentUtil.getXMLString("BloodType", rs.getString("tipo_sangre")));
-
-
-           newEmp.setUserName(rs.getString("usuario"));
-
-           newEmp.setFirstName(rs.getString("nombre"));
-//           newEmp.middlename(rs.getString("segundo_nombre"));
-           newEmp.setLastName(rs.getString("apellido_paterno"));
-           newEmp.setPreviousLastName(rs.getString("apellido_paterno"));
-
-           newEmp.setDisplayName(newEmp.getFirstName()+" "+newEmp.getLastName());
-
-           newEmp.setAddressLine1(rs.getString("direccion"));
-           newEmp.setCountry(rs.getString("pais"));
-           //
-           newEmp.setLegalEntityId(LegalEntitiesIds.get(rs.getString("entidad_legal")));
-           //
-           newEmp.setGender(rs.getString("sexo"));
-           newEmp.setMaritalStatus(rs.getString("estado_civil"));
-           newEmp.setNationalIdType(rs.getString("tipo_identificador1"));
-           newEmp.setNationalId(rs.getString("numero_identificador1"));
-           newEmp.setNationalIdCountry(rs.getString("pais"));
-
-
-          
+//          newEmp.middlename(rs.getString("segundo_nombre"));
+                     
 //          WorkRelationship workRelationship = new WorkRelationship();
 //          workRelationship.setDateStart(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
 //          workRelationship.setLegalEmployerName(DocumentUtil.getXMLString("LegalEmployerName", rs.getString("entidad_legal")));
@@ -254,33 +261,53 @@ public class CreateWorkerClient
 //##          assignment.setPositionCode(DocumentUtil.getXMLString("PositionCode", rs.getString("codigo_posicion")));
 //
            RequestAssignment assignment = new RequestAssignment();
-           assignment.setBusinessUnitId(BussinesUnitCodes.get(rs.getString("unidad_negocio")));
-//           assignment.setAssignmentName(rs.getString("nombre_asignacion"));
-
-//++           assignment.setWorkerType(rs.getString(""));
+           
+           String bussinesUnit = rs.getString("unidad_negocio");
+           
+           assignment.setAssignmentName(rs.getString("nombre")+"_assignment_"+rs.getString("apellido_paterno"));   /* devuelve null */
+           assignment.setBusinessUnitId(BussinesUnitCodes.get(bussinesUnit)); /* devuelve null */
            assignment.setWorkerCategory("WC");
            assignment.setAssignmentCategory("FR");
            assignment.setWorkingAtHome("N");
            assignment.setWorkingAsManager("N");
            assignment.setSalaryCode("H");
-           assignment.setSalaryAmount(rs.getString("salario"));
            assignment.setWorkingHours("8");
            assignment.setFrequency("D");
-//           assignment.setSalaryBasisId("tabla");
+           assignment.setSalaryBasisId("300000001590736");
+           assignment.setSalaryAmount(rs.getString("salario"));
            assignment.setActionCode(rs.getString("accion"));
            assignment.setActionReasonCode(rs.getString("estado"));
-           assignment.setAssignmentStatus("Active - Payroll Eligible");
+           assignment.setAssignmentStatus("ACTIVE");
+           
+//++       assignment.setWorkerType(rs.getString(""));
 
+           //List<RequestAssignment> assignments = new ArrayList<RequestAssignment>();
+           //assignments.add(assignment);
+           //newEmp.setAssignments(assignments);
+
+           //HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(newEmp,postHeaders);
+
+           //String urlPostEmp = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps";
+
+           //ResponseEntity resp = restTemplate.exchange(urlPostEmp,HttpMethod.POST,request,String.class);
+          // System.out.println(resp.toString());
+           
            List<RequestAssignment> assignments = new ArrayList<RequestAssignment>();
            assignments.add(assignment);
-           newEmp.setAssignments(assignments);
+           emp.setAssignments(assignments);
+          
+           try {
+               String json = new ObjectMapper().writeValueAsString(emp);
+               System.out.println(json);
+           } catch (JsonProcessingException e) {
+               e.printStackTrace();
+           }
+             
 
-           HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(newEmp,postHeaders);
-
-           String urlPostEmp = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps";
-
-           ResponseEntity resp = restTemplate.exchange(urlPostEmp,HttpMethod.POST,request,String.class);
-           System.out.println(resp.toString());
+           HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(emp,httpHeaders);
+           ResponseEntity response = restTemplate.exchange(url,HttpMethod.POST,request,String.class);
+           System.out.println(response.toString());
+           
 
 //          BaseWorkerAsgDFF baseWorkerAsgDFF = new BaseWorkerAsgDFF();
 //          baseWorkerAsgDFF.setBanco(DocumentUtil.getXMLStringBas("banco", rs.getString("nombre_banco")));
@@ -479,21 +506,20 @@ public class CreateWorkerClient
 //          xmlGenerado1 = wsse.getXml_generated();
           
           
-          if ((response.getResult() != null) && (response.getResult().getValue().size() > 0))
+          /*if ((response.getResult() != null) && (response.getResult().getValue().size() > 0))
            {
             LOGGER.info("Obteniendo respuesta exitosa.");
             LOGGER.info("PersonId: " + ((Worker)response.getResult().getValue().get(0)).getPersonId());
             
-            /* cambia el estado en HCM_colaboradores a "CP" */
+            /* cambia el estado en HCM_colaboradores a "CP" 
             int exito = updateResponseTable(id_number, "PersonId: " + ((Worker)response.getResult().getValue().get(0)).getPersonId().toString(), "OK", metodo, xmlGenerado1, xmlGenerado2, xmlGenerado3);
-            
+           
             if (exito == 1)
              {
               LOGGER.info("Datos actualizados correctamente en la base de datos.");
              }
-
           }
-          
+          */
           
             }
        
@@ -555,10 +581,10 @@ public class CreateWorkerClient
                     LOGGER.info("### Ejecutando el metodo: createWorker");
                     metodo = "createWorker";
 
-                    WRresponse.setResult(port.createWorkRelationship(workRelationship, al));
-                    xmlGenerado1 = wsse.getXml_generated();
+                   // WRresponse.setResult(port.createWorkRelationship(workRelationship, al));
+                   // xmlGenerado1 = wsse.getXml_generated();
                     
-                    if ((response.getResult() != null) && (WRresponse.getResult().getValue().size() > 0)) {
+                /*    if ((response.getResult() != null) && (WRresponse.getResult().getValue().size() > 0)) {
                       LOGGER.info("Obteniendo respuesta exitosa.");
                       LOGGER.info("PersonId: " + ((WorkRelationship)WRresponse.getResult().getValue().get(0)).getPersonId());
                       
@@ -572,7 +598,7 @@ public class CreateWorkerClient
                       
 
                     }
-                      
+                      */
                 
                 /*Verificar código*/
 
