@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oracle.ws.client.DTOs.*;
 import org.apache.commons.codec.binary.Base64;
+import org.omg.CORBA.TIMEOUT;
 import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.HttpURLConnection;
@@ -18,17 +20,17 @@ public class test {
 //    private RestTemplate restTemplate = new RestTemplate();
 
     public static void main (String[] args){
-        RestTemplate restTemplate = new RestTemplate();
-        String url = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps?q=PersonNumber="+"34056000";
-        String url2 = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps?q=PersonNumber="+"34056";
-        HttpEntity entity = new HttpEntity(createHeaders());
-        HttpEntity response = restTemplate.exchange(url, HttpMethod.GET, entity, ResponseListEmployee.class);
-
-        response.toString();
-
-        HttpEntity response2 = restTemplate.exchange(url2, HttpMethod.GET, entity, ResponseListEmployee.class);
-
-        response2.toString();
+//        RestTemplate restTemplate = new RestTemplate();
+//        String url = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps?q=PersonNumber="+"34056000";
+//        String url2 = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps?q=PersonNumber="+"34056";
+//        HttpEntity entity = new HttpEntity(createHeaders());
+//        HttpEntity response = restTemplate.exchange(url, HttpMethod.GET, entity, ResponseListEmployee.class);
+//
+//        response.toString();
+//
+//        HttpEntity response2 = restTemplate.exchange(url2, HttpMethod.GET, entity, ResponseListEmployee.class);
+//
+//        response2.toString();
 
 
 //        POST!
@@ -128,6 +130,28 @@ public class test {
 //
 //        ResponseEntity<Photo> response = restTemplate.exchange(url,HttpMethod.POST,request,Photo.class);
 //        System.out.println(response.toString());
+
+//PATCH
+
+
+        RestTemplate restTemplate = new RestTemplate();
+        String url = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/00020000000EACED00057708000110D931C4B2130000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B5974190300007870770800000165B67A680078";
+        PatchObject test = new PatchObject();
+        test.setLastName("RESTTEMPLATE");
+
+        HttpHeaders httpHeaders = createHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<PatchObject> request = new HttpEntity<PatchObject>(test,httpHeaders);
+
+
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+
+        restTemplate.setRequestFactory(requestFactory);
+
+        HttpEntity response = restTemplate.exchange(url, HttpMethod.PATCH, request, ResponseEmployee.class);
+        response.toString();
+
 
 	}
 
