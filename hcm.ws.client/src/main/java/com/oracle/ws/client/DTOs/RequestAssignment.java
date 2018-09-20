@@ -45,7 +45,7 @@ public class RequestAssignment {
     private String assignmentStatus;
 
     @JsonProperty("assignmentsDFF")
-    private List<RequestAssignment> assignmentDFF = null;
+    private List<RequestAssignmentDFF> assignmentDFF = null;
 
 
     public String getAssignmentName() {
@@ -160,11 +160,11 @@ public class RequestAssignment {
         this.assignmentStatus = assignmentStatus;
     }
 
-    public List<RequestAssignment> getAssignmentDFF() {
+    public List<RequestAssignmentDFF> getAssignmentDFF() {
         return assignmentDFF;
     }
 
-    public void setAssignmentDFF(List<RequestAssignment> assignmentDFF) {
+    public void setAssignmentDFF(List<RequestAssignmentDFF> assignmentDFF) {
         this.assignmentDFF = assignmentDFF;
     }
 
