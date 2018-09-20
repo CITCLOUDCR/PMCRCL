@@ -69,9 +69,9 @@ import org.joda.time.LocalDateTime;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
-public class CreateWorkerClient
+public class CreateWorkerClient_Backup
 {
-  private static final Logger LOGGER = Logger.getLogger(CreateWorkerClient.class);
+  private static final Logger LOGGER = Logger.getLogger(CreateWorkerClient_Backup.class);
   DateTimeZone dateTimeZone = DateTimeZone.forID(DateTimeZone.getDefault().getID());
   
   private Properties properties;
@@ -90,7 +90,7 @@ public class CreateWorkerClient
   PreparedStatement ps = null;
   ResultSet rs = null;
   
-  public CreateWorkerClient()
+  public CreateWorkerClient_Backup()
   {
     initPropertyFile();
   }
@@ -149,7 +149,7 @@ public class CreateWorkerClient
       
       
       RestTemplate restTemplate = new RestTemplate();
-      String url = ClientConfig.endpoint + "/hcmRestApi/resources/latest/emps";
+      String url = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps";
       HttpEntity authenticationHeaders = new HttpEntity(createHeaders());
 
       HttpHeaders httpHeaders = createHeaders();
@@ -229,7 +229,6 @@ public class CreateWorkerClient
            emp.setNationalIdCountry(rs.getString("pais"));
            emp.setEffectiveStartDate("2018-09-14");
            emp.setUserName(rs.getString("usuario"));
-           
            
        
 //          w.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
@@ -597,7 +596,7 @@ public class CreateWorkerClient
 
                       }
                       
-CreateWorkerClient.java
+
                     }
                       */
                 
