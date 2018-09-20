@@ -6,7 +6,29 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true) //must be there all times most likely
-public class RequestEmployee {
+public class RequestEmployee{
+
+    @JsonProperty("Saludation")
+    private String saludation;
+    @JsonProperty("MiddleName")
+    private String middleName;
+    @JsonProperty("HireDate")
+    private String hireDate;
+    @JsonProperty("CitizenshipLegislationCode")
+    private String citizenshipLegislationCode;
+    @JsonProperty("WorkEmail")
+    private String workEmail;
+    @JsonProperty("HomePhoneNumber")
+    private String homePhoneNumber;
+    @JsonProperty("WorkPhoneNumber")
+    private String workPhoneNumber;
+    @JsonProperty("WorkMobilePhoneNumber")
+    private String workMobilePhoneNumber;
+    @JsonProperty("DriverLicenseExpirationDate")
+    private String driverLicenseExpirationDate;
+    @JsonProperty("DriverLicenseId")
+    private String driverLicenseId;
+
     @JsonProperty("FirstName")
     private String firstName;
     @JsonProperty("LastName")
@@ -41,6 +63,87 @@ public class RequestEmployee {
     private String userName;
     @JsonProperty("assignments")
     private List<RequestAssignment> assignments = null;
+
+
+    public String getSaludation() {
+        return saludation;
+    }
+
+    public void setSaludation(String saludation) {
+        this.saludation = saludation;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public String getHireDate() {
+        return hireDate;
+    }
+
+    public void setHireDate(String hireDate) {
+        this.hireDate = hireDate;
+    }
+
+    public String getCitizenshipLegislationCode() {
+        return citizenshipLegislationCode;
+    }
+
+    public void setCitizenshipLegislationCode(String citizenshipLegislationCode) {
+        this.citizenshipLegislationCode = citizenshipLegislationCode;
+    }
+
+    public String getWorkEmail() {
+        return workEmail;
+    }
+
+    public void setWorkEmail(String workEmail) {
+        this.workEmail = workEmail;
+    }
+
+    public String getHomePhoneNumber() {
+        return homePhoneNumber;
+    }
+
+    public void setHomePhoneNumber(String homePhoneNumber) {
+        this.homePhoneNumber = homePhoneNumber;
+    }
+
+    public String getWorkPhoneNumber() {
+        return workPhoneNumber;
+    }
+
+    public void setWorkPhoneNumber(String workPhoneNumber) {
+        this.workPhoneNumber = workPhoneNumber;
+    }
+
+    public String getWorkMobilePhoneNumber() {
+        return workMobilePhoneNumber;
+    }
+
+    public void setWorkMobilePhoneNumber(String workMobilePhoneNumber) {
+        this.workMobilePhoneNumber = workMobilePhoneNumber;
+    }
+
+    public String getDriverLicenseExpirationDate() {
+        return driverLicenseExpirationDate;
+    }
+
+    public void setDriverLicenseExpirationDate(String driverLicenseExpirationDate) {
+        this.driverLicenseExpirationDate = driverLicenseExpirationDate;
+    }
+
+    public String getDriverLicenseId() {
+        return driverLicenseId;
+    }
+
+    public void setDriverLicenseId(String driverLicenseId) {
+        this.driverLicenseId = driverLicenseId;
+    }
 
     public String getFirstName() {
         return firstName;
