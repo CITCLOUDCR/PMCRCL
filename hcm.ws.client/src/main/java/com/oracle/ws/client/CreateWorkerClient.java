@@ -181,6 +181,15 @@ public class CreateWorkerClient
                         RequestEmployee emp = new RequestEmployee();
 
                         emp.setSaludation(rs.getString("MR."));
+                        emp.setMiddleName(rs.getString("segundo_nombre"));
+                        emp.setHireDate(rs.getString("fecha_contratacion"));
+                        emp.setCitizenshipLegislationCode(rs.getString("codigo_legislacion"));
+                        emp.setWorkEmail(rs.getString("correo_empresa"));
+                        emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
+                        emp.setWorkMobilePhoneNumber(rs.getString("movil_particular1"));
+                        emp.setWorkPhoneNumber("");
+                        emp.setDriverLicenseExpirationDate(rs.getString("fecha_licencia1"));
+                        emp.setDriverLicenseId(rs.getString("fecha_licencia1"));
 
 
                         emp.setFirstName(rs.getString("nombre"));
@@ -197,7 +206,7 @@ public class CreateWorkerClient
                         emp.setNationalIdType(rs.getString("tipo_identificador1"));
                         emp.setNationalId(rs.getString("numero_identificador1"));
                         emp.setNationalIdCountry(rs.getString("pais"));
-                        emp.setEffectiveStartDate("2018-09-14");
+                        emp.setEffectiveStartDate(rs.getString("fecha_contratacion"));
                         emp.setUserName(rs.getString("usuario"));
 
 
