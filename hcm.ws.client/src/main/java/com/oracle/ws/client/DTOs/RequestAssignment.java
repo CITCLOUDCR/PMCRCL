@@ -2,8 +2,19 @@ package com.oracle.ws.client.DTOs;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.List;
+
 @JsonIgnoreProperties(ignoreUnknown = true) //must be there all times most likely
 public class RequestAssignment {
+
+    @JsonProperty("PositionId")
+    private String positionId;
+    @JsonProperty("AssignmentNumber")
+    private String assignmentNumber;
+    @JsonProperty("PrimaryAssignmentFlag")
+    private String primaryAssignmentFlag;
+
     @JsonProperty("AssignmentName")
     private String assignmentName;
     @JsonProperty("BusinessUnitId")
@@ -32,6 +43,10 @@ public class RequestAssignment {
     private String actionReasonCode;
     @JsonProperty("AssignmentStatus")
     private String assignmentStatus;
+
+    @JsonProperty("assignmentsDFF")
+    private List<RequestAssignment> assignmentDFF = null;
+
 
     public String getAssignmentName() {
         return assignmentName;
@@ -143,5 +158,37 @@ public class RequestAssignment {
 
     public void setAssignmentStatus(String assignmentStatus) {
         this.assignmentStatus = assignmentStatus;
+    }
+
+    public List<RequestAssignment> getAssignmentDFF() {
+        return assignmentDFF;
+    }
+
+    public void setAssignmentDFF(List<RequestAssignment> assignmentDFF) {
+        this.assignmentDFF = assignmentDFF;
+    }
+
+    public String getPositionId() {
+        return positionId;
+    }
+
+    public void setPositionId(String positionId) {
+        this.positionId = positionId;
+    }
+
+    public String getAssignmentNumber() {
+        return assignmentNumber;
+    }
+
+    public void setAssignmentNumber(String assignmentNumber) {
+        this.assignmentNumber = assignmentNumber;
+    }
+
+    public String getPrimaryAssignmentFlag() {
+        return primaryAssignmentFlag;
+    }
+
+    public void setPrimaryAssignmentFlag(String primaryAssignmentFlag) {
+        this.primaryAssignmentFlag = primaryAssignmentFlag;
     }
 }

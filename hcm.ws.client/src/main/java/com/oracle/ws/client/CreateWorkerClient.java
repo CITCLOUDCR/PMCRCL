@@ -135,9 +135,7 @@ public class CreateWorkerClient
       ps = cn.prepareStatement(sql);
       ps.setString(1, "CP");
       rs = ps.executeQuery();
-      
 
-//      Worker w = null;
       ActionsList al = null;
 
       //new code
@@ -164,35 +162,9 @@ public class CreateWorkerClient
           {
             String getEmpEndpoint = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps?q=PersonNumber="+rs.getString("no_persona");
 
-//            wsse = new WSSESOAPHandler();
-//            wsse.setWSSE(properties.getProperty("ws.user"), properties.getProperty("ws.password"));
-//            wsseHR = new WSSESOAPHandlerResolver(wsse);
-            //Service service = Service.create(new URL(properties.getProperty("ws.endpoint")), new QName(properties.getProperty("ws.qname"), properties.getProperty("ws.name")));
-            //service.setHandlerResolver(wsseHR);
-            //WorkerService port = (WorkerService)service.getPort(WorkerService.class);
-            
-         
             LOGGER.info("### Ejecutando el metodo: getWorkerInformationByPersonNumber");
-            
-//            informationResponse = new GetWorkerInformationByPersonNumberResponse();
-           
-//            informationResponse.setResult(port.getWorkerInformationByPersonNumber(rs.getString("no_persona"), null));
-//            xmlGenerado1 = wsse.getXml_generated();
 
-
-//
-//            if ((informationResponse.getResult() != null))
-//            {
-//              LOGGER.info("Se ejecuto con exito el metodo");
-//              LOGGER.info("Relación Laboral existente");
-//              LOGGER.info("AssignmentId: " + ((WorkerDetails)informationResponse.getResult().getValue().get(0)).getAssignmentId());
-//              respuesta = respuesta + " / AssignmentId: " + ((WorkerDetails)informationResponse.getResult().getValue().get(0)).getAssignmentId();
-//            }
-  
-//            response = new CreateWorkerResponse();
-            
-//            w = new Worker();
-              RequestEmployee newEmp = new RequestEmployee();
+            RequestEmployee newEmp = new RequestEmployee();
 
 
             al = new ActionsList();
@@ -203,11 +175,8 @@ public class CreateWorkerClient
        {
     	   
     	   LOGGER.info("Proceso de creacion de un trabajador");
-//           response = new CreateWorkerResponse();
 
            LOGGER.info("Obteniendo datos del trabajador: " + rs.getString("nombre"));
-           
-         
 
            RequestEmployee emp = new RequestEmployee();
            emp.setFirstName(rs.getString("nombre"));
@@ -230,18 +199,16 @@ public class CreateWorkerClient
            emp.setEffectiveStartDate("2018-09-14");
            emp.setUserName(rs.getString("usuario"));
            
-       
+
 //          w.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
 //          w.setPersonNumber(DocumentUtil.getXMLString("PersonNumber", rs.getString("no_persona")));
 //          w.setStartDate(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
 //          w.setDateOfBirth(DocumentUtil.getXMLGregorianCalendar("DateOfBirth", rs.getString("fecha_nacimiento")));
 //          w.setBloodType(DocumentUtil.getXMLString("BloodType", rs.getString("tipo_sangre")));
-//          newEmp.middlename(rs.getString("segundo_nombre"));
-                     
 //          WorkRelationship workRelationship = new WorkRelationship();
 //          workRelationship.setDateStart(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
 //          workRelationship.setLegalEmployerName(DocumentUtil.getXMLString("LegalEmployerName", rs.getString("entidad_legal")));
-//          workRelationship.setWorkerType(rs.getString("tipo_trabajador"));
+//##          workRelationship.setWorkerType(rs.getString("tipo_trabajador"));
 //
 
 //          WorkTerms workTerms = new WorkTerms();
@@ -278,7 +245,7 @@ public class CreateWorkerClient
            assignment.setActionCode(rs.getString("accion"));
            assignment.setActionReasonCode(rs.getString("estado"));
            assignment.setAssignmentStatus("ACTIVE");
-           
+
 //++       assignment.setWorkerType(rs.getString(""));
 
            //List<RequestAssignment> assignments = new ArrayList<RequestAssignment>();
@@ -291,7 +258,7 @@ public class CreateWorkerClient
 
            //ResponseEntity resp = restTemplate.exchange(urlPostEmp,HttpMethod.POST,request,String.class);
           // System.out.println(resp.toString());
-           
+
            List<RequestAssignment> assignments = new ArrayList<RequestAssignment>();
            assignments.add(assignment);
            emp.setAssignments(assignments);
@@ -320,7 +287,7 @@ public class CreateWorkerClient
           
 
 //          workTerms.getAssignment().add(assignment);
-          
+
 
 //          workRelationship.getWorkTerms().add(workTerms);
           
@@ -958,15 +925,13 @@ public class CreateWorkerClient
           LOGGER.info("Proceso de cese de un trabajador");
           
           // String TypeRevokeUser = "";
+            wsse = new WSSESOAPHandler();
+            wsse.setWSSE(properties.getProperty("ws.user"), properties.getProperty("ws.password"));
+            wsseHR = new WSSESOAPHandlerResolver(wsse);
+            Service service = Service.create(new URL(properties.getProperty("ws.endpoint")), new QName(properties.getProperty("ws.qname"), properties.getProperty("ws.name")));
+            service.setHandlerResolver(wsseHR);
+            WorkerService port = (WorkerService)service.getPort(WorkerService.class);
 
-          
-          wsse = new WSSESOAPHandler();
-          wsse.setWSSE(properties.getProperty("ws.user"), properties.getProperty("ws.password"));
-          wsseHR = new WSSESOAPHandlerResolver(wsse);
-          Service service = Service.create(new URL(properties.getProperty("ws.endpoint")), new QName(properties.getProperty("ws.qname"), properties.getProperty("ws.name")));
-          service.setHandlerResolver(wsseHR);
-          WorkerService port = (WorkerService)service.getPort(WorkerService.class);
-          
           respuesta = "";
           id_number = rs.getInt("id_number");
           TerminateWorkRelationship terminateWorkRelationship = new TerminateWorkRelationship();

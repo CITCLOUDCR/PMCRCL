@@ -153,6 +153,10 @@ public class ResponseEmployee {
     @JsonProperty("WorkerType")
     private String workerType;
 
+
+
+
+
     public String getSalutation() {
         return salutation;
     }
