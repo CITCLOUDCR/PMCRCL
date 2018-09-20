@@ -78,7 +78,10 @@ public class CreateWorkerClient
 
     private HashMap<String,String> BussinesUnitCodes = new HashMap<String, String>()
     {{
-        put("Purdy Motor S.A. BU", "300000001543620");
+        put("Purdy Motor S.A. BU", "300000001543545");
+        put("Purdy Carrocería y Pintura BU", "300000001543620");
+        put("Purdy Seguros, Agencia de Seguros S.A. BU", "300000001543695");
+        put("Asociación Solidarista de empleados de Purdy Motor S.A. y afines BU", "300000001543770");
     }};
 
     private HashMap<String,String> LegalEntitiesIds = new HashMap<String, String>()
@@ -100,13 +103,12 @@ public class CreateWorkerClient
         WSSESOAPHandler wsse = null;
         WSSESOAPHandlerResolver wsseHR = null;
 
-
         CreateWorkRelationshipResponse WRresponse = null;
         // CreateWorkerResponse response = null;
         MergePersonResponse mergeResponse = null;
         GetWorkerInformationByPersonNumberResponse informationResponse = null;
         UpdateAssignmentResponse updateAssignmentResponse = null;
-
+        
         int id_number = 0;
         // String no_persona = "";
         String respuesta = "";
@@ -209,6 +211,26 @@ public class CreateWorkerClient
                         emp.setEffectiveStartDate(rs.getString("fecha_contratacion"));
                         emp.setUserName(rs.getString("usuario"));
 
+                        RequestAssignment assignment = new RequestAssignment();
+
+                        String bussinesUnit = rs.getString("unidad_negocio");
+
+                        assignment.setAssignmentName(rs.getString("nombre")+"_assignment_"+rs.getString("apellido_paterno"));   /* devuelve null */
+                        assignment.setBusinessUnitId(BussinesUnitCodes.get(bussinesUnit)); /* devuelve null */
+                        assignment.setWorkerCategory("WC");
+                        assignment.setAssignmentCategory("FR");
+                        assignment.setWorkingAtHome("N");
+                        assignment.setWorkingAsManager("N");
+                        assignment.setSalaryCode("H");
+                        assignment.setWorkingHours("8");
+                        assignment.setFrequency("D");
+                        assignment.setSalaryBasisId("300000001590736");
+                        assignment.setSalaryAmount(rs.getString("salario"));
+                        assignment.setActionCode(rs.getString("accion"));
+                        assignment.setActionReasonCode(rs.getString("estado"));
+                        assignment.setAssignmentStatus("ACTIVE");
+
+
 
 //          w.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
 //          w.setPersonNumber(DocumentUtil.getXMLString("PersonNumber", rs.getString("no_persona")));
@@ -237,24 +259,6 @@ public class CreateWorkerClient
 //##          assignment.setDepartmentName(DocumentUtil.getXMLString("DepartmentName", rs.getString("departamento")));
 //##          assignment.setPositionCode(DocumentUtil.getXMLString("PositionCode", rs.getString("codigo_posicion")));
 //
-                        RequestAssignment assignment = new RequestAssignment();
-
-                        String bussinesUnit = rs.getString("unidad_negocio");
-
-                        assignment.setAssignmentName(rs.getString("nombre")+"_assignment_"+rs.getString("apellido_paterno"));   /* devuelve null */
-                        assignment.setBusinessUnitId(BussinesUnitCodes.get(bussinesUnit)); /* devuelve null */
-                        assignment.setWorkerCategory("WC");
-                        assignment.setAssignmentCategory("FR");
-                        assignment.setWorkingAtHome("N");
-                        assignment.setWorkingAsManager("N");
-                        assignment.setSalaryCode("H");
-                        assignment.setWorkingHours("8");
-                        assignment.setFrequency("D");
-                        assignment.setSalaryBasisId("300000001590736");
-                        assignment.setSalaryAmount(rs.getString("salario"));
-                        assignment.setActionCode(rs.getString("accion"));
-                        assignment.setActionReasonCode(rs.getString("estado"));
-                        assignment.setAssignmentStatus("ACTIVE");
 
 //++       assignment.setWorkerType(rs.getString(""));
 
