@@ -87,7 +87,10 @@ public class CreateWorkerClient
 
     private HashMap<String,String> LegalEntitiesIds = new HashMap<String, String>()
     {{
-        put("Purdy Motor S.A.", "300000001545611");
+        put("Purdy Motor S.A.", "300000001545660");  
+        put("Purdy Carrocería y Pintura", "300000001545611"); 
+        put("Purdy Seguros, Agencia de Seguros S.A.", "300000001545709"); 
+        put("Asociación Solidarista de empleados de Purdy Motor S.A. y afines", "300000001544105");
     }};
 
     Connection cn = null;
@@ -183,16 +186,16 @@ public class CreateWorkerClient
 
                         RequestEmployee emp = new RequestEmployee();
 
-                        emp.setSaludation(rs.getString("MR."));
+                        //emp.setSaludation(rs.getString("MR."));
                         emp.setMiddleName(rs.getString("segundo_nombre"));
-                        emp.setHireDate(rs.getString("fecha_contratacion"));
-                        emp.setCitizenshipLegislationCode(rs.getString("codigo_legislacion"));
+                        //emp.setHireDate(rs.getString("fecha_contratacion"));
+                        //emp.setCitizenshipLegislationCode(rs.getString("codigo_legislacion"));
                         emp.setWorkEmail(rs.getString("correo_empresa"));
                         emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
                         emp.setWorkMobilePhoneNumber(rs.getString("movil_particular1"));
-                        emp.setWorkPhoneNumber("");
+                        //emp.setWorkPhoneNumber("");
                         emp.setDriverLicenseExpirationDate(rs.getString("fecha_licencia1"));
-                        emp.setDriverLicenseId(rs.getString("fecha_licencia1"));
+                        //emp.setDriverLicenseId(rs.getString(""));
 
 
                         emp.setFirstName(rs.getString("nombre"));
@@ -209,16 +212,16 @@ public class CreateWorkerClient
                         emp.setNationalIdType(rs.getString("tipo_identificador1"));
                         emp.setNationalId(rs.getString("numero_identificador1"));
                         emp.setNationalIdCountry(rs.getString("pais"));
-                        emp.setEffectiveStartDate(rs.getString("fecha_contratacion"));
+                        //emp.setEffectiveStartDate(rs.getString("fecha_contratacion"));
                         emp.setUserName(rs.getString("usuario"));
 
                         RequestAssignment assignment = new RequestAssignment();
 
                         String bussinesUnit = rs.getString("unidad_negocio");
 
-                        assignment.setPositionId(null);
-                        assignment.setAssignmentNumber(null);
-                        assignment.setPrimaryAssignmentFlag(null);
+                        //assignment.setPositionId(rs.getString("codigo_posicion"));
+                        assignment.setAssignmentNumber(rs.getString("NumeroAsignacion"));
+                        assignment.setPrimaryAssignmentFlag("Y");
 
                         assignment.setAssignmentName(rs.getString("nombre")+"_assignment_"+rs.getString("apellido_paterno"));   /* devuelve null */
                         assignment.setBusinessUnitId(BussinesUnitCodes.get(bussinesUnit)); /* devuelve null */
@@ -234,6 +237,7 @@ public class CreateWorkerClient
                         assignment.setActionCode(rs.getString("accion"));
                         assignment.setActionReasonCode(rs.getString("estado"));
                         assignment.setAssignmentStatus("ACTIVE");
+                       
 
                         RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
 
@@ -241,8 +245,8 @@ public class CreateWorkerClient
                         extraInfo.setCuenta(rs.getString("cuenta_bco"));
                         extraInfo.setTipoCuenta(rs.getString("tipo_cuenta_bco"));
                         extraInfo.setCuentaCliente(rs.getString("cuenta_cliente_bco"));
-                        extraInfo.setCentroFuncionalDepartamento("centro_funcional_dep");
-                        extraInfo.setCentroFuncionalContable("centro_funcional_cont");
+                        extraInfo.setCentroFuncionalDepartamento(rs.getString("centro_funcional_dep"));
+                        extraInfo.setCentroFuncionalContable(rs.getString("centro_funcional_cont"));
 
 
                         List<RequestAssignmentDFF> assignmentsDFF = new ArrayList<RequestAssignmentDFF>();
