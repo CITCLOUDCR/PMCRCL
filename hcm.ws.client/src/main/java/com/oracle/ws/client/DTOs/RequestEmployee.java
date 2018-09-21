@@ -8,8 +8,8 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true) //must be there all times most likely
 public class RequestEmployee{
 
-    @JsonProperty("Saludation")
-    private String saludation;
+    @JsonProperty("Salutation")
+    private String salutation;
     @JsonProperty("MiddleName")
     private String middleName;
     @JsonProperty("HireDate")
@@ -24,9 +24,9 @@ public class RequestEmployee{
     private String workPhoneNumber;
     @JsonProperty("WorkMobilePhoneNumber")
     private String workMobilePhoneNumber;
-    @JsonProperty("DriverLicenseExpirationDate")
+    @JsonProperty("DriversLicenseExpirationDate")
     private String driverLicenseExpirationDate;
-    @JsonProperty("DriverLicenseId")
+    @JsonProperty("DriversLicenseId")
     private String driverLicenseId;
 
     @JsonProperty("FirstName")
@@ -65,12 +65,12 @@ public class RequestEmployee{
     private List<RequestAssignment> assignments = null;
 
 
-    public String getSaludation() {
-        return saludation;
+    public String getSalutation() {
+        return salutation;
     }
 
-    public void setSaludation(String saludation) {
-        this.saludation = saludation;
+    public void setSalutation(String salutation) {
+        this.salutation = salutation;
     }
 
     public String getMiddleName() {

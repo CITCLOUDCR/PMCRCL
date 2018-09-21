@@ -44,7 +44,7 @@ public class RequestAssignment {
     @JsonProperty("AssignmentStatus")
     private String assignmentStatus;
 
-    @JsonProperty("assignmentsDFF")
+    @JsonProperty("assignmentDFF")
     private List<RequestAssignmentDFF> assignmentDFF = null;
 
 
