@@ -2,10 +2,7 @@ package com.oracle.ws.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oracle.ws.client.DTOs.RequestAssignment;
-import com.oracle.ws.client.DTOs.RequestAssignmentDFF;
-import com.oracle.ws.client.DTOs.RequestEmployee;
-import com.oracle.ws.client.DTOs.ResponseListEmployee;
+import com.oracle.ws.client.DTOs.*;
 import com.oracle.ws.handlers.WSSESOAPHandler;
 import com.oracle.ws.handlers.WSSESOAPHandlerResolver;
 import com.oracle.xmlns.apps.hcm.employment.core.flex.baseworkerassignmentdff.BaseWorkerAsgDFF;
@@ -68,6 +65,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 public class CreateWorkerClient
@@ -427,19 +425,29 @@ public class CreateWorkerClient
 
                         LOGGER.info("Proceso de actualizacion de un trabajador");
 
-                        RequestEmployee emp = new RequestEmployee();
+                        PatchEmployee emp = new PatchEmployee();
 
-                        RequestAssignment assignment = new RequestAssignment();
+                        emp.setMiddleName(rs.getString("segundo_nombre"));
+                        emp.setWorkEmail(rs.getString("correo_empresa"));
+                        emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
+                        emp.setWorkMobilePhoneNumber(rs.getString("movil_particular1"));
+                        emp.setDriverLicenseExpirationDate(rs.getString("fecha_licencia1"));
 
-                        RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
-
-                        List<RequestAssignmentDFF> assignmentsDFF = new ArrayList<RequestAssignmentDFF>();
-                        assignmentsDFF.add(extraInfo);
-                        assignment.setAssignmentDFF(assignmentsDFF);
-
-                        List<RequestAssignment> assignments = new ArrayList<RequestAssignment>();
-                        assignments.add(assignment);
-                        emp.setAssignments(assignments);
+                        emp.setFirstName(rs.getString("nombre"));
+                        emp.setLastName(rs.getString("apellido_paterno"));
+                        emp.setPreviousLastName(rs.getString("apellido_materno"));
+                        emp.setDisplayName(rs.getString("nombre")+" "+rs.getString("apellido_paterno")); /* devuelve null */
+//                        emp.setPersonNumber(rs.getString("no_persona"));
+                        emp.setAddressLine1(rs.getString("direccion"));
+                        emp.setCountry(rs.getString("pais"));
+                        emp.setDateOfBirth(rs.getString("fecha_nacimiento"));
+                        emp.setLegalEntityId(LegalEntitiesIds.get(rs.getString("entidad_legal"))); /* devuelve null */
+                        emp.setGender(rs.getString("sexo"));
+                        emp.setMaritalStatus(rs.getString("estado_civil"));
+                        emp.setNationalIdType(rs.getString("tipo_identificador1"));
+                        emp.setNationalId(rs.getString("numero_identificador1"));
+                        emp.setNationalIdCountry(rs.getString("pais"));
+                        emp.setUserName(rs.getString("usuario"));
 
                         try {
                             String json = new ObjectMapper().writeValueAsString(emp);
@@ -448,49 +456,70 @@ public class CreateWorkerClient
                             e.printStackTrace();
                         }
 
-
-//                        HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(emp,httpHeaders);
-//                        ResponseEntity response = restTemplate.exchange(url,HttpMethod.POST,request,String.class);
-//                        System.out.println(response.toString());
+                        String urlPatchEmp = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/00020000000EACED00057708000110D931C4B2130000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B5974190300007870770800000165B67A680078";
+                        PatchObject test = new PatchObject();
+                        test.setLastName("RESTTEMPLATE");
 //
+//                        HttpHeaders httpHeaders = createHeaders();
+//                        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-                        emp.setDateOfBirth(rs.getString("fecha_nacimiento"));
+                        HttpEntity<PatchEmployee> request = new HttpEntity<PatchEmployee>(emp, httpHeaders);
 
-//                        emp.setCitizenshipLegislationCode(rs.getString("codigo_legislacion"));
-                        emp.setMaritalStatus(rs.getString("estado_civil"));
+                        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 
-//                        personName.setNameType("GLOBAL");
+                        restTemplate.setRequestFactory(requestFactory);
 
-                        emp.setFirstName(rs.getString("nombre"));
-                        emp.setMiddleName(rs.getString("segundo_nombre"));
-                        emp.setLastName(rs.getString("apellido_paterno"));
-                        emp.setPreviousLastName(rs.getString("apellido_materno"));
-
-                        emp.setNationalIdCountry(rs.getString("pais"));
-
-                        if ((isNotNullOrEmpty(rs.getString("tipo_identificador1"))) && (isNotNullOrEmpty(rs.getString("numero_identificador1")))) {
-                            emp.setNationalId(rs.getString("numero_identificador1"));
-                            emp.setNationalIdType(rs.getString("tipo_identificador1"));
+                        try {
+                            String json = new ObjectMapper().writeValueAsString(emp);
+                            System.out.println(json);
+                        } catch (JsonProcessingException e) {
+                            e.printStackTrace();
                         }
-                        else if ((isNotNullOrEmpty(rs.getString("tipo_identificador2"))) && (isNotNullOrEmpty(rs.getString("numero_identificador2")))) {
-                            emp.setNationalId(rs.getString("numero_identificador2"));
-                            emp.setNationalIdType(rs.getString("tipo_identificador2"));
-                        }
+                        HttpEntity response = restTemplate.exchange(urlPatchEmp, HttpMethod.PATCH, request, ResponseEmployee.class);
+                        response.toString();
 
-
-                        if (isNotNullOrEmpty(rs.getString("categoria_licencia1")))
-//                            personDriversLicence1.setLicenseNumber(DocumentUtil.getXMLString("LicenseNumber", rs.getString("categoria_licencia1")));
-                        if (isNotNullOrEmpty(rs.getString("fecha_licencia1")))
-                            emp.setDriverLicenseExpirationDate(rs.getString("fecha_licencia1"));
-
-//                        DriversLicenseTypeDFF driversLicenseTypeDFF = new DriversLicenseTypeDFF();
-//                        driversLicenseTypeDFF.setCategoria(DocumentUtil.getXMLStringDff("categoria", rs.getString("categoria_licencia1")));
-//                        if (isNotNullOrEmpty(rs.getString("categoria_licencia1"))) { personDriversLicence1.setDriversLicenseTypeDFF(driversLicenseTypeDFF);
+////                        HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(emp,httpHeaders);
+////                        ResponseEntity response = restTemplate.exchange(url,HttpMethod.POST,request,String.class);
+////                        System.out.println(response.toString());
+////
+//
+//                        emp.setDateOfBirth(rs.getString("fecha_nacimiento"));
+//
+////                        emp.setCitizenshipLegislationCode(rs.getString("codigo_legislacion"));
+//                        emp.setMaritalStatus(rs.getString("estado_civil"));
+//
+////                        personName.setNameType("GLOBAL");
+//
+//                        emp.setFirstName(rs.getString("nombre"));
+//                        emp.setMiddleName(rs.getString("segundo_nombre"));
+//                        emp.setLastName(rs.getString("apellido_paterno"));
+//                        emp.setPreviousLastName(rs.getString("apellido_materno"));
+//
+//                        emp.setNationalIdCountry(rs.getString("pais"));
+//
+//                        if ((isNotNullOrEmpty(rs.getString("tipo_identificador1"))) && (isNotNullOrEmpty(rs.getString("numero_identificador1")))) {
+//                            emp.setNationalId(rs.getString("numero_identificador1"));
+//                            emp.setNationalIdType(rs.getString("tipo_identificador1"));
 //                        }
+//                        else if ((isNotNullOrEmpty(rs.getString("tipo_identificador2"))) && (isNotNullOrEmpty(rs.getString("numero_identificador2")))) {
+//                            emp.setNationalId(rs.getString("numero_identificador2"));
+//                            emp.setNationalIdType(rs.getString("tipo_identificador2"));
+//                        }
+//
+//
+//                        if (isNotNullOrEmpty(rs.getString("categoria_licencia1")))
+////                            personDriversLicence1.setLicenseNumber(DocumentUtil.getXMLString("LicenseNumber", rs.getString("categoria_licencia1")));
+//                        if (isNotNullOrEmpty(rs.getString("fecha_licencia1")))
+//                            emp.setDriverLicenseExpirationDate(rs.getString("fecha_licencia1"));
+//
+////                        DriversLicenseTypeDFF driversLicenseTypeDFF = new DriversLicenseTypeDFF();
+////                        driversLicenseTypeDFF.setCategoria(DocumentUtil.getXMLStringDff("categoria", rs.getString("categoria_licencia1")));
+////                        if (isNotNullOrEmpty(rs.getString("categoria_licencia1"))) { personDriversLicence1.setDriversLicenseTypeDFF(driversLicenseTypeDFF);
+////                        }
 
 
 
-                        metodo = metodo + "mergePerson";
+//                        metodo = metodo + "mergePerson";
 
                         LOGGER.info("Enviando datos al web service.");
                         LOGGER.info("### Ejecutando el metodo: mergePerson");
