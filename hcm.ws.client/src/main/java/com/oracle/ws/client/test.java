@@ -20,7 +20,7 @@ public class test {
 //    private RestTemplate restTemplate = new RestTemplate();
 
     public static void main (String[] args){
-//        RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
 //        String url = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/00020000000EACED00057708000110D931C4B2130000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B5974190300007870770800000165B67A680078/child/assignments";
 ////        String url2 = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps?q=PersonNumber="+"34056";
 //        HttpEntity entity = new HttpEntity(createHeaders());
@@ -154,55 +154,80 @@ public class test {
 
 
 
-        PatchEmployee emp = new PatchEmployee();
+//        PatchEmployee emp = new PatchEmployee();
+//
+//        emp.setMiddleName("segundo_nombre");
+//        emp.setWorkEmail("correo_empresa");
+//        emp.setHomePhoneNumber("123456789");
+//        emp.setWorkMobilePhoneNumber("123456789");
+//        emp.setDriverLicenseExpirationDate(null);
+//
+//        emp.setFirstName("nombre");
+//        emp.setLastName("apellido_paterno");
+//        emp.setPreviousLastName("apellido_materno");
+//        emp.setDisplayName("nombre"+" "+"apellido_paterno"); /* devuelve null */
+//        emp.setAddressLine1("direccion");
+//        emp.setCountry("CR");
+//        emp.setDateOfBirth("1994-05-19");
+//        emp.setLegalEntityId("300000001545611"); /* devuelve null */
+//        emp.setGender("M");
+//        emp.setMaritalStatus("S");
+//        emp.setNationalIdType("C");
+//        emp.setNationalId("123456789");
+//        emp.setNationalIdCountry("CR");
+//        emp.setUserName("usuario");
+//
+//        RestTemplate restTemplate = new RestTemplate();
+//        String url = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/00020000000EACED00057708000110D931C4B2130000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B5974190300007870770800000165B67A680078";
+//        PatchObject test = new PatchObject();
+//        test.setLastName("RESTTEMPLATE");
+//
+//        HttpHeaders httpHeaders = createHeaders();
+//        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+//
+//        HttpEntity<PatchEmployee> request = new HttpEntity<PatchEmployee>(emp, httpHeaders);
+//
+//
+//        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+//
+//        restTemplate.setRequestFactory(requestFactory);
+//
+//        try {
+//            String json = new ObjectMapper().writeValueAsString(emp);
+//            System.out.println(json);
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//        }
+//        HttpEntity response = restTemplate.exchange(url, HttpMethod.PATCH, request, ResponseEmployee.class);
+//        response.toString();
 
-        emp.setMiddleName("segundo_nombre");
-        emp.setWorkEmail("correo_empresa");
-        emp.setHomePhoneNumber("123456789");
-        emp.setWorkMobilePhoneNumber("123456789");
-        emp.setDriverLicenseExpirationDate(null);
 
-        emp.setFirstName("nombre");
-        emp.setLastName("apellido_paterno");
-        emp.setPreviousLastName("apellido_materno");
-        emp.setDisplayName("nombre"+" "+"apellido_paterno"); /* devuelve null */
-        emp.setAddressLine1("direccion");
-        emp.setCountry("CR");
-        emp.setDateOfBirth("1994-05-19");
-        emp.setLegalEntityId("300000001545611"); /* devuelve null */
-        emp.setGender("M");
-        emp.setMaritalStatus("S");
-        emp.setNationalIdType("C");
-        emp.setNationalId("123456789");
-        emp.setNationalIdCountry("CR");
-        emp.setUserName("usuario");
+//       GETUSERID
 
-        RestTemplate restTemplate = new RestTemplate();
-        String url = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/00020000000EACED00057708000110D931C4B2130000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B5974190300007870770800000165B67A680078";
-        PatchObject test = new PatchObject();
-        test.setLastName("RESTTEMPLATE");
+        String findUserLink = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps?q=PersonNumber=1905";
+        HttpEntity getHeaders = new HttpEntity(createHeaders());
+        HttpEntity<ResponseLinkListUser> response = restTemplate.exchange(findUserLink,HttpMethod.GET,getHeaders,ResponseLinkListUser.class);
 
-        HttpHeaders httpHeaders = createHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        System.out.println(response);
 
-        HttpEntity<PatchEmployee> request = new HttpEntity<PatchEmployee>(emp, httpHeaders);
+        if(response.getBody().getItems().size()!=0){
+            String userId = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/")[7];
+            String patchUrl = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/"+userId;
 
+            HttpHeaders postHeaders = createHeaders();
+            postHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+            PatchObject test = new PatchObject();
+            test.setLastName("PatchComplete");
 
-        restTemplate.setRequestFactory(requestFactory);
+            restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
 
-        try {
-            String json = new ObjectMapper().writeValueAsString(emp);
-            System.out.println(json);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            HttpEntity<PatchObject> requestObj = new HttpEntity<PatchObject>(test,postHeaders);
+
+            HttpEntity resp = restTemplate.exchange(patchUrl,HttpMethod.PATCH,requestObj,ResponseEmployee.class);
+
+            System.out.println(resp.toString());
         }
-        HttpEntity response = restTemplate.exchange(url, HttpMethod.PATCH, request, ResponseEmployee.class);
-        response.toString();
-
-
-
 
     }
 
