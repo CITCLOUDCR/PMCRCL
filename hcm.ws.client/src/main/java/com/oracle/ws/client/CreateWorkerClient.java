@@ -456,27 +456,52 @@ public class CreateWorkerClient
                             e.printStackTrace();
                         }
 
-                        String urlPatchEmp = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/00020000000EACED00057708000110D931C4B2130000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B5974190300007870770800000165B67A680078";
-                        PatchObject test = new PatchObject();
-                        test.setLastName("RESTTEMPLATE");
+
+                        String findUserLink = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps?q=PersonNumber="+rs.getString("no_persona");
+                        HttpEntity getHeaders = new HttpEntity(createHeaders());
+                        HttpEntity<ResponseLinkListUser> response = restTemplate.exchange(findUserLink,HttpMethod.GET,getHeaders,ResponseLinkListUser.class);
+
+                        System.out.println(response);
+
+                        if(response.getBody().getItems().size()!=0){
+                            String userId = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/")[7];
+                            String patchUrl = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/"+userId;
+
+                            HttpEntity<PatchEmployee> request = new HttpEntity<PatchEmployee>(emp, httpHeaders);
+
+                            HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+
+                            restTemplate.setRequestFactory(requestFactory);
+
+                            HttpEntity<ResponseEmployee> patchResponse = restTemplate.exchange(patchUrl, HttpMethod.PATCH, request, ResponseEmployee.class);
+                            System.out.println(patchResponse);
+
+                            LOGGER.info("Enviando datos al web service.");
+                            LOGGER.info("### Ejecutando el metodo: mergePerson");
+
+//                        mergeResponse.setResult(port.mergePerson(attributeList));
+
+//                        xmlGenerado1 = wsse.getXml_generated();
+
+//                        if ((mergeResponse.getResult() != null) && (mergeResponse.getResult().getValue().size() > 0)) {
+                            if(((ResponseEntity<ResponseEmployee>) patchResponse).getStatusCode().equals(HttpStatus.OK)){
+                                LOGGER.info("Se ejecuto con exito el metodo");
+                                LOGGER.info("Obteniendo respuesta exitosa.");
+                                LOGGER.info("PersonId: " + patchResponse.getBody().getPersonId());
+//                            respuesta = respuesta + "PersonId: " + mergeResponse.getResult().getValue().get(0).getPersonId();
+                            }
+                        }else{
+                            System.out.println("No se pudo realizar el patch, usuario no encontrado");
+                        }
+
+//                        String urlPatchEmp = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/00020000000EACED00057708000110D931C4B2130000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B5974190300007870770800000165B67A680078";
+//                        PatchObject test = new PatchObject();
+//                        test.setLastName("RESTTEMPLATE");
 //
 //                        HttpHeaders httpHeaders = createHeaders();
 //                        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-                        HttpEntity<PatchEmployee> request = new HttpEntity<PatchEmployee>(emp, httpHeaders);
 
-                        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-
-                        restTemplate.setRequestFactory(requestFactory);
-
-                        try {
-                            String json = new ObjectMapper().writeValueAsString(emp);
-                            System.out.println(json);
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
-                        }
-                        HttpEntity response = restTemplate.exchange(urlPatchEmp, HttpMethod.PATCH, request, ResponseEmployee.class);
-                        response.toString();
 
 ////                        HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(emp,httpHeaders);
 ////                        ResponseEntity response = restTemplate.exchange(url,HttpMethod.POST,request,String.class);
@@ -521,19 +546,20 @@ public class CreateWorkerClient
 
 //                        metodo = metodo + "mergePerson";
 
-                        LOGGER.info("Enviando datos al web service.");
-                        LOGGER.info("### Ejecutando el metodo: mergePerson");
-
-                        mergeResponse.setResult(port.mergePerson(attributeList));
-
-                        xmlGenerado1 = wsse.getXml_generated();
-
-                        if ((mergeResponse.getResult() != null) && (mergeResponse.getResult().getValue().size() > 0)) {
-                            LOGGER.info("Se ejecuto con exito el metodo");
-                            LOGGER.info("Obteniendo respuesta exitosa.");
-                            LOGGER.info("PersonId: " + mergeResponse.getResult().getValue().get(0).getPersonId());
-                            respuesta = respuesta + "PersonId: " + mergeResponse.getResult().getValue().get(0).getPersonId();
-                        }
+//                        LOGGER.info("Enviando datos al web service.");
+//                        LOGGER.info("### Ejecutando el metodo: mergePerson");
+//
+////                        mergeResponse.setResult(port.mergePerson(attributeList));
+//
+////                        xmlGenerado1 = wsse.getXml_generated();
+//
+////                        if ((mergeResponse.getResult() != null) && (mergeResponse.getResult().getValue().size() > 0)) {
+//                        if(){
+//                            LOGGER.info("Se ejecuto con exito el metodo");
+//                            LOGGER.info("Obteniendo respuesta exitosa.");
+//                            LOGGER.info("PersonId: " + mergeResponse.getResult().getValue().get(0).getPersonId());
+////                            respuesta = respuesta + "PersonId: " + mergeResponse.getResult().getValue().get(0).getPersonId();
+//                        }
                     }
 
 
