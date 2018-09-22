@@ -16,6 +16,10 @@ public class RequestEmployee{
     private String hireDate;
     @JsonProperty("CitizenshipLegislationCode")
     private String citizenshipLegislationCode;
+    @JsonProperty("CitizenshipStatus")
+    private String citizenshipStatus;
+    
+    
     @JsonProperty("WorkEmail")
     private String workEmail;
     @JsonProperty("HomePhoneNumber")
@@ -96,7 +100,18 @@ public class RequestEmployee{
     public void setCitizenshipLegislationCode(String citizenshipLegislationCode) {
         this.citizenshipLegislationCode = citizenshipLegislationCode;
     }
+    
+    public String getCitizenshipStatus()
+    {
+        return citizenshipStatus;
+    }
 
+    public void setCitizenshipStatus(String citizenshipStatus) 
+    {
+        this.citizenshipStatus = citizenshipStatus;
+    }
+    
+    
     public String getWorkEmail() {
         return workEmail;
     }
