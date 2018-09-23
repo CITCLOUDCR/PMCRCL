@@ -90,7 +90,28 @@ public class CreateWorkerClient
         put("Purdy Seguros, Agencia de Seguros S.A.", "300000001545709"); 
         put("Asociación Solidarista de empleados de Purdy Motor S.A. y afines", "300000001544105");
     }};
-
+    
+    private HashMap<String,String> PositionIds = new HashMap<String, String>()
+    {{
+        put("01-3-1-0-ANFITRIO-PCPADM", "10");  
+    }};
+    
+    private HashMap<String,String> DepartmentId = new HashMap<String, String>()
+    {{
+        put("PCPADM - Purdy C&P - Administrativo", "177");  
+    }};
+    
+    private HashMap<String,String> JobId = new HashMap<String, String>()
+    {{
+        put("Anfitriona", "8");  
+    }};
+    
+    private HashMap<String,String> LocationId = new HashMap<String, String>()
+    {{
+        put("Purdy Carrocería y Pintura", "300000001543539");  
+    }};
+    
+ 
     Connection cn = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
@@ -184,45 +205,50 @@ public class CreateWorkerClient
 
                         RequestEmployee emp = new RequestEmployee();
 
-                        //emp.setSaludation(rs.getString("MR."));
+                        emp.setFirstName(rs.getString("nombre"));
                         emp.setMiddleName(rs.getString("segundo_nombre"));
-                        //emp.setHireDate(rs.getString("fecha_contratacion"));
-                        //emp.setCitizenshipLegislationCode(rs.getString("codigo_legislacion"));
+                        emp.setLastName(rs.getString("apellido_paterno"));
+                        emp.setPreviousLastName(rs.getString("apellido_materno"));
+                        emp.setDisplayName(rs.getString("nombre")+" "+rs.getString("apellido_paterno"));
+                        emp.setCitizenshipLegislationCode(rs.getString("codigo_legislacion"));
+                        emp.setCitizenshipStatus("A");
                         emp.setWorkEmail(rs.getString("correo_empresa"));
                         emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
                         emp.setWorkMobilePhoneNumber(rs.getString("movil_particular1"));
-                        //emp.setWorkPhoneNumber("");
                         emp.setDriverLicenseExpirationDate(rs.getString("fecha_licencia1"));
-                        //emp.setDriverLicenseId(rs.getString(""));
-
-
-                        emp.setFirstName(rs.getString("nombre"));
-                        emp.setLastName(rs.getString("apellido_paterno"));
-                        emp.setPreviousLastName(rs.getString("apellido_materno"));
-                        emp.setDisplayName(rs.getString("nombre")+" "+rs.getString("apellido_paterno")); /* devuelve null */
+                       
                         emp.setPersonNumber(rs.getString("no_persona"));
                         emp.setAddressLine1(rs.getString("direccion"));
                         emp.setCountry(rs.getString("pais"));
                         emp.setDateOfBirth(rs.getString("fecha_nacimiento"));
-                        emp.setLegalEntityId(LegalEntitiesIds.get(rs.getString("entidad_legal"))); /* devuelve null */
+                        emp.setLegalEntityId(LegalEntitiesIds.get(rs.getString("entidad_legal")));
                         emp.setGender(rs.getString("sexo"));
                         emp.setMaritalStatus(rs.getString("estado_civil"));
                         emp.setNationalIdType(rs.getString("tipo_identificador1"));
                         emp.setNationalId(rs.getString("numero_identificador1"));
                         emp.setNationalIdCountry(rs.getString("pais"));
-                        //emp.setEffectiveStartDate(rs.getString("fecha_contratacion"));
                         emp.setUserName(rs.getString("usuario"));
-
+                        
+                        //emp.setDriverLicenseId(rs.getString(""));
+                        //emp.setWorkPhoneNumber("");
+                        //emp.setSaludation(rs.getString("MR."));
+                        //emp.setHireDate(rs.getString("fecha_contratacion"));
+                        //emp.setEffectiveStartDate(rs.getString("fecha_contratacion"));
+                        
+                        
                         RequestAssignment assignment = new RequestAssignment();
 
                         String bussinesUnit = rs.getString("unidad_negocio");
 
-                        //assignment.setPositionId(rs.getString("codigo_posicion"));
+                        assignment.setPositionId(PositionIds.get(rs.getString("codigo_posicion")));
+                        assignment.setJobId(JobId.get(rs.getString("nombre_asignacion")));
+                        assignment.setDepartmentId(DepartmentId.get(rs.getString("departamento")));
+                        //assignment.setLocationId("300000001543539");
                         assignment.setAssignmentNumber(rs.getString("NumeroAsignacion"));
                         assignment.setPrimaryAssignmentFlag("Y");
 
-                        assignment.setAssignmentName(rs.getString("nombre")+"_assignment_"+rs.getString("apellido_paterno"));   /* devuelve null */
-                        assignment.setBusinessUnitId(BussinesUnitCodes.get(bussinesUnit)); /* devuelve null */
+                        assignment.setAssignmentName(rs.getString("nombre")+"_assignment_"+rs.getString("apellido_paterno"));
+                        assignment.setBusinessUnitId(BussinesUnitCodes.get(bussinesUnit));
                         assignment.setWorkerCategory("WC");
                         assignment.setAssignmentCategory("FR");
                         assignment.setWorkingAtHome("N");
@@ -236,7 +262,6 @@ public class CreateWorkerClient
                         assignment.setActionReasonCode(rs.getString("estado"));
                         assignment.setAssignmentStatus("ACTIVE");
                        
-
                         RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
 
                         extraInfo.setBanco(rs.getString("nombre_banco"));

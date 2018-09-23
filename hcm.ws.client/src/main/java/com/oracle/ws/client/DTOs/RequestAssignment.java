@@ -10,6 +10,13 @@ public class RequestAssignment {
 
     @JsonProperty("PositionId")
     private String positionId;
+    @JsonProperty("JobId")
+    private String jobId;
+    @JsonProperty("DepartmentId")
+    private String departmentId;
+    @JsonProperty("LocationId")
+    private String locationId;
+    
     @JsonProperty("AssignmentNumber")
     private String assignmentNumber;
     @JsonProperty("PrimaryAssignmentFlag")
@@ -176,6 +183,36 @@ public class RequestAssignment {
         this.positionId = positionId;
     }
 
+    public String getJobId() 
+    {
+        return jobId;
+    }
+
+    public void setJobId(String jobId) 
+    {
+        this.jobId = jobId;
+    }
+    
+    public String getDepartmentId() 
+    {
+        return departmentId;
+    }
+
+    public void setDepartmentId(String departmentId) 
+    {
+        this.departmentId = departmentId;
+    }
+    
+    public String getLocationId() 
+    {
+        return locationId;
+    }
+
+    public void setLocationId(String locationId) 
+    {
+        this.locationId = locationId;
+    }
+    
     public String getAssignmentNumber() {
         return assignmentNumber;
     }
