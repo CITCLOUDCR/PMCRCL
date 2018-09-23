@@ -301,7 +301,10 @@ public class CreateWorkerClient
 //        	   al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "NOT"));
                         }
 
+                        LOGGER.info("Creando el Request");
                         HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(emp,httpHeaders);
+                        LOGGER.info("Request info:" + request.toString());
+
                         ResponseEntity<ResponseEmployee> postEmpResponse = restTemplate.exchange(url,HttpMethod.POST,request,ResponseEmployee.class);
                         System.out.println(postEmpResponse.toString());
                         LOGGER.info("Respuesta HCM: "+ postEmpResponse.toString());
@@ -391,7 +394,7 @@ public class CreateWorkerClient
                         al.setActionCode(DocumentUtil.getXMLString("ActionCode","HIRE_ADD_WORK_RELATION"));
                         // al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "NOM"));
 
-                        LOGGER.info("Enviando datos al web service.");
+                        LOGGER.info("Enviando datos del usuario al web service.");
                         LOGGER.info("### Ejecutando el metodo: createWorker");
                         metodo = "createWorker";
 
@@ -516,8 +519,8 @@ public class CreateWorkerClient
 
                             //                        metodo = metodo + "mergePerson";
 
-                            LOGGER.info("Enviando datos al web service.");
-                            LOGGER.info("### Ejecutando el metodo: mergePerson");
+//                            LOGGER.info("Enviando datos al web service.");
+//                            LOGGER.info("### Ejecutando el metodo: mergePerson");
 
 //                        mergeResponse.setResult(port.mergePerson(attributeList));
 
@@ -814,27 +817,27 @@ public class CreateWorkerClient
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            LOGGER.info("error:"+ e.toString());
 
-            if (wsse.getMessage() != null) {
-                System.out.println(wsse.getXml_generated());
-                LOGGER.error("\nException: " + wsse.getMessage());
-
-                if ((metodo.trim().equals("createWorker")) || (metodo.trim().equals("mergePerson"))) {
-                    xmlGenerado1 = xmlGenerado1 == null ? wsse.getXml_generated() : xmlGenerado1;
-                }
-                else if (metodo.equals("mergePerson/getWorkerInformationByPersonNumber")) {
-                    xmlGenerado2 = xmlGenerado2 == null ? wsse.getXml_generated() : xmlGenerado2;
-                }
-                else
-                {
-                    xmlGenerado3 = xmlGenerado3 == null ? wsse.getXml_generated() : xmlGenerado3;
-                }
-
-                int exito = updateResponseTable(id_number, wsse.getMessage(), "ER", metodo, xmlGenerado1, xmlGenerado2, xmlGenerado3);
-                if (exito == 1) {
-                    LOGGER.info("Datos actualizados correctamente en la base de datos.");
-                }
+//            if (wsse.getMessage() != null) {
+//                System.out.println(wsse.getXml_generated());
+//                LOGGER.error("\nException: " + wsse.getMessage());
+//
+//                if ((metodo.trim().equals("createWorker")) || (metodo.trim().equals("mergePerson"))) {
+//                    xmlGenerado1 = xmlGenerado1 == null ? wsse.getXml_generated() : xmlGenerado1;
+//                }
+//                else if (metodo.equals("mergePerson/getWorkerInformationByPersonNumber")) {
+//                    xmlGenerado2 = xmlGenerado2 == null ? wsse.getXml_generated() : xmlGenerado2;
+//                }
+//                else
+//                {
+//                    xmlGenerado3 = xmlGenerado3 == null ? wsse.getXml_generated() : xmlGenerado3;
+//                }
+//
+//                int exito = updateResponseTable(id_number, wsse.getMessage(), "ER", metodo, xmlGenerado1, xmlGenerado2, xmlGenerado3);
+//                if (exito == 1) {
+//                    LOGGER.info("Datos actualizados correctamente en la base de datos.");
+//                }
             }
 
             try
