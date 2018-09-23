@@ -67,6 +67,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 public class CreateWorkerClient
@@ -312,17 +313,18 @@ public class CreateWorkerClient
                         HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(emp,httpHeaders);
                         LOGGER.info("Request info:" + request.toString());
 
-                        ResponseEntity<ResponseEmployee> postEmpResponse = restTemplate.exchange(url,HttpMethod.POST,request,ResponseEmployee.class);
-                        System.out.println(postEmpResponse.toString());
-                        LOGGER.info("Respuesta HCM: "+ postEmpResponse.toString());
+                        try {
+                            ResponseEntity<ResponseEmployee> postEmpResponse = restTemplate.exchange(url, HttpMethod.POST, request, ResponseEmployee.class);
+                            System.out.println(postEmpResponse.toString());
+                            LOGGER.info("Respuesta HCM: " + postEmpResponse.toString());
 
 
-                        al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));  /* comportamiento */
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "NOM"));  /* accion  estado? */
+                            al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));  /* comportamiento */
+                            al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "NOM"));  /* accion  estado? */
 //
-                        LOGGER.info("Enviando datos al web service.");
-                        LOGGER.info("### Ejecutando el metodo: createWorker");
-                        metodo = "createWorker";
+                            LOGGER.info("Enviando datos al web service.");
+                            LOGGER.info("### Ejecutando el metodo: createWorker");
+                            metodo = "createWorker";
 
           /*     w = new Worker();
                   al = new ActionsList();  */
@@ -331,19 +333,19 @@ public class CreateWorkerClient
 //          xmlGenerado1 = wsse.getXml_generated();
 
 
-                        if (postEmpResponse.getStatusCode().equals(HttpStatus.CREATED))
-                        {
-                            LOGGER.info("Obteniendo respuesta exitosa.");
-                            LOGGER.info("PersonId: " + (postEmpResponse.getBody().getPersonId()));
+                            if (postEmpResponse.getStatusCode().equals(HttpStatus.CREATED)) {
+                                LOGGER.info("Obteniendo respuesta exitosa.");
+                                LOGGER.info("PersonId: " + (postEmpResponse.getBody().getPersonId()));
 
 //             cambia el estado en HCM_colaboradores a "CP"
-                            int exito = updateResponseTable(id_number, "PersonId: " + postEmpResponse.getBody().getPersonId(), "OK", metodo, postEmpResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
-                            if (exito == 1)
-                            {
-                                LOGGER.info("Datos actualizados correctamente en la base de datos.");
+                                int exito = updateResponseTable(id_number, "PersonId: " + postEmpResponse.getBody().getPersonId(), "OK", metodo, postEmpResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
+                                if (exito == 1) {
+                                    LOGGER.info("Datos actualizados correctamente en la base de datos.");
+                                }
                             }
+                        }catch (HttpClientErrorException e){
+                            LOGGER.info("Error en el servidor: "+ e.getResponseBodyAsString());
                         }
-
 
                     }
 

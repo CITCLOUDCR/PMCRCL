@@ -7,6 +7,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.omg.CORBA.TIMEOUT;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.HttpURLConnection;
@@ -229,6 +230,29 @@ public class test {
 //            System.out.println(resp.toString());
 //        }
 
+//  Error Handler
+        String url = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/00020000000EACED00057708000110D931C4B2130000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B5974190300007870770800000165B67A680078";
+        PatchObject test = new PatchObject();
+        test.setLastName("");
+
+        HttpHeaders httpHeaders = createHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<PatchObject> request = new HttpEntity<PatchObject>(test,httpHeaders);
+
+
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+
+        restTemplate.setRequestFactory(requestFactory);
+
+        try{
+            HttpEntity response = restTemplate.exchange(url, HttpMethod.PATCH, request, ResponseEmployee.class);
+            response.toString();
+
+        }catch(HttpClientErrorException e){
+            System.out.println(e.getResponseBodyAsString());
+        }
+//
     }
 
     static HttpHeaders createHeaders(){
