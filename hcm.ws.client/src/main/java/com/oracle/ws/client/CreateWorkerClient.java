@@ -872,6 +872,7 @@ public class CreateWorkerClient
 
             LOGGER.info("Actualizando datos de respuesta del trabajor con id_number: "+id_number);
             String sqlUpdate = "update hcm_colaboradores set metodo_ws = ?, fecha_procesamiento = ?, respuesta_ws = ?, flag_status = ?, xml_enviado1 = ?, xml_enviado2 = ?, xml_enviado3 = ?, estado = 'CP' where id_number = ?";
+            LOGGER.info("Consulta a la para actualizar: " + sqlUpdate);
             cn.setAutoCommit(false);
             ps = cn.prepareStatement(sqlUpdate);
             ps.setString(1, metodo);
