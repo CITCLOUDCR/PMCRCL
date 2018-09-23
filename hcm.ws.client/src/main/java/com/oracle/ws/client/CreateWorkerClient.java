@@ -86,33 +86,33 @@ public class CreateWorkerClient
 
     private HashMap<String,String> LegalEntitiesIds = new HashMap<String, String>()
     {{
-        put("Purdy Motor S.A.", "300000001545660");  
-        put("Purdy Carrocería y Pintura", "300000001545611"); 
-        put("Purdy Seguros, Agencia de Seguros S.A.", "300000001545709"); 
+        put("Purdy Motor S.A.", "300000001545660");
+        put("Purdy Carrocería y Pintura", "300000001545611");
+        put("Purdy Seguros, Agencia de Seguros S.A.", "300000001545709");
         put("Asociación Solidarista de empleados de Purdy Motor S.A. y afines", "300000001544105");
     }};
-    
+
     private HashMap<String,String> PositionIds = new HashMap<String, String>()
     {{
-        put("01-3-1-0-ANFITRIO-PCPADM", "10");  
+        put("01-3-1-0-ANFITRIO-PCPADM", "10");
     }};
-    
+
     private HashMap<String,String> DepartmentId = new HashMap<String, String>()
     {{
-        put("PCPADM - Purdy C&P - Administrativo", "177");  
+        put("PCPADM - Purdy C&P - Administrativo", "177");
     }};
-    
+
     private HashMap<String,String> JobId = new HashMap<String, String>()
     {{
-        put("Anfitriona", "8");  
+        put("Anfitriona", "8");
     }};
-    
+
     private HashMap<String,String> LocationId = new HashMap<String, String>()
     {{
-        put("Purdy Carrocería y Pintura", "300000001543539");  
+        put("Purdy Carrocería y Pintura", "300000001543539");
     }};
-    
- 
+
+
     Connection cn = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
@@ -218,7 +218,7 @@ public class CreateWorkerClient
                         emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
                         emp.setWorkMobilePhoneNumber(rs.getString("movil_particular1"));
                         emp.setDriverLicenseExpirationDate(rs.getString("fecha_licencia1"));
-                       
+
                         emp.setPersonNumber(rs.getString("no_persona"));
                         emp.setAddressLine1(rs.getString("direccion"));
                         emp.setCountry(rs.getString("pais"));
@@ -230,14 +230,14 @@ public class CreateWorkerClient
                         emp.setNationalId(rs.getString("numero_identificador1"));
                         emp.setNationalIdCountry(rs.getString("pais"));
                         emp.setUserName(rs.getString("usuario"));
-                        
+
                         //emp.setDriverLicenseId(rs.getString(""));
                         //emp.setWorkPhoneNumber("");
                         //emp.setSaludation(rs.getString("MR."));
                         //emp.setHireDate(rs.getString("fecha_contratacion"));
                         //emp.setEffectiveStartDate(rs.getString("fecha_contratacion"));
-                        
-                        
+
+
                         RequestAssignment assignment = new RequestAssignment();
 
                         String bussinesUnit = rs.getString("unidad_negocio");
@@ -263,7 +263,7 @@ public class CreateWorkerClient
                         assignment.setActionCode(rs.getString("accion"));
                         assignment.setActionReasonCode(rs.getString("estado"));
                         assignment.setAssignmentStatus("ACTIVE");
-                       
+
                         RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
 
                         extraInfo.setBanco(rs.getString("nombre_banco"));
@@ -285,11 +285,21 @@ public class CreateWorkerClient
                         try {
                             String json = new ObjectMapper().writeValueAsString(emp);
                             System.out.println(json);
-                            LOGGER.info("Insertando colaborador con el siguiente objeto");
+                            LOGGER.info("Insertando colaborador con el siguiente objeto: " + json);
                         } catch (JsonProcessingException e) {
                             e.printStackTrace();
                         }
 
+
+                        if (rs.getString("estado").equals("CT"))  // Nombramiento temporal.
+                        {
+//        	  /* Fecha_Final */
+//        	   w.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
+//        	   workTerms.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
+//        	   assignment.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
+//        	   /* Accion estado? */
+//        	   al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "NOT"));
+                        }
 
                         HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(emp,httpHeaders);
                         ResponseEntity<ResponseEmployee> postEmpResponse = restTemplate.exchange(url,HttpMethod.POST,request,ResponseEmployee.class);
@@ -302,16 +312,6 @@ public class CreateWorkerClient
                         LOGGER.info("### Ejecutando el metodo: createWorker");
                         metodo = "createWorker";
 
-                        if (rs.getString("estado").equals("CT"))  // Nombramiento temporal.
-                        {
-//        	  /* Fecha_Final */
-//        	   w.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
-//        	   workTerms.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
-//        	   assignment.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
-//        	   /* Accion estado? */
-//        	   al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "NOT"));
-                        }
-
           /*     w = new Worker();
                   al = new ActionsList();  */
 
@@ -319,18 +319,18 @@ public class CreateWorkerClient
 //          xmlGenerado1 = wsse.getXml_generated();
 
 
-          if (postEmpResponse.getStatusCode().equals(HttpStatus.CREATED))
-           {
-            LOGGER.info("Obteniendo respuesta exitosa.");
-            LOGGER.info("PersonId: " + (postEmpResponse.getBody().getPersonId()));
+                        if (postEmpResponse.getStatusCode().equals(HttpStatus.CREATED))
+                        {
+                            LOGGER.info("Obteniendo respuesta exitosa.");
+                            LOGGER.info("PersonId: " + (postEmpResponse.getBody().getPersonId()));
 
 //             cambia el estado en HCM_colaboradores a "CP"
-            int exito = updateResponseTable(id_number, "PersonId: " + postEmpResponse.getBody().getPersonId(), "OK", metodo, postEmpResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
-            if (exito == 1)
-             {
-              LOGGER.info("Datos actualizados correctamente en la base de datos.");
-             }
-          }
+                            int exito = updateResponseTable(id_number, "PersonId: " + postEmpResponse.getBody().getPersonId(), "OK", metodo, postEmpResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
+                            if (exito == 1)
+                            {
+                                LOGGER.info("Datos actualizados correctamente en la base de datos.");
+                            }
+                        }
 
 
                     }
@@ -514,8 +514,8 @@ public class CreateWorkerClient
 
                             //                        metodo = metodo + "mergePerson";
 
-                        LOGGER.info("Enviando datos al web service.");
-                        LOGGER.info("### Ejecutando el metodo: mergePerson");
+                            LOGGER.info("Enviando datos al web service.");
+                            LOGGER.info("### Ejecutando el metodo: mergePerson");
 
 //                        mergeResponse.setResult(port.mergePerson(attributeList));
 
@@ -527,7 +527,7 @@ public class CreateWorkerClient
                                 LOGGER.info("Se ejecuto con exito el metodo");
                                 LOGGER.info("Obteniendo respuesta exitosa.");
                                 LOGGER.info("PersonId: " + patchResponse.getBody().getPersonId());
-                            respuesta = respuesta + "PersonId: " + mergeResponse.getResult().getValue().get(0).getPersonId();
+                                respuesta = respuesta + "PersonId: " + mergeResponse.getResult().getValue().get(0).getPersonId();
 //                                cambia el estado en HCM_colaboradores a "CP"
                                 int exito = updateResponseTable(id_number, "PersonId: " + patchResponse.getBody().getPersonId(), "OK", metodo, metodo, xmlGenerado2, xmlGenerado3);
 
