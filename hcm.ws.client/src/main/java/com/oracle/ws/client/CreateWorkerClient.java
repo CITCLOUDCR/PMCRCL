@@ -838,7 +838,7 @@ public class CreateWorkerClient
 //                if (exito == 1) {
 //                    LOGGER.info("Datos actualizados correctamente en la base de datos.");
 //                }
-            }
+//            }
 
             try
             {
