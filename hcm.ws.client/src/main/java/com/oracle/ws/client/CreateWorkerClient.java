@@ -214,7 +214,14 @@ public class CreateWorkerClient
                         emp.setDisplayName(rs.getString("nombre")+" "+rs.getString("apellido_paterno"));
                         emp.setCitizenshipLegislationCode(rs.getString("codigo_legislacion"));
                         emp.setCitizenshipStatus("A");
-                        emp.setWorkEmail(rs.getString("correo_empresa"));
+                        
+                        if (isNotNullOrEmpty(rs.getString("correo_empresa")))
+                        {
+                        	emp.setWorkEmail(rs.getString("correo_empresa"));
+                        }
+                        else
+                        	emp.setWorkEmail(null);
+                        
                         emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
                         emp.setWorkMobilePhoneNumber(rs.getString("movil_particular1"));
                         emp.setDriverLicenseExpirationDate(rs.getString("fecha_licencia1"));
@@ -261,7 +268,7 @@ public class CreateWorkerClient
                         assignment.setSalaryBasisId("300000001590736");
                         assignment.setSalaryAmount(rs.getString("salario"));
                         assignment.setActionCode(rs.getString("accion"));
-                        assignment.setActionReasonCode(rs.getString("estado"));
+                        assignment.setActionReasonCode(rs.getString("estado").trim());
                         assignment.setAssignmentStatus("ACTIVE");
 
                         RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
@@ -269,7 +276,7 @@ public class CreateWorkerClient
                         extraInfo.setBanco(rs.getString("nombre_banco"));
                         extraInfo.setCuenta(rs.getString("cuenta_bco"));
                         extraInfo.setTipoCuenta(rs.getString("tipo_cuenta_bco"));
-                        extraInfo.setCuentaCliente(rs.getString("cuenta_cliente_bco"));
+                        extraInfo.setCuentaCliente(rs.getString("cuenta_cliente_bco").trim());
                         extraInfo.setCentroFuncionalDepartamento(rs.getString("centro_funcional_dep"));
                         extraInfo.setCentroFuncionalContable(rs.getString("centro_funcional_cont"));
 
