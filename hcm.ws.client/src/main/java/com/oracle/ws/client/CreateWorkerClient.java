@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Properties;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.namespace.QName;
+import javax.xml.ws.Response;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebServiceException;
 
@@ -187,6 +188,7 @@ public class CreateWorkerClient
                 {
                     String getEmpEndpoint = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps?q=PersonNumber="+rs.getString("no_persona");
 
+                    LOGGER.info("Version: 23 sep 2018");
                     LOGGER.info("### Ejecutando el metodo: getWorkerInformationByPersonNumber");
 
                     RequestEmployee newEmp = new RequestEmployee();
@@ -283,17 +285,18 @@ public class CreateWorkerClient
                         try {
                             String json = new ObjectMapper().writeValueAsString(emp);
                             System.out.println(json);
+                            LOGGER.info("Insertando colaborador con el siguiente objeto");
                         } catch (JsonProcessingException e) {
                             e.printStackTrace();
                         }
 
 
                         HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(emp,httpHeaders);
-                        ResponseEntity response = restTemplate.exchange(url,HttpMethod.POST,request,String.class);
-                        System.out.println(response.toString());
+                        ResponseEntity<ResponseEmployee> postEmpResponse = restTemplate.exchange(url,HttpMethod.POST,request,ResponseEmployee.class);
+                        System.out.println(postEmpResponse.toString());
 
-//          al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));  /* comportamiento */
-//          al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "NOM"));  /* accion  estado? */
+                        al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));  /* comportamiento */
+                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "NOM"));  /* accion  estado? */
 //
                         LOGGER.info("Enviando datos al web service.");
                         LOGGER.info("### Ejecutando el metodo: createWorker");
@@ -310,26 +313,25 @@ public class CreateWorkerClient
                         }
 
           /*     w = new Worker();
-                 al = new ActionsList();  */
+                  al = new ActionsList();  */
 
 //          response.setResult(port.createWorker(w, al));
 //          xmlGenerado1 = wsse.getXml_generated();
 
 
-          /*if ((response.getResult() != null) && (response.getResult().getValue().size() > 0))
+          if (postEmpResponse.getStatusCode().equals(HttpStatus.CREATED))
            {
             LOGGER.info("Obteniendo respuesta exitosa.");
-            LOGGER.info("PersonId: " + ((Worker)response.getResult().getValue().get(0)).getPersonId());
+            LOGGER.info("PersonId: " + (postEmpResponse.getBody().getPersonId()));
 
-            /* cambia el estado en HCM_colaboradores a "CP"
-            int exito = updateResponseTable(id_number, "PersonId: " + ((Worker)response.getResult().getValue().get(0)).getPersonId().toString(), "OK", metodo, xmlGenerado1, xmlGenerado2, xmlGenerado3);
-
+//             cambia el estado en HCM_colaboradores a "CP"
+            int exito = updateResponseTable(id_number, "PersonId: " + postEmpResponse.getBody().getPersonId(), "OK", metodo, postEmpResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
             if (exito == 1)
              {
               LOGGER.info("Datos actualizados correctamente en la base de datos.");
              }
           }
-          */
+
 
                     }
 
@@ -447,7 +449,7 @@ public class CreateWorkerClient
                     if (rs.getString("estado").equals("U"))  /* actualiza */
                     {
 
-
+                        LOGGER.info("Version: 23 sep 2018");
                         LOGGER.info("Proceso de actualizacion de un trabajador");
 
                         PatchEmployee emp = new PatchEmployee();
@@ -477,6 +479,7 @@ public class CreateWorkerClient
                         try {
                             String json = new ObjectMapper().writeValueAsString(emp);
                             System.out.println(json);
+                            LOGGER.info("Datos a actualizar:"+json);
                         } catch (JsonProcessingException e) {
                             e.printStackTrace();
                         }
@@ -508,83 +511,36 @@ public class CreateWorkerClient
 
 //                        xmlGenerado1 = wsse.getXml_generated();
 
+
+                            //                        metodo = metodo + "mergePerson";
+
+                        LOGGER.info("Enviando datos al web service.");
+                        LOGGER.info("### Ejecutando el metodo: mergePerson");
+
+//                        mergeResponse.setResult(port.mergePerson(attributeList));
+
+//                        xmlGenerado1 = wsse.getXml_generated();
+
+
 //                        if ((mergeResponse.getResult() != null) && (mergeResponse.getResult().getValue().size() > 0)) {
                             if(((ResponseEntity<ResponseEmployee>) patchResponse).getStatusCode().equals(HttpStatus.OK)){
                                 LOGGER.info("Se ejecuto con exito el metodo");
                                 LOGGER.info("Obteniendo respuesta exitosa.");
                                 LOGGER.info("PersonId: " + patchResponse.getBody().getPersonId());
-//                            respuesta = respuesta + "PersonId: " + mergeResponse.getResult().getValue().get(0).getPersonId();
+                            respuesta = respuesta + "PersonId: " + mergeResponse.getResult().getValue().get(0).getPersonId();
+//                                cambia el estado en HCM_colaboradores a "CP"
+                                int exito = updateResponseTable(id_number, "PersonId: " + patchResponse.getBody().getPersonId(), "OK", metodo, metodo, xmlGenerado2, xmlGenerado3);
+
+                                if (exito == 1) {
+                                    LOGGER.info("Datos actualizados correctamente en la base de datos.");
+                                }
                             }
                         }else{
                             System.out.println("No se pudo realizar el patch, usuario no encontrado");
                         }
 
-//                        String urlPatchEmp = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/00020000000EACED00057708000110D931C4B2130000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B5974190300007870770800000165B67A680078";
-//                        PatchObject test = new PatchObject();
-//                        test.setLastName("RESTTEMPLATE");
-//
-//                        HttpHeaders httpHeaders = createHeaders();
-//                        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
 
-
-////                        HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(emp,httpHeaders);
-////                        ResponseEntity response = restTemplate.exchange(url,HttpMethod.POST,request,String.class);
-////                        System.out.println(response.toString());
-////
-//
-//                        emp.setDateOfBirth(rs.getString("fecha_nacimiento"));
-//
-////                        emp.setCitizenshipLegislationCode(rs.getString("codigo_legislacion"));
-//                        emp.setMaritalStatus(rs.getString("estado_civil"));
-//
-////                        personName.setNameType("GLOBAL");
-//
-//                        emp.setFirstName(rs.getString("nombre"));
-//                        emp.setMiddleName(rs.getString("segundo_nombre"));
-//                        emp.setLastName(rs.getString("apellido_paterno"));
-//                        emp.setPreviousLastName(rs.getString("apellido_materno"));
-//
-//                        emp.setNationalIdCountry(rs.getString("pais"));
-//
-//                        if ((isNotNullOrEmpty(rs.getString("tipo_identificador1"))) && (isNotNullOrEmpty(rs.getString("numero_identificador1")))) {
-//                            emp.setNationalId(rs.getString("numero_identificador1"));
-//                            emp.setNationalIdType(rs.getString("tipo_identificador1"));
-//                        }
-//                        else if ((isNotNullOrEmpty(rs.getString("tipo_identificador2"))) && (isNotNullOrEmpty(rs.getString("numero_identificador2")))) {
-//                            emp.setNationalId(rs.getString("numero_identificador2"));
-//                            emp.setNationalIdType(rs.getString("tipo_identificador2"));
-//                        }
-//
-//
-//                        if (isNotNullOrEmpty(rs.getString("categoria_licencia1")))
-////                            personDriversLicence1.setLicenseNumber(DocumentUtil.getXMLString("LicenseNumber", rs.getString("categoria_licencia1")));
-//                        if (isNotNullOrEmpty(rs.getString("fecha_licencia1")))
-//                            emp.setDriverLicenseExpirationDate(rs.getString("fecha_licencia1"));
-//
-////                        DriversLicenseTypeDFF driversLicenseTypeDFF = new DriversLicenseTypeDFF();
-////                        driversLicenseTypeDFF.setCategoria(DocumentUtil.getXMLStringDff("categoria", rs.getString("categoria_licencia1")));
-////                        if (isNotNullOrEmpty(rs.getString("categoria_licencia1"))) { personDriversLicence1.setDriversLicenseTypeDFF(driversLicenseTypeDFF);
-////                        }
-
-
-
-//                        metodo = metodo + "mergePerson";
-
-//                        LOGGER.info("Enviando datos al web service.");
-//                        LOGGER.info("### Ejecutando el metodo: mergePerson");
-//
-////                        mergeResponse.setResult(port.mergePerson(attributeList));
-//
-////                        xmlGenerado1 = wsse.getXml_generated();
-//
-////                        if ((mergeResponse.getResult() != null) && (mergeResponse.getResult().getValue().size() > 0)) {
-//                        if(){
-//                            LOGGER.info("Se ejecuto con exito el metodo");
-//                            LOGGER.info("Obteniendo respuesta exitosa.");
-//                            LOGGER.info("PersonId: " + mergeResponse.getResult().getValue().get(0).getPersonId());
-////                            respuesta = respuesta + "PersonId: " + mergeResponse.getResult().getValue().get(0).getPersonId();
-//                        }
                     }
 
 
@@ -620,8 +576,6 @@ public class CreateWorkerClient
                     assignment.setPositionCode(DocumentUtil.getXMLString("PositionCode", rs.getString("codigo_posicion")));
                     assignment.setDepartmentName(DocumentUtil.getXMLString("DepartmentName", rs.getString("departamento")));
                     assignment.setAssignmentName(DocumentUtil.getXMLString("AssignmentName", rs.getString("nombre_asignacion")));
-
-
 
                     BaseWorkerAsgDFF baseWorkerAsgDFF = new BaseWorkerAsgDFF();
                     baseWorkerAsgDFF.setBanco(DocumentUtil.getXMLStringBas("banco", rs.getString("nombre_banco")));
