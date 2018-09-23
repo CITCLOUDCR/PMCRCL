@@ -304,6 +304,8 @@ public class CreateWorkerClient
                         HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(emp,httpHeaders);
                         ResponseEntity<ResponseEmployee> postEmpResponse = restTemplate.exchange(url,HttpMethod.POST,request,ResponseEmployee.class);
                         System.out.println(postEmpResponse.toString());
+                        LOGGER.info("Respuesta HCM: "+ postEmpResponse.toString());
+
 
                         al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));  /* comportamiento */
                         al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "NOM"));  /* accion  estado? */
@@ -537,13 +539,13 @@ public class CreateWorkerClient
                             }
                         }else{
                             System.out.println("No se pudo realizar el patch, usuario no encontrado");
+                            LOGGER.info("No se pudo realizar el patch, usuario no encontrado");
+
                         }
 
 
 
                     }
-
-
 
                     LOGGER.info("### Ejecutando el metodo: getWorkerInformationByPersonNumber");
                     informationResponse = new GetWorkerInformationByPersonNumberResponse();

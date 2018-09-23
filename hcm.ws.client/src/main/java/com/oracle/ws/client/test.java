@@ -203,31 +203,31 @@ public class test {
 
 
 //       GETUSERID
+//
+//        String findUserLink = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps?q=PersonNumber=1905";
+//        HttpEntity getHeaders = new HttpEntity(createHeaders());
+//        HttpEntity<ResponseLinkListUser> response = restTemplate.exchange(findUserLink,HttpMethod.GET,getHeaders,ResponseLinkListUser.class);
 
-        String findUserLink = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps?q=PersonNumber=1905";
-        HttpEntity getHeaders = new HttpEntity(createHeaders());
-        HttpEntity<ResponseLinkListUser> response = restTemplate.exchange(findUserLink,HttpMethod.GET,getHeaders,ResponseLinkListUser.class);
-
-        System.out.println(response);
-
-        if(response.getBody().getItems().size()!=0){
-            String userId = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/")[7];
-            String patchUrl = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/"+userId;
-
-            HttpHeaders postHeaders = createHeaders();
-            postHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-            PatchObject test = new PatchObject();
-            test.setLastName("PatchComplete");
-
-            restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-
-            HttpEntity<PatchObject> requestObj = new HttpEntity<PatchObject>(test,postHeaders);
-
-            HttpEntity resp = restTemplate.exchange(patchUrl,HttpMethod.PATCH,requestObj,ResponseEmployee.class);
-
-            System.out.println(resp.toString());
-        }
+//        System.out.println(response);
+//
+//        if(response.getBody().getItems().size()!=0){
+//            String userId = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/")[7];
+//            String patchUrl = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/"+userId;
+//
+//            HttpHeaders postHeaders = createHeaders();
+//            postHeaders.setContentType(MediaType.APPLICATION_JSON);
+//
+//            PatchObject test = new PatchObject();
+//            test.setLastName("PatchComplete");
+//
+//            restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+//
+//            HttpEntity<PatchObject> requestObj = new HttpEntity<PatchObject>(test,postHeaders);
+//
+//            HttpEntity resp = restTemplate.exchange(patchUrl,HttpMethod.PATCH,requestObj,ResponseEmployee.class);
+//
+//            System.out.println(resp.toString());
+//        }
 
     }
 
