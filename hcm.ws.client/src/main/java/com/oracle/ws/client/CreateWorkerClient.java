@@ -475,7 +475,8 @@ public class CreateWorkerClient
                             emp.setWorkEmail(rs.getString("correo_empresa"));
                         }
                         else
-                            emp.setWorkEmail(null);                        emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
+                            emp.setWorkEmail(null);
+                        emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
                         emp.setWorkMobilePhoneNumber(rs.getString("movil_particular1"));
                         emp.setDriverLicenseExpirationDate(rs.getString("fecha_licencia1"));
 
@@ -507,6 +508,7 @@ public class CreateWorkerClient
                         try {
                             String findUserLink = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps?q=PersonNumber=" + rs.getString("no_persona");
                             HttpEntity getHeaders = new HttpEntity(createHeaders());
+                            LOGGER.info("Endpoint para buscar a usuario por numero de persona: " + findUserLink);
                             HttpEntity<ResponseLinkListUser> response = restTemplate.exchange(findUserLink, HttpMethod.GET, getHeaders, ResponseLinkListUser.class);
 
                             System.out.println(response);
@@ -514,6 +516,8 @@ public class CreateWorkerClient
                             if (response.getBody().getItems().size() != 0) {
                                 String userId = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/")[7];
                                 String patchUrl = ClientConfig.endpoint + "/hcmRestApi/resources/latest/emps/" + userId;
+
+                                LOGGER.info("Endpoint para actualizar informacion de una persona: " + patchUrl);
 
                                 HttpEntity<PatchEmployee> request = new HttpEntity<PatchEmployee>(emp, httpHeaders);
 
