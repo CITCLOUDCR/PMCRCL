@@ -469,8 +469,13 @@ public class CreateWorkerClient
                         PatchEmployee emp = new PatchEmployee();
 
                         emp.setMiddleName(rs.getString("segundo_nombre"));
-                        emp.setWorkEmail(rs.getString("correo_empresa"));
-                        emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
+
+                        if (isNotNullOrEmpty(rs.getString("correo_empresa")))
+                        {
+                            emp.setWorkEmail(rs.getString("correo_empresa"));
+                        }
+                        else
+                            emp.setWorkEmail(null);                        emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
                         emp.setWorkMobilePhoneNumber(rs.getString("movil_particular1"));
                         emp.setDriverLicenseExpirationDate(rs.getString("fecha_licencia1"));
 
