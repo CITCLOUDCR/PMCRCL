@@ -541,9 +541,9 @@ public class CreateWorkerClient
                                 LOGGER.info("Se ejecuto con exito el metodo");
                                 LOGGER.info("Obteniendo respuesta exitosa.");
                                 LOGGER.info("PersonId: " + patchResponse.getBody().getPersonId());
-                                respuesta = respuesta + "PersonId: " + mergeResponse.getResult().getValue().get(0).getPersonId();
+//                                respuesta = respuesta + "PersonId: " + mergeResponse.getResult().getValue().get(0).getPersonId();
 //                                cambia el estado en HCM_colaboradores a "CP"
-                                int exito = updateResponseTable(id_number, "PersonId: " + patchResponse.getBody().getPersonId(), "OK", metodo, metodo, xmlGenerado2, xmlGenerado3);
+                                int exito = updateResponseTable(id_number, "PersonId: " + patchResponse.getBody().getPersonId(), "OK", metodo, patchResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
 
                                 if (exito == 1) {
                                     LOGGER.info("Datos actualizados correctamente en la base de datos.");
