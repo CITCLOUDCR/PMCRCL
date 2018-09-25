@@ -266,7 +266,7 @@ public class CreateWorkerClient
                         assignment.setSalaryCode("H");
                         assignment.setWorkingHours("8");
                         assignment.setFrequency("D");
-                        assignment.setSalaryBasisId("300000001590736");
+                        assignment.setSalaryBasisId("300000005782807");
                         assignment.setSalaryAmount(rs.getString("salario"));
                         assignment.setActionCode(rs.getString("accion"));
                         assignment.setActionReasonCode(rs.getString("estado").trim());
@@ -504,34 +504,35 @@ public class CreateWorkerClient
                         }
 
 
-                        String findUserLink = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps?q=PersonNumber="+rs.getString("no_persona");
-                        HttpEntity getHeaders = new HttpEntity(createHeaders());
-                        HttpEntity<ResponseLinkListUser> response = restTemplate.exchange(findUserLink,HttpMethod.GET,getHeaders,ResponseLinkListUser.class);
+                        try {
+                            String findUserLink = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps?q=PersonNumber=" + rs.getString("no_persona");
+                            HttpEntity getHeaders = new HttpEntity(createHeaders());
+                            HttpEntity<ResponseLinkListUser> response = restTemplate.exchange(findUserLink, HttpMethod.GET, getHeaders, ResponseLinkListUser.class);
 
-                        System.out.println(response);
+                            System.out.println(response);
 
-                        if(response.getBody().getItems().size()!=0){
-                            String userId = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/")[7];
-                            String patchUrl = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/"+userId;
+                            if (response.getBody().getItems().size() != 0) {
+                                String userId = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/")[7];
+                                String patchUrl = ClientConfig.endpoint + "/hcmRestApi/resources/latest/emps/" + userId;
 
-                            HttpEntity<PatchEmployee> request = new HttpEntity<PatchEmployee>(emp, httpHeaders);
+                                HttpEntity<PatchEmployee> request = new HttpEntity<PatchEmployee>(emp, httpHeaders);
 
-                            HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+                                HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 
-                            restTemplate.setRequestFactory(requestFactory);
+                                restTemplate.setRequestFactory(requestFactory);
 
-                            HttpEntity<ResponseEmployee> patchResponse = restTemplate.exchange(patchUrl, HttpMethod.PATCH, request, ResponseEmployee.class);
-                            System.out.println(patchResponse);
+                                HttpEntity<ResponseEmployee> patchResponse = restTemplate.exchange(patchUrl, HttpMethod.PATCH, request, ResponseEmployee.class);
+                                System.out.println(patchResponse);
 
-                            LOGGER.info("Enviando datos al web service.");
-                            LOGGER.info("### Ejecutando el metodo: mergePerson");
+                                LOGGER.info("Enviando datos al web service.");
+                                LOGGER.info("### Ejecutando el metodo: mergePerson");
 
 //                        mergeResponse.setResult(port.mergePerson(attributeList));
 
 //                        xmlGenerado1 = wsse.getXml_generated();
 
 
-                            //                        metodo = metodo + "mergePerson";
+                                //                        metodo = metodo + "mergePerson";
 
 //                            LOGGER.info("Enviando datos al web service.");
 //                            LOGGER.info("### Ejecutando el metodo: mergePerson");
@@ -542,25 +543,28 @@ public class CreateWorkerClient
 
 
 //                        if ((mergeResponse.getResult() != null) && (mergeResponse.getResult().getValue().size() > 0)) {
-                            if(((ResponseEntity<ResponseEmployee>) patchResponse).getStatusCode().equals(HttpStatus.OK)){
-                                LOGGER.info("Se ejecuto con exito el metodo");
-                                LOGGER.info("Obteniendo respuesta exitosa.");
-                                LOGGER.info("PersonId: " + patchResponse.getBody().getPersonId());
+                                if (((ResponseEntity<ResponseEmployee>) patchResponse).getStatusCode().equals(HttpStatus.OK)) {
+                                    LOGGER.info("Se ejecuto con exito el metodo");
+                                    LOGGER.info("Obteniendo respuesta exitosa.");
+                                    LOGGER.info("PersonId: " + patchResponse.getBody().getPersonId());
 //                                respuesta = respuesta + "PersonId: " + mergeResponse.getResult().getValue().get(0).getPersonId();
 //                                cambia el estado en HCM_colaboradores a "CP"
-                                int exito = updateResponseTable(id_number, "PersonId: " + patchResponse.getBody().getPersonId(), "OK", metodo, patchResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
+                                    int exito = updateResponseTable(id_number, "PersonId: " + patchResponse.getBody().getPersonId(), "OK", metodo, patchResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
 
-                                if (exito == 1) {
-                                    LOGGER.info("Datos actualizados correctamente en la base de datos.");
+                                    if (exito == 1) {
+                                        LOGGER.info("Datos actualizados correctamente en la base de datos.");
+                                    }
                                 }
+
+                            } else {
+                                System.out.println("No se pudo realizar el patch, usuario no encontrado");
+                                LOGGER.info("No se pudo realizar el patch, usuario no encontrado");
+
                             }
-                        }else{
-                            System.out.println("No se pudo realizar el patch, usuario no encontrado");
-                            LOGGER.info("No se pudo realizar el patch, usuario no encontrado");
 
+                        }catch (HttpClientErrorException e){
+                            LOGGER.info("Error en el servidor: "+ e.getResponseBodyAsString());
                         }
-
-
 
                     }
 
