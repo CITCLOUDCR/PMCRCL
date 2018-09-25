@@ -475,7 +475,8 @@ public class CreateWorkerClient
                             emp.setWorkEmail(rs.getString("correo_empresa"));
                         }
                         else
-                            emp.setWorkEmail(null);
+                            emp.setWorkEmail(" ");       
+                        
                         emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
                         emp.setWorkMobilePhoneNumber(rs.getString("movil_particular1"));
                         emp.setDriverLicenseExpirationDate(rs.getString("fecha_licencia1"));
