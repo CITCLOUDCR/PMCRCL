@@ -473,9 +473,13 @@ public class CreateWorkerClient
                         if (isNotNullOrEmpty(rs.getString("correo_empresa"))) {
                             emp.setWorkEmail(rs.getString("correo_empresa"));
                         }else
-                            emp.setWorkEmail(" ");       
-                        
-                        emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
+                            emp.setWorkEmail(" ");
+
+                        if (isNotNullOrEmpty(rs.getString("telefono_particular1"))) {
+                            emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
+                        }else
+                            emp.setHomePhoneNumber(" ");
+//                        emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
 
                         if (isNotNullOrEmpty(rs.getString("movil_particular1"))) {
                             emp.setWorkMobilePhoneNumber(rs.getString("movil_particular1"));
