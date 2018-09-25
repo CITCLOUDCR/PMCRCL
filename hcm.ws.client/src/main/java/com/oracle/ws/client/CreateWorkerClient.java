@@ -470,15 +470,18 @@ public class CreateWorkerClient
 
                         emp.setMiddleName(rs.getString("segundo_nombre"));
 
-                        if (isNotNullOrEmpty(rs.getString("correo_empresa")))
-                        {
+                        if (isNotNullOrEmpty(rs.getString("correo_empresa"))) {
                             emp.setWorkEmail(rs.getString("correo_empresa"));
-                        }
-                        else
+                        }else
                             emp.setWorkEmail(" ");       
                         
                         emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
-                        emp.setWorkMobilePhoneNumber(rs.getString("movil_particular1"));
+
+                        if (isNotNullOrEmpty(rs.getString("movil_particular1"))) {
+                            emp.setWorkMobilePhoneNumber(rs.getString("movil_particular1"));
+                        }else
+                            emp.setWorkMobilePhoneNumber(" ");
+
                         emp.setDriverLicenseExpirationDate(rs.getString("fecha_licencia1"));
 
                         emp.setFirstName(rs.getString("nombre"));
