@@ -370,7 +370,7 @@ public class CreateWorkerClient
                         WorkTerms workTerms = new WorkTerms();
                         workTerms.setBusinessUnitShortCode(DocumentUtil.getXMLString("BusinessUnitShortCode", rs.getString("unidad_negocio")));
                         workTerms.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
-                        workTerms.setPrimaryWorkTermsFlag(false);
+                        workTerms.setPrimaryWorkTermsFlag(true);
 
                         Assignment assignment = new Assignment();
                         assignment.setBusinessUnitShortCode(DocumentUtil.getXMLString("BusinessUnitShortCode", rs.getString("unidad_negocio")));
@@ -378,7 +378,8 @@ public class CreateWorkerClient
                         assignment.setAssignmentName(DocumentUtil.getXMLString("AssignmentName", rs.getString("nombre_asignacion")));
                         assignment.setDepartmentName(DocumentUtil.getXMLString("DepartmentName", rs.getString("departamento")));
                         assignment.setPositionCode(DocumentUtil.getXMLString("PositionCode", rs.getString("codigo_posicion")));
-                        assignment.setPrimaryFlag(false);
+                        assignment.setPrimaryFlag(true);
+
 
                         BaseWorkerAsgDFF baseWorkerAsgDFF = new BaseWorkerAsgDFF();
                         baseWorkerAsgDFF.setBanco(DocumentUtil.getXMLStringBas("banco", rs.getString("nombre_banco")));
@@ -433,30 +434,28 @@ public class CreateWorkerClient
                     /*Fin de Contratación HIRE */
                 }
                 //  Inicio de if de actualización
-                else if ((rs.getString("accion").equals("ASG_CHANGE")) ||  /* cambio-ajuste */
-                        (rs.getString("accion").equals("INABILITY"))  ||  /* Incapacidad */
-                        (rs.getString("accion").equals("PERMISSION")) ||  /* permiso */
-                        (rs.getString("accion").equals("VACATION")))      /* vacaciones */
-                {
+
+                else if((rs.getString("accion").equals("ASG_CHANGE"))){
 
 
-                    wsse = new WSSESOAPHandler();
-                    wsse.setWSSE(properties.getProperty("ws.user"), properties.getProperty("ws.password"));
-                    wsseHR = new WSSESOAPHandlerResolver(wsse);
-                    Service service = Service.create(new URL(properties.getProperty("ws.endpoint")), new QName(properties.getProperty("ws.qname"), properties.getProperty("ws.name")));
-                    service.setHandlerResolver(wsseHR);
-                    WorkerService port = service.getPort(WorkerService.class);
+//                    wsse = new WSSESOAPHandler();
+//                    wsse.setWSSE(properties.getProperty("ws.user"), properties.getProperty("ws.password"));
+//                    wsseHR = new WSSESOAPHandlerResolver(wsse);
+//                    Service service = Service.create(new URL(properties.getProperty("ws.endpoint")), new QName(properties.getProperty("ws.qname"), properties.getProperty("ws.name")));
+//                    service.setHandlerResolver(wsseHR);
+//                    WorkerService port = service.getPort(WorkerService.class);
 
                     respuesta = "";
                     id_number = rs.getInt("id_number");
-                    mergeResponse = new MergePersonResponse();
-                    Person attributeList = null;
-                    attributeList = new Person();
+//                    mergeResponse = new MergePersonResponse();
+//                    Person attributeList = null;
+//                    attributeList = new Person();
 
                     LOGGER.info("Obteniendo datos del trabajador: " + rs.getString("nombre"));
 
 
-                    attributeList.setPersonNumber(DocumentUtil.getXMLString("PersonNumber", rs.getString("no_persona")));
+
+//                    attributeList.setPersonNumber(DocumentUtil.getXMLString("PersonNumber", rs.getString("no_persona")));
 
 
 
@@ -578,144 +577,87 @@ public class CreateWorkerClient
                             LOGGER.info("Error en el servidor: "+ e.getResponseBodyAsString());
                         }
 
-                    }
+//                        Preguntar a LUIS!!!##
+                    }else {
 
-                    LOGGER.info("### Ejecutando el metodo: getWorkerInformationByPersonNumber");
-                    informationResponse = new GetWorkerInformationByPersonNumberResponse();
-                    metodo = metodo + "/getWorkerInformationByPersonNumber";
-                    informationResponse.setResult(port.getWorkerInformationByPersonNumber(rs.getString("no_persona"), null));
+                        LOGGER.info("### Ejecutando el metodo: getWorkerInformationByPersonNumber");
+//                        informationResponse = new GetWorkerInformationByPersonNumberResponse();
 
-                    xmlGenerado2 = wsse.getXml_generated();
-
-                    if ((informationResponse.getResult() != null) && (informationResponse.getResult().getValue().size() > 0)) {
-                        LOGGER.info("Se ejecuto con exito el metodo");
-                        LOGGER.info("Obteniendo respuesta exitosa.");
-                        LOGGER.info("AssignmentId: " + informationResponse.getResult().getValue().get(0).getAssignmentId());
-                        respuesta = respuesta + " / AssignmentId: " + informationResponse.getResult().getValue().get(0).getAssignmentId();
-                    }
-
-                    LOGGER.info("### Ejecutando el metodo: updateAssignment");
-                    updateAssignmentResponse = new UpdateAssignmentResponse();
-
-                    al = new ActionsList();
+                        String assignmentPrimary = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps?q=PersonNumber=" + rs.getString("no_persona");
 
 
-                    Assignment assignment = null;
+                        String assignmentPatch = ClientConfig.endpoint + "/getWorkerInformationByPersonNumber";
+//                        informationResponse.setResult(port.getWorkerInformationByPersonNumber(rs.getString("no_persona"), null));
 
-                    assignment = new Assignment();
+                        xmlGenerado2 = wsse.getXml_generated();
 
-                    assignment.setAssignmentId(informationResponse.getResult().getValue().get(0).getAssignmentId());
-                    assignment.setPersonNumber(DocumentUtil.getXMLString("PersonNumber", rs.getString("no_persona")));
-                    assignment.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_inicio")));
-                    assignment.setBusinessUnitShortCode(DocumentUtil.getXMLString("BusinessUnitShortCode", rs.getString("unidad_negocio")));
-                    assignment.setPositionCode(DocumentUtil.getXMLString("PositionCode", rs.getString("codigo_posicion")));
-                    assignment.setDepartmentName(DocumentUtil.getXMLString("DepartmentName", rs.getString("departamento")));
-                    assignment.setAssignmentName(DocumentUtil.getXMLString("AssignmentName", rs.getString("nombre_asignacion")));
+                        if ((informationResponse.getResult() != null) && (informationResponse.getResult().getValue().size() > 0)) {
+                            LOGGER.info("Se ejecuto con exito el metodo");
+                            LOGGER.info("Obteniendo respuesta exitosa.");
+                            LOGGER.info("AssignmentId: " + informationResponse.getResult().getValue().get(0).getAssignmentId());
+                            respuesta = respuesta + " / AssignmentId: " + informationResponse.getResult().getValue().get(0).getAssignmentId();
+                        }
 
-                    BaseWorkerAsgDFF baseWorkerAsgDFF = new BaseWorkerAsgDFF();
-                    baseWorkerAsgDFF.setBanco(DocumentUtil.getXMLStringBas("banco", rs.getString("nombre_banco")));
-                    baseWorkerAsgDFF.setCuenta(DocumentUtil.getXMLStringBas("cuenta", rs.getString("cuenta_bco")));
-                    baseWorkerAsgDFF.setTipoCuenta(DocumentUtil.getXMLStringBas("tipoCuenta", rs.getString("tipo_cuenta_bco")));
-                    baseWorkerAsgDFF.setCuentaCliente(DocumentUtil.getXMLStringBas("cuentaCliente", rs.getString("cuenta_cliente_bco")));
-                    baseWorkerAsgDFF.setCentroFuncionalDepartamento(DocumentUtil.getXMLStringBas("centroFuncionalDepartamento", rs.getString("centro_funcional_dep")));
-                    baseWorkerAsgDFF.setCentroFuncionalContable(DocumentUtil.getXMLStringBas("centroFuncionalContable", rs.getString("centro_funcional_cont")));
-                    assignment.setBaseWorkerAsgDFF(baseWorkerAsgDFF);
+                        LOGGER.info("### Ejecutando el metodo: updateAssignment");
+                        updateAssignmentResponse = new UpdateAssignmentResponse();
+
+                        al = new ActionsList();
 
 
-                    al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));
+                        Assignment assignment = null;
 
-                    if (rs.getString("estado").equals("ADL")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "ADL"));
-                    } else if (rs.getString("estado").contains("AJT"))   // ajuste salario temporal
-                    {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "AJT"));
-                        // configurar Fecha_final
-                        assignment.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
-                    }
-                    else if (rs.getString("estado").contains("AJU")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "AJU"));
-                    } else if (rs.getString("estado").contains("AUM")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "AUM"));
-                    } else if (rs.getString("estado").contains("CAC")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CAC"));
-                    } else if (rs.getString("estado").contains("CAJ")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CAJ"));
-                    } else if (rs.getString("estado").contains("CAS")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CAS"));
-                    } else if (rs.getString("estado").contains("CCF")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CCF"));
-                    } else if (rs.getString("estado").contains("CCT"))   // Cambio Centro de Costo (cambio de plaza) Temporal
-                    {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CCT"));
-                        // configurar Fecha_final
-                        assignment.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
-                    }
-                    else if (rs.getString("estado").contains("CRV")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CRV"));
-                    } else if (rs.getString("estado").contains("CSE")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CSE"));
-                    } else if (rs.getString("estado").contains("LIM")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "LIM"));
-                    } else if (rs.getString("estado").contains("PCO")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "PCO"));
-                    } else if (rs.getString("estado").contains("PSI")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "PSI"));
-                    } else if (rs.getString("estado").contains("TR1"))   // Traslado Temporal
-                    {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "TR1"));
-                        // configurar Fecha_final
-                        assignment.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
-                    }
-                    else if (rs.getString("estado").contains("TRA")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "TRA"));
-                    } else if (rs.getString("estado").contains("U")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "U"));
-                    } else if (rs.getString("estado").contains("ASC")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "ASC"));
-                    } else if (rs.getString("estado").contains("CAP")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CAP"));
-                    } else if (rs.getString("estado").contains("CNP")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CNP"));
-                    } else if (rs.getString("estado").contains("SUS")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "SUS"));
-                    } else if (rs.getString("estado").contains("INS")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "INS"));
-                    } else if (rs.getString("estado").contains("LCP")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "LCP"));
-                    } else if (rs.getString("estado").contains("LMA")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "LMA"));
-                    } else if (rs.getString("estado").contains("VAU")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "VAU"));
-                    } else if (rs.getString("estado").contains("ICC")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "ISS"));
-                    } else if (rs.getString("estado").contains("LIN")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "LIN"));
-                    } else if (rs.getString("estado").contains("LDU")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "LDU"));
-                    } else if (rs.getString("estado").contains("VAC")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "VAC"));
-                    }
+                        assignment = new Assignment();
 
-                    metodo = metodo + "/updateAssignment";
-                    updateAssignmentResponse.setResult(port.updateAssignment(assignment, al));
-                    xmlGenerado3 = wsse.getXml_generated();
+//                    PrimaryAssignmentFlag: boolean -> true
 
-                    if ((updateAssignmentResponse.getResult() != null) && (updateAssignmentResponse.getResult().getValue().size() > 0)) {
-                        LOGGER.info("Se ejecuto con exito el metodo");
-                        LOGGER.info("Obteniendo respuesta exitosa.");
-                        LOGGER.info("Mensaje: Actualizacion de datos exitoso");
-                        respuesta = respuesta + " / Mensaje: Actualizacion de datos exitoso";
+                        assignment.setAssignmentId(informationResponse.getResult().getValue().get(0).getAssignmentId());
+                        assignment.setPersonNumber(DocumentUtil.getXMLString("PersonNumber", rs.getString("no_persona")));
+                        assignment.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_inicio")));
+                        assignment.setBusinessUnitShortCode(DocumentUtil.getXMLString("BusinessUnitShortCode", rs.getString("unidad_negocio")));
+                        assignment.setPositionCode(DocumentUtil.getXMLString("PositionCode", rs.getString("codigo_posicion")));
+                        assignment.setDepartmentName(DocumentUtil.getXMLString("DepartmentName", rs.getString("departamento")));
+                        assignment.setAssignmentName(DocumentUtil.getXMLString("AssignmentName", rs.getString("nombre_asignacion")));
 
-                        // cambia el estado a "CP"
-                        int exito = updateResponseTable(id_number, respuesta, "OK", metodo, xmlGenerado1, xmlGenerado2, xmlGenerado3);
-                        if (exito == 1)
-                        {
-                            LOGGER.info("Datos actualizados correctamente en la base de datos.");
+                        BaseWorkerAsgDFF baseWorkerAsgDFF = new BaseWorkerAsgDFF();
+                        baseWorkerAsgDFF.setBanco(DocumentUtil.getXMLStringBas("banco", rs.getString("nombre_banco")));
+                        baseWorkerAsgDFF.setCuenta(DocumentUtil.getXMLStringBas("cuenta", rs.getString("cuenta_bco")));
+                        baseWorkerAsgDFF.setTipoCuenta(DocumentUtil.getXMLStringBas("tipoCuenta", rs.getString("tipo_cuenta_bco")));
+                        baseWorkerAsgDFF.setCuentaCliente(DocumentUtil.getXMLStringBas("cuentaCliente", rs.getString("cuenta_cliente_bco")));
+                        baseWorkerAsgDFF.setCentroFuncionalDepartamento(DocumentUtil.getXMLStringBas("centroFuncionalDepartamento", rs.getString("centro_funcional_dep")));
+                        baseWorkerAsgDFF.setCentroFuncionalContable(DocumentUtil.getXMLStringBas("centroFuncionalContable", rs.getString("centro_funcional_cont")));
+                        assignment.setBaseWorkerAsgDFF(baseWorkerAsgDFF);
+
+
+                        al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));
+
+                        String estadoCode = rs.getString("estado");
+                        if (estadoCode.equals("AJT") || estadoCode.equals("CCT") || estadoCode.equals("TR1")){
+                            // configurar Fecha_final
+//                        assignment.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
+                        }else{
+//                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "ADL"));
+                        }
+
+
+                        metodo = metodo + "/updateAssignment";
+//                    updateAssignmentResponse.setResult(port.updateAssignment(assignment, al));
+                        xmlGenerado3 = wsse.getXml_generated();
+
+                        if ((updateAssignmentResponse.getResult() != null) && (updateAssignmentResponse.getResult().getValue().size() > 0)) {
+                            LOGGER.info("Se ejecuto con exito el metodo");
+                            LOGGER.info("Obteniendo respuesta exitosa.");
+                            LOGGER.info("Mensaje: Actualizacion de datos exitoso");
+                            respuesta = respuesta + " / Mensaje: Actualizacion de datos exitoso";
+
+                            // cambia el estado a "CP"
+                            int exito = updateResponseTable(id_number, respuesta, "OK", metodo, xmlGenerado1, xmlGenerado2, xmlGenerado3);
+                            if (exito == 1) {
+                                LOGGER.info("Datos actualizados correctamente en la base de datos.");
+                            }
+
                         }
 
                     }
-
-
                 }
                 else if (rs.getString("accion").equals("TERMINATION"))
                 {
