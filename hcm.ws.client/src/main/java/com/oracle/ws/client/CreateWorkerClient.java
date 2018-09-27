@@ -189,7 +189,7 @@ public class CreateWorkerClient
                 {
                     String getEmpEndpoint = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps?q=PersonNumber="+rs.getString("no_persona");
 
-                    LOGGER.info("Version: 23 sep 2018");
+                    LOGGER.info("Version: 27 sep 2018");
                     LOGGER.info("### Ejecutando el metodo: getWorkerInformationByPersonNumber");
 
                     RequestEmployee newEmp = new RequestEmployee();
@@ -204,7 +204,7 @@ public class CreateWorkerClient
 
                         LOGGER.info("Proceso de creacion de un trabajador");
 
-                        LOGGER.info("Obteniendo datos del trabajador: " + rs.getString("nombre"));
+                        LOGGER.info("Obteniendo datos del trabajador: " + rs.getString("nombre")+" "+rs.getString("apellido_paterno"));
 
                         RequestEmployee emp = new RequestEmployee();
 
@@ -462,21 +462,25 @@ public class CreateWorkerClient
                     if (rs.getString("estado").equals("U"))  /* actualiza */
                     {
 
-                        LOGGER.info("Version: 23 sep 2018");
+                        LOGGER.info("Version: 27 sep 2018");
                         LOGGER.info("Proceso de actualizacion de un trabajador");
 
                         PatchEmployee emp = new PatchEmployee();
 
                         emp.setMiddleName(rs.getString("segundo_nombre"));
 
-                        if (isNotNullOrEmpty(rs.getString("correo_empresa"))) {
+                        if (isNotNullOrEmpty(rs.getString("correo_empresa")))
+                        {
                             emp.setWorkEmail(rs.getString("correo_empresa"));
-                        }else
+                        }
+                        else
                             emp.setWorkEmail(" ");
 
-                        if (isNotNullOrEmpty(rs.getString("telefono_particular1"))) {
+                        if (isNotNullOrEmpty(rs.getString("telefono_particular1"))) 
+                        {
                             emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
-                        }else
+                        }
+                        else
                             emp.setHomePhoneNumber(" ");
 //                        emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
 
@@ -503,11 +507,14 @@ public class CreateWorkerClient
                         emp.setNationalIdCountry(rs.getString("pais"));
                         emp.setUserName(rs.getString("usuario"));
 
-                        try {
+                        try
+                        {
                             String json = new ObjectMapper().writeValueAsString(emp);
                             System.out.println(json);
                             LOGGER.info("Datos a actualizar:"+json);
-                        } catch (JsonProcessingException e) {
+                        }
+                        catch (JsonProcessingException e)
+                        {
                             e.printStackTrace();
                         }
 
@@ -697,30 +704,13 @@ public class CreateWorkerClient
                     terminateWorkRelationship.setTerminationDetails(termination);
                     al = new ActionsList();
 
-                    if (rs.getString("estado").contains("CE1")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CE1"));
-                    } else if (rs.getString("estado").contains("CE2")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CE2"));
-                    } else if (rs.getString("estado").contains("CE3")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CE3"));
-                    } else if (rs.getString("estado").contains("CE4")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CE4"));
-                    } else if (rs.getString("estado").contains("CE5")) {
+                  
+                    if (rs.getString("estado").contains("CE5"))
+                    {
                         al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CE5"));
-                    } else if (rs.getString("estado").contains("CE6")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CE6"));
-                    } else if (rs.getString("estado").contains("CE8")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CE8"));
-                    } else if (rs.getString("estado").contains("CE9")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CE9"));
-                    } else if (rs.getString("estado").contains("DEF")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "DEF"));
-                    } else if (rs.getString("estado").contains("R10")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "R10"));
-                    } else if (rs.getString("estado").contains("TCO")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "TCO"));
-                    } else if (rs.getString("estado").contains("REN")) {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "REN"));
+                    } 
+                    else
+                    {
                     }
 
                     al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));
@@ -758,6 +748,71 @@ public class CreateWorkerClient
 
                     LOGGER.info("Fin del proceso de historial de accion");
                 }
+                
+                else if ((rs.getString("accion").equals("INABILITY")) || (rs.getString("accion").equals("PERMISSION")) || (rs.getString("accion").equals("VACATION")))    
+                {
+                	
+                	 String PostAbsenceEndpoint = ClientConfig.endpoint+"/hcmRestApi/resources/latest/absences";
+
+                     LOGGER.info("Version: 27 sep 2018");
+                     LOGGER.info("### Ejecutando el metodo: POST Absences");
+
+                     RequestAbsence Ausencias = new RequestAbsence();
+                     Ausencias.setPersonNumber(rs.getString("no_persona"));
+                     Ausencias.setEmployer(rs.getString("entidad_legal"));
+                     Ausencias.setAbsenceType(rs.getString("DescripcionAccion"));
+                     Ausencias.setStartDate(rs.getString("fecha_inicio"));
+                     Ausencias.setStartTime("08:00");
+                     Ausencias.setEndDate(rs.getString("fecha_vencimiento"));
+                     Ausencias.setEndTime("17:00");
+                     Ausencias.setAbsenceStatusCd("SUBMITTED");
+                	
+                     try
+                     {
+                         String json = new ObjectMapper().writeValueAsString(Ausencias);
+                         System.out.println(json);
+                         LOGGER.info("Insertando colaborador con el siguiente objeto: " + json);
+                     } 
+                     catch (JsonProcessingException e) 
+                     {
+                         e.printStackTrace();
+                     }
+                	
+                     LOGGER.info("Creando el Request");
+                     HttpEntity<RequestAbsence> request = new HttpEntity<RequestAbsence>(Ausencias,httpHeaders);
+                     LOGGER.info("Request info:" + request.toString());
+
+                     try
+                     {
+                         ResponseEntity<ResponseAbsence> postAbsenceResponse = restTemplate.exchange(PostAbsenceEndpoint, HttpMethod.POST, request, ResponseAbsence.class);
+                         System.out.println(postAbsenceResponse.toString());
+                         LOGGER.info("Respuesta HCM: " + postAbsenceResponse.toString());
+
+                         LOGGER.info("Enviando datos al web service.");
+                         LOGGER.info("### Ejecutando el metodo: createWorker");
+                         metodo = "POSTAbsence";
+
+
+                         if (postAbsenceResponse.getStatusCode().equals(HttpStatus.CREATED))
+                         {
+                             LOGGER.info("Obteniendo respuesta exitosa.");
+                             LOGGER.info("Person: " + (postAbsenceResponse.getBody().getPersonId()));
+
+//          cambia el estado en HCM_colaboradores a "CP"
+                             int exito = updateResponseTable(id_number, "PersonId: " + postAbsenceResponse.getBody().getPersonId(), "OK", metodo, postAbsenceResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
+                             if (exito == 1) 
+                             {
+                                 LOGGER.info("Datos actualizados correctamente en la base de datos.");
+                             }
+                         }
+                     }
+                     catch (HttpClientErrorException e)
+                     {
+                         LOGGER.info("Error en el servidor: "+ e.getResponseBodyAsString());
+                     }
+                	
+                }
+                
                 else if (rs.getString("accion").equals("LOCK"))
                 {
                     LOGGER.info("Proceso de Bloqueo de Usuario para las acciones temporales");
