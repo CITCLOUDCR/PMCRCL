@@ -33,6 +33,9 @@ public class ResponseAbsence
 	 @JsonProperty("personId;")
 	 private String PersonId;
 	 
+	 @JsonProperty("comments")
+	 private String  Comments;
+	 
 	 public String getAbsenceType()
 	 {
 	   return AbsenceType;
@@ -122,4 +125,14 @@ public class ResponseAbsence
 	 {
 	      this.PersonId = PersonId;
 	 }
+	 
+	 public String getComments()
+	 {
+	   return Comments;
+	 }
+
+	 public void setComments(String Comments)
+	 {
+	     this.Comments = Comments;
+	 }	 
 }

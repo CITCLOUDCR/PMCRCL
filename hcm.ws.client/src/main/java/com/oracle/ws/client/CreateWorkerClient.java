@@ -760,12 +760,13 @@ public class CreateWorkerClient
                      RequestAbsence Ausencias = new RequestAbsence();
                      Ausencias.setPersonNumber(rs.getString("no_persona"));
                      Ausencias.setEmployer(rs.getString("entidad_legal"));
-                     Ausencias.setAbsenceType(rs.getString("DescripcionAccion"));
+                     Ausencias.setAbsenceType(rs.getString("Recomendacion"));
                      Ausencias.setStartDate(rs.getString("fecha_inicio"));
                      Ausencias.setStartTime("08:00");
                      Ausencias.setEndDate(rs.getString("fecha_vencimiento"));
                      Ausencias.setEndTime("17:00");
                      Ausencias.setAbsenceStatusCd("SUBMITTED");
+                     Ausencias.setComments(rs.getString("DescripcionAccion"));
                 	
                      try
                      {

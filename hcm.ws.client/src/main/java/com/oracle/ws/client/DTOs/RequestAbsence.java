@@ -31,6 +31,9 @@ public class RequestAbsence
 	 @JsonProperty("absenceStatusCd")
 	 private String AbsenceStatusCd;
 	 
+	 @JsonProperty("comments")
+	 private String  Comments;
+	 
 	 public String getAbsenceType()
 	 {
 	   return AbsenceType;
@@ -109,6 +112,16 @@ public class RequestAbsence
 	 public void setEndTime(String EndTime)
 	 {
 	     this.EndTime = EndTime;
+	 }
+	 
+	 public String getComments()
+	 {
+	   return Comments;
+	 }
+
+	 public void setComments(String Comments)
+	 {
+	     this.Comments = Comments;
 	 }
 	 
 }
