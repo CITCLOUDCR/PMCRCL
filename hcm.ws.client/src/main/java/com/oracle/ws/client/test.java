@@ -231,28 +231,47 @@ public class test {
 //        }
 
 //  Error Handler
-        String url = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/00020000000EACED00057708000110D931C4B2130000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B5974190300007870770800000165B67A680078";
-        PatchObject test = new PatchObject();
-        test.setLastName("");
-
-        HttpHeaders httpHeaders = createHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<PatchObject> request = new HttpEntity<PatchObject>(test,httpHeaders);
-
-
-        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-
-        restTemplate.setRequestFactory(requestFactory);
-
-        try{
-            HttpEntity response = restTemplate.exchange(url, HttpMethod.PATCH, request, ResponseEmployee.class);
-            response.toString();
-
-        }catch(HttpClientErrorException e){
-            System.out.println(e.getResponseBodyAsString());
-        }
+//        String url = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/00020000000EACED00057708000110D931C4B2130000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B5974190300007870770800000165B67A680078";
+//        PatchObject test = new PatchObject();
+//        test.setLastName("");
 //
+//        HttpHeaders httpHeaders = createHeaders();
+//        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+//
+//        HttpEntity<PatchObject> request = new HttpEntity<PatchObject>(test,httpHeaders);
+//
+//
+//        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+//
+//        restTemplate.setRequestFactory(requestFactory);
+//
+//        try{
+//            HttpEntity response = restTemplate.exchange(url, HttpMethod.PATCH, request, ResponseEmployee.class);
+//            response.toString();
+//
+//        }catch(HttpClientErrorException e){
+//            System.out.println(e.getResponseBodyAsString());
+//        }
+//
+//        Response id
+
+
+        String findUserLink = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps?q=PersonNumber="+"1905";
+        HttpEntity getHeaders = new HttpEntity(createHeaders());
+        HttpEntity<ResponseLinkListUser> response = restTemplate.exchange(findUserLink,HttpMethod.GET,getHeaders,ResponseLinkListUser.class);
+        String userId = null;
+        if(response.getBody().getItems().size()!=0){
+            userId = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/")[7];
+            String userPrimaryAssignment = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps/"+userId+"/child/assignments?q=PrimaryAssignmentFlag=true";
+            response = restTemplate.exchange(userPrimaryAssignment,HttpMethod.GET,getHeaders,ResponseLinkListUser.class);
+            String[] links = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/");
+             String assignmentId = links[10];
+        }else {
+            System.out.println("No se pudo realizar el patch, usuario no encontrado");
+        }
+
+
+
     }
 
     static HttpHeaders createHeaders(){
