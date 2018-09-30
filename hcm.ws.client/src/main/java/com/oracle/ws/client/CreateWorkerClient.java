@@ -257,7 +257,7 @@ public class CreateWorkerClient
                         assignment.setAssignmentNumber(rs.getString("NumeroAsignacion"));
                         assignment.setPrimaryAssignmentFlag("Y");
 
-                        assignment.setAssignmentName(rs.getString("nombre")+"_assignment_"+rs.getString("apellido_paterno"));
+                        assignment.setAssignmentName(rs.getString("nombre_asignacion"));
                         assignment.setBusinessUnitId(BussinesUnitCodes.get(bussinesUnit));
                         assignment.setWorkerCategory("WC");
                         assignment.setAssignmentCategory("FR");
