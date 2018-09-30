@@ -455,7 +455,7 @@ public class CreateWorkerClient
 
 
 
-//                    attributeList.setPersonNumber(DocumentUtil.getXMLString("PersonNumber", rs.getString("no_persona")));
+                    String userId = getUserHCMIdByEmpNumber(rs.getString("no_persona"));
 
 
 
@@ -520,15 +520,8 @@ public class CreateWorkerClient
 
 
                         try {
-                            String findUserLink = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps?q=PersonNumber=" + rs.getString("no_persona");
-                            HttpEntity getHeaders = new HttpEntity(createHeaders());
-                            LOGGER.info("Endpoint para buscar a usuario por numero de persona: " + findUserLink);
-                            HttpEntity<ResponseLinkListUser> response = restTemplate.exchange(findUserLink, HttpMethod.GET, getHeaders, ResponseLinkListUser.class);
 
-                            System.out.println(response);
-
-                            if (response.getBody().getItems().size() != 0) {
-                                String userId = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/")[7];
+                            if (userId!=null) {
                                 String patchUrl = ClientConfig.endpoint + "/hcmRestApi/resources/latest/emps/" + userId;
 
                                 LOGGER.info("Endpoint para actualizar informacion de una persona: " + patchUrl);
@@ -588,51 +581,63 @@ public class CreateWorkerClient
                     }else {
 
                         LOGGER.info("### Ejecutando el metodo: getWorkerInformationByPersonNumber");
-//                        informationResponse = new GetWorkerInformationByPersonNumberResponse();
-
-                        String assignmentPrimary = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps?q=PersonNumber=" + rs.getString("no_persona");
 
 
-                        String assignmentPatch = ClientConfig.endpoint + "/getWorkerInformationByPersonNumber";
+                        String userPrimaryAssignment = ClientConfig.endpoint+"hcmRestApi/resources/latest/emps/"+userId+"/child/assignments?q=PrimaryAssignmentFlag=true";
+                        HttpEntity<ResponseLinkListUser> assignmentIdRequest = restTemplate.exchange(userPrimaryAssignment,HttpMethod.GET,authenticationHeaders,ResponseLinkListUser.class);
+                        String[] links = assignmentIdRequest.getBody().getItems().get(0).getLinks().get(0).getHref().split("/");
+                        String assignmentId = links[10];
+
+                        String assignmentPatch = ClientConfig.endpoint + "hcmRestApi/resources/latest/emps/"+userId+"/child/assignments/"+assignmentId;
 //                        informationResponse.setResult(port.getWorkerInformationByPersonNumber(rs.getString("no_persona"), null));
 
-                        xmlGenerado2 = wsse.getXml_generated();
+//                        xmlGenerado2 = wsse.getXml_generated();
 
-                        if ((informationResponse.getResult() != null) && (informationResponse.getResult().getValue().size() > 0)) {
-                            LOGGER.info("Se ejecuto con exito el metodo");
-                            LOGGER.info("Obteniendo respuesta exitosa.");
-                            LOGGER.info("AssignmentId: " + informationResponse.getResult().getValue().get(0).getAssignmentId());
-                            respuesta = respuesta + " / AssignmentId: " + informationResponse.getResult().getValue().get(0).getAssignmentId();
-                        }
+                        RestTemplate restPatch = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+                        HttpHeaders headers = createHeaders();
+                        headers.setContentType(MediaType.APPLICATION_JSON);
 
                         LOGGER.info("### Ejecutando el metodo: updateAssignment");
-                        updateAssignmentResponse = new UpdateAssignmentResponse();
+//                        updateAssignmentResponse = new UpdateAssignmentResponse();
 
                         al = new ActionsList();
 
 
-                        Assignment assignment = null;
-
-                        assignment = new Assignment();
+//                        Assignment assignment = new Assignment();
 
 //                    PrimaryAssignmentFlag: boolean -> true
 
-                        assignment.setAssignmentId(informationResponse.getResult().getValue().get(0).getAssignmentId());
-                        assignment.setPersonNumber(DocumentUtil.getXMLString("PersonNumber", rs.getString("no_persona")));
-                        assignment.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_inicio")));
-                        assignment.setBusinessUnitShortCode(DocumentUtil.getXMLString("BusinessUnitShortCode", rs.getString("unidad_negocio")));
-                        assignment.setPositionCode(DocumentUtil.getXMLString("PositionCode", rs.getString("codigo_posicion")));
-                        assignment.setDepartmentName(DocumentUtil.getXMLString("DepartmentName", rs.getString("departamento")));
-                        assignment.setAssignmentName(DocumentUtil.getXMLString("AssignmentName", rs.getString("nombre_asignacion")));
+                        PatchAssignment assignment = new PatchAssignment();
+//                        assignment.setDepartmentId();
+                        assignment.setAssignmentName(rs.getString("nombre_asignacion"));
+//                        assignment.setDepartmentId(rs.getString(""));
+                        assignment.setActionCode(rs.getString("accion"));
+                        assignment.setActionReasonCode(rs.getString("estado"));
+                        assignment.setBusinessUnitId(BussinesUnitCodes.get(rs.getString("unidad_negocio")));
+//                        assignment.setJobId();
+                        assignment.setSalaryAmount(rs.getString("salario"));
 
-                        BaseWorkerAsgDFF baseWorkerAsgDFF = new BaseWorkerAsgDFF();
-                        baseWorkerAsgDFF.setBanco(DocumentUtil.getXMLStringBas("banco", rs.getString("nombre_banco")));
-                        baseWorkerAsgDFF.setCuenta(DocumentUtil.getXMLStringBas("cuenta", rs.getString("cuenta_bco")));
-                        baseWorkerAsgDFF.setTipoCuenta(DocumentUtil.getXMLStringBas("tipoCuenta", rs.getString("tipo_cuenta_bco")));
-                        baseWorkerAsgDFF.setCuentaCliente(DocumentUtil.getXMLStringBas("cuentaCliente", rs.getString("cuenta_cliente_bco")));
-                        baseWorkerAsgDFF.setCentroFuncionalDepartamento(DocumentUtil.getXMLStringBas("centroFuncionalDepartamento", rs.getString("centro_funcional_dep")));
-                        baseWorkerAsgDFF.setCentroFuncionalContable(DocumentUtil.getXMLStringBas("centroFuncionalContable", rs.getString("centro_funcional_cont")));
-                        assignment.setBaseWorkerAsgDFF(baseWorkerAsgDFF);
+//                        assignment.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_inicio")));
+
+//                        salario
+//                        job
+//                        horario de trabajo
+//                        esquema salarial
+
+
+//                        assignment.setBusinessUnitShortCode(DocumentUtil.getXMLString("BusinessUnitShortCode", rs.getString("unidad_negocio")));
+//                        assignment.setPositionCode(DocumentUtil.getXMLString("PositionCode", rs.getString("codigo_posicion")));
+//                        assignment.setDepartmentName(DocumentUtil.getXMLString("DepartmentName", rs.getString("departamento")));
+//                        assignment.setAssignmentName(DocumentUtil.getXMLString("AssignmentName", rs.getString("nombre_asignacion")));
+//
+//                        BaseWorkerAsgDFF baseWorkerAsgDFF = new BaseWorkerAsgDFF();
+//                        baseWorkerAsgDFF.setBanco(DocumentUtil.getXMLStringBas("banco", rs.getString("nombre_banco")));
+//                        baseWorkerAsgDFF.setCuenta(DocumentUtil.getXMLStringBas("cuenta", rs.getString("cuenta_bco")));
+//                        baseWorkerAsgDFF.setTipoCuenta(DocumentUtil.getXMLStringBas("tipoCuenta", rs.getString("tipo_cuenta_bco")));
+//                        baseWorkerAsgDFF.setCuentaCliente(DocumentUtil.getXMLStringBas("cuentaCliente", rs.getString("cuenta_cliente_bco")));
+//                        baseWorkerAsgDFF.setCentroFuncionalDepartamento(DocumentUtil.getXMLStringBas("centroFuncionalDepartamento", rs.getString("centro_funcional_dep")));
+//                        baseWorkerAsgDFF.setCentroFuncionalContable(DocumentUtil.getXMLStringBas("centroFuncionalContable", rs.getString("centro_funcional_cont")));
+//                        assignment.setBaseWorkerAsgDFF(baseWorkerAsgDFF);
 
 
                         al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));
@@ -641,28 +646,36 @@ public class CreateWorkerClient
                         if (estadoCode.equals("AJT") || estadoCode.equals("CCT") || estadoCode.equals("TR1")){
                             // configurar Fecha_final
 //                        assignment.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
-                        }else{
-//                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "ADL"));
                         }
 
+                        HttpEntity<PatchAssignment> request = new HttpEntity<PatchAssignment>(assignment,headers);
 
-                        metodo = metodo + "/updateAssignment";
-//                    updateAssignmentResponse.setResult(port.updateAssignment(assignment, al));
-                        xmlGenerado3 = wsse.getXml_generated();
+                        try{
+                            HttpEntity<RequestAssignment> assignmentResponse = restPatch.exchange(assignmentPatch,HttpMethod.PATCH,request,RequestAssignment.class);
+                            if (((ResponseEntity<RequestAssignment>) assignmentResponse).getStatusCode().equals(HttpStatus.OK)) {
+                                LOGGER.info("Se ejecuto con exito el metodo");
+                                LOGGER.info("Obteniendo respuesta exitosa.");
+                                LOGGER.info("Mensaje: Actualizacion de datos exitoso");
+                                respuesta = respuesta + " / Mensaje: Actualizacion de datos exitoso";
 
-                        if ((updateAssignmentResponse.getResult() != null) && (updateAssignmentResponse.getResult().getValue().size() > 0)) {
-                            LOGGER.info("Se ejecuto con exito el metodo");
-                            LOGGER.info("Obteniendo respuesta exitosa.");
-                            LOGGER.info("Mensaje: Actualizacion de datos exitoso");
-                            respuesta = respuesta + " / Mensaje: Actualizacion de datos exitoso";
+                                // cambia el estado a "CP"
+                                int exito = updateResponseTable(id_number, respuesta, "OK", metodo, assignmentResponse.getBody().toString(), null, null);
+                                if (exito == 1) {
+                                    LOGGER.info("Datos actualizados correctamente en la base de datos.");
+                                }
 
-                            // cambia el estado a "CP"
-                            int exito = updateResponseTable(id_number, respuesta, "OK", metodo, xmlGenerado1, xmlGenerado2, xmlGenerado3);
-                            if (exito == 1) {
-                                LOGGER.info("Datos actualizados correctamente en la base de datos.");
                             }
-
+                        }catch (HttpClientErrorException e){
+                            System.out.println(e.getResponseBodyAsString());
+                            LOGGER.info(e.getResponseBodyAsString());
                         }
+
+
+//                        metodo = metodo + "/updateAssignment";
+//                    updateAssignmentResponse.setResult(port.updateAssignment(assignment, al));
+//                        xmlGenerado3 = wsse.getXml_generated();
+
+
 
                     }
                 }
@@ -968,6 +981,24 @@ public class CreateWorkerClient
             String authHeader = "Basic " + new String( encodedAuth );
             set( "Authorization", authHeader );
         }};
+    }
+
+
+    private String getUserHCMIdByEmpNumber(String nUsuario){
+        RestTemplate restTemplate = new RestTemplate();
+        String findUserLink = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps?q=PersonNumber="+nUsuario;
+        HttpEntity getHeaders = new HttpEntity(createHeaders());
+        HttpEntity<ResponseLinkListUser> response = restTemplate.exchange(findUserLink,HttpMethod.GET,getHeaders,ResponseLinkListUser.class);
+        String userId = null;
+        if(response.getBody().getItems().size()!=0){
+            LOGGER.info("Obteniendo el id del empleado");
+            userId = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/")[7];
+        }else {
+            System.out.println("No se pudo realizar el patch, usuario no encontrado");
+            LOGGER.info("No se pudo realizar el patch, usuario no encontrado");
+        }
+
+        return userId;
     }
 
 }
