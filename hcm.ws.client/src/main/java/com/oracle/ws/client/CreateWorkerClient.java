@@ -583,12 +583,12 @@ public class CreateWorkerClient
                         LOGGER.info("### Ejecutando el metodo: getWorkerInformationByPersonNumber");
 
 
-                        String userPrimaryAssignment = ClientConfig.endpoint+"hcmRestApi/resources/latest/emps/"+userId+"/child/assignments?q=PrimaryAssignmentFlag=true";
+                        String userPrimaryAssignment = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/"+userId+"/child/assignments?q=PrimaryAssignmentFlag=true";
                         HttpEntity<ResponseLinkListUser> assignmentIdRequest = restTemplate.exchange(userPrimaryAssignment,HttpMethod.GET,authenticationHeaders,ResponseLinkListUser.class);
                         String[] links = assignmentIdRequest.getBody().getItems().get(0).getLinks().get(0).getHref().split("/");
                         String assignmentId = links[10];
 
-                        String assignmentPatch = ClientConfig.endpoint + "hcmRestApi/resources/latest/emps/"+userId+"/child/assignments/"+assignmentId;
+                        String assignmentPatch = ClientConfig.endpoint + "/hcmRestApi/resources/latest/emps/"+userId+"/child/assignments/"+assignmentId;
 //                        informationResponse.setResult(port.getWorkerInformationByPersonNumber(rs.getString("no_persona"), null));
 
 //                        xmlGenerado2 = wsse.getXml_generated();
@@ -610,12 +610,13 @@ public class CreateWorkerClient
                         PatchAssignment assignment = new PatchAssignment();
 //                        assignment.setDepartmentId();
                         assignment.setAssignmentName(rs.getString("nombre_asignacion"));
-//                        assignment.setDepartmentId(rs.getString(""));
+                        assignment.setDepartmentId("19");
                         assignment.setActionCode(rs.getString("accion"));
                         assignment.setActionReasonCode(rs.getString("estado"));
                         assignment.setBusinessUnitId(BussinesUnitCodes.get(rs.getString("unidad_negocio")));
-//                        assignment.setJobId();
+                        assignment.setJobId("73");
                         assignment.setSalaryAmount(rs.getString("salario"));
+                        assignment.setPositionId("149");
 
 //                        assignment.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_inicio")));
 
@@ -648,10 +649,22 @@ public class CreateWorkerClient
 //                        assignment.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
                         }
 
+                        try
+                        {
+                            String json = new ObjectMapper().writeValueAsString(assignment);
+                            System.out.println(json);
+                            LOGGER.info("Datos a actualizar:"+json);
+                        }
+                        catch (JsonProcessingException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        
                         HttpEntity<PatchAssignment> request = new HttpEntity<PatchAssignment>(assignment,headers);
 
                         try{
-                            HttpEntity<RequestAssignment> assignmentResponse = restPatch.exchange(assignmentPatch,HttpMethod.PATCH,request,RequestAssignment.class);
+                   
+                        	HttpEntity<RequestAssignment> assignmentResponse = restPatch.exchange(assignmentPatch,HttpMethod.PATCH,request,RequestAssignment.class);
                             if (((ResponseEntity<RequestAssignment>) assignmentResponse).getStatusCode().equals(HttpStatus.OK)) {
                                 LOGGER.info("Se ejecuto con exito el metodo");
                                 LOGGER.info("Obteniendo respuesta exitosa.");
@@ -659,7 +672,7 @@ public class CreateWorkerClient
                                 respuesta = respuesta + " / Mensaje: Actualizacion de datos exitoso";
 
                                 // cambia el estado a "CP"
-                                int exito = updateResponseTable(id_number, respuesta, "OK", metodo, assignmentResponse.getBody().toString(), null, null);
+                                int exito = updateResponseTable(id_number, respuesta, "OK", "updateAssignment", assignmentResponse.getBody().toString(), null, null);
                                 if (exito == 1) {
                                     LOGGER.info("Datos actualizados correctamente en la base de datos.");
                                 }
