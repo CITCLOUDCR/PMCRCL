@@ -3,6 +3,7 @@ package com.oracle.ws.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oracle.ws.client.DTOs.*;
+import com.oracle.ws.client.ids.HashMaps;
 import com.oracle.ws.handlers.WSSESOAPHandler;
 import com.oracle.ws.handlers.WSSESOAPHandlerResolver;
 import com.oracle.xmlns.apps.hcm.employment.core.flex.baseworkerassignmentdff.BaseWorkerAsgDFF;
@@ -98,15 +99,8 @@ public class CreateWorkerClient
         put("01-3-1-0-ANFITRIO-PCPADM", "10");
     }};
 
-    private HashMap<String,String> DepartmentId = new HashMap<String, String>()
-    {{
-        put("PCPADM - Purdy C&P - Administrativo", "177");
-    }};
-
-    private HashMap<String,String> JobId = new HashMap<String, String>()
-    {{
-        put("Anfitriona", "8");
-    }};
+    private HashMap<String,String> DepartmentId = HashMaps.departmentIds;
+    private HashMap<String,String> JobId = HashMaps.jobIds;
 
     private HashMap<String,String> LocationId = new HashMap<String, String>()
     {{
