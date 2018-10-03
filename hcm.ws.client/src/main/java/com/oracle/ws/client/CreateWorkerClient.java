@@ -590,6 +590,8 @@ public class CreateWorkerClient
                         RestTemplate restPatch = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
                         HttpHeaders headers = createHeaders();
                         headers.setContentType(MediaType.APPLICATION_JSON);
+                        headers.set("Effective-Of","RangeMode=UPDATE");
+                        headers.set("RangeStartDate","2000-01-01");
 
                         LOGGER.info("### Ejecutando el metodo: updateAssignment");
 //                        updateAssignmentResponse = new UpdateAssignmentResponse();
