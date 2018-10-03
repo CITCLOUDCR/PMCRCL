@@ -94,10 +94,7 @@ public class CreateWorkerClient
         put("Asociación Solidarista de empleados de Purdy Motor S.A. y afines", "300000001544105");
     }};
 
-    private HashMap<String,String> PositionIds = new HashMap<String, String>()
-    {{
-        put("01-3-1-0-ANFITRIO-PCPADM", "10");
-    }};
+    private HashMap<String,String> PositionIds = HashMaps.positionIds;
 
     private HashMap<String,String> DepartmentId = HashMaps.departmentIds;
     private HashMap<String,String> JobId = HashMaps.jobIds;
@@ -520,7 +517,12 @@ public class CreateWorkerClient
 
                                 LOGGER.info("Endpoint para actualizar informacion de una persona: " + patchUrl);
 
-                                HttpEntity<PatchEmployee> request = new HttpEntity<PatchEmployee>(emp, httpHeaders);
+                                HttpHeaders headers = createHeaders();
+                                headers.setContentType(MediaType.APPLICATION_JSON);
+                                headers.set("Effective-Of","RangeMode=UPDATE");
+                                headers.set("RangeStartDate","2000-01-01");
+
+                                HttpEntity<PatchEmployee> request = new HttpEntity<PatchEmployee>(emp, headers);
 
                                 HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 
