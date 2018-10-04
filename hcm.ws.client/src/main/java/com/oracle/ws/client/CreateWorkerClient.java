@@ -704,50 +704,85 @@ public class CreateWorkerClient
                     LOGGER.info("Proceso de cese de un trabajador");
 
                     // String TypeRevokeUser = "";
-                    wsse = new WSSESOAPHandler();
-                    wsse.setWSSE(properties.getProperty("ws.user"), properties.getProperty("ws.password"));
-                    wsseHR = new WSSESOAPHandlerResolver(wsse);
-                    Service service = Service.create(new URL(properties.getProperty("ws.endpoint")), new QName(properties.getProperty("ws.qname"), properties.getProperty("ws.name")));
-                    service.setHandlerResolver(wsseHR);
-                    WorkerService port = service.getPort(WorkerService.class);
 
                     respuesta = "";
                     id_number = rs.getInt("id_number");
-                    TerminateWorkRelationship terminateWorkRelationship = new TerminateWorkRelationship();
+//                    TerminateWorkRelationship terminateWorkRelationship = new TerminateWorkRelationship();
 
+                    String assignmentPatchEndpoint = getPrimaryAssignmentEndpoint(rs.getString("no_persona"));
                     LOGGER.info("Obteniendo datos del trabajador: " + rs.getString("nombre"));
 
-                    WorkRelationshipUserKey workRelationshipUserKey = new WorkRelationshipUserKey();
-                    workRelationshipUserKey.setPersonNumber(DocumentUtil.getXMLString("PersonNumber", rs.getString("no_persona")));
-                    workRelationshipUserKey.setStartDate(DocumentUtil.getXMLGregorianCalendar("StartDate", rs.getString("fecha_contratacion")));
-                    workRelationshipUserKey.setWorkerType(DocumentUtil.getXMLString("WorkerType", rs.getString("tipo_trabajador")));
-                    workRelationshipUserKey.setLegalEmployerName(DocumentUtil.getXMLString("LegalEmployerName", rs.getString("entidad_legal")));
+                    PatchTerminationAssignment terminationAssignment = new PatchTerminationAssignment();
+                    terminationAssignment.setActionCode(rs.getString("action_code"));
+                    terminationAssignment.setActionReasonCode(rs.getString("reason_code"));
+//                    terminationAssignment.setAssignmentStatus("INACTIVE");
 
-                    terminateWorkRelationship.setWorkRelationshipUserKey(workRelationshipUserKey);
+                    HttpHeaders headers = createPatchHeaders();
+                    HttpEntity<PatchTerminationAssignment> request = new HttpEntity<PatchTerminationAssignment>(terminationAssignment,headers);
 
-                    Termination termination = new Termination();
-                    termination.setActualTerminationDate(DocumentUtil.getXMLGregorianCalendar("ActualTerminationDate", rs.getString("fecha_inicio")));
+                    RestTemplate restPatch = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
 
-                    termination.setRehireRecommendation(DocumentUtil.getXMLString("RehireRecommendation","No"));
-                    /*termination.setNotifiedTerminationDate(DocumentUtil.getXMLGregorianCalendar("NotifiedTerminationDate", rs.getString("fecha_inicio")));*/
+                    try{
 
-                    termination.setRevokeUserAccess(DocumentUtil.getXMLString("RevokeUserAccess","I"));
+                        HttpEntity<RequestAssignment> assignmentResponse = restPatch.exchange(assignmentPatchEndpoint,HttpMethod.PATCH,request,RequestAssignment.class);
+                        if (((ResponseEntity<RequestAssignment>) assignmentResponse).getStatusCode().equals(HttpStatus.OK)) {
+                            LOGGER.info("Se ejecuto con exito el metodo");
+                            LOGGER.info("Obteniendo respuesta exitosa.");
+                            LOGGER.info("Mensaje: Actualizacion de datos exitoso");
+                            respuesta = respuesta + " / Mensaje: Actualizacion de datos exitoso";
 
-                    terminateWorkRelationship.setTerminationDetails(termination);
-                    al = new ActionsList();
+                            String requestJson = "{\"TerminationDate\":\""+rs.getString("fecha_vencimiento")+"\"}";
+
+                            HttpEntity<String> patchrequest = new HttpEntity<String>(requestJson,headers);
+                            HttpEntity<ResponseEmployee> empResponse = restPatch.exchange(ClientConfig.endpoint + "/hcmRestApi/resources/latest/emps/" + getUserHCMIdByEmpNumber(rs.getString("no_person")),HttpMethod.PATCH,patchrequest,ResponseEmployee.class);
+
+                            if(((ResponseEntity<ResponseEmployee>) empResponse).getStatusCode().equals(HttpStatus.OK)) {
+                                // cambia el estado a "CP"
+                                int exito = updateResponseTable(id_number, respuesta, "OK", "updateAssignment", assignmentResponse.getBody().toString(), null, null);
+                                if (exito == 1) {
+                                    LOGGER.info("Datos actualizados correctamente en la base de datos.");
+                                }
+                            }
+
+                        }
+                    }catch (HttpClientErrorException e){
+                        System.out.println(e.getResponseBodyAsString());
+                        LOGGER.info(e.getResponseBodyAsString());
+                    }
+
+//                    WorkRelationshipUserKey workRelationshipUserKey = new WorkRelationshipUserKey();
+//                    workRelationshipUserKey.setPersonNumber(DocumentUtil.getXMLString("PersonNumber", rs.getString("no_persona")));
+//                    workRelationshipUserKey.setStartDate(DocumentUtil.getXMLGregorianCalendar("StartDate", rs.getString("fecha_contratacion")));
+//                    workRelationshipUserKey.setWorkerType(DocumentUtil.getXMLString("WorkerType", rs.getString("tipo_trabajador")));
+//                    workRelationshipUserKey.setLegalEmployerName(DocumentUtil.getXMLString("LegalEmployerName", rs.getString("entidad_legal")));
+
+//                    terminateWorkRelationship.setWorkRelationshipUserKey(workRelationshipUserKey);
+
+
+
+//                    Termination termination = new Termination();
+//                    termination.setActualTerminationDate(DocumentUtil.getXMLGregorianCalendar("ActualTerminationDate", rs.getString("fecha_inicio")));
+//
+//                    termination.setRehireRecommendation(DocumentUtil.getXMLString("RehireRecommendation","No"));
+//                    /*termination.setNotifiedTerminationDate(DocumentUtil.getXMLGregorianCalendar("NotifiedTerminationDate", rs.getString("fecha_inicio")));*/
+//
+//                    termination.setRevokeUserAccess(DocumentUtil.getXMLString("RevokeUserAccess","I"));
+//
+//                    terminateWorkRelationship.setTerminationDetails(termination);
+//                    al = new ActionsList();
 
                   
                     if (rs.getString("estado").contains("CE5"))
                     {
-                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CE5"));
+//                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CE5"));
                     } 
                     else
                     {
                     }
 
-                    al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));
+//                    al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));
 
-                    terminateWorkRelationship.setActionList(al);
+//                    terminateWorkRelationship.setActionList(al);
 
 
 
@@ -757,7 +792,7 @@ public class CreateWorkerClient
 
 
                     metodo = "terminateWorkRelationship";
-                    port.terminateWorkRelationship(workRelationshipUserKey, termination, al);
+//                    port.terminateWorkRelationship(workRelationshipUserKey, termination, al);
 
                     xmlGenerado1 = wsse.getXml_generated();
 
@@ -1020,11 +1055,32 @@ public class CreateWorkerClient
             LOGGER.info("Obteniendo el id del empleado");
             userId = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/")[7];
         }else {
-            System.out.println("No se pudo realizar el patch, usuario no encontrado");
+            System.out.println("usuario no encontrado");
             LOGGER.info("No se pudo realizar el patch, usuario no encontrado");
         }
 
         return userId;
+    }
+
+    private String getPrimaryAssignmentEndpoint(String nUsuario){
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity getHeaders = new HttpEntity(createHeaders());
+
+        String endpoint = null;
+        String userId = getUserHCMIdByEmpNumber(nUsuario);
+        if (userId!=null) {
+            String userPrimaryAssignment = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/"+userId+"/child/assignments?q=PrimaryAssignmentFlag=true";
+            HttpEntity<ResponseLinkListUser> assignmentIdRequest = restTemplate.exchange(userPrimaryAssignment,HttpMethod.GET,getHeaders,ResponseLinkListUser.class);
+            String[] links = assignmentIdRequest.getBody().getItems().get(0).getLinks().get(0).getHref().split("/");
+            String assignmentId = links[10];
+
+            endpoint = ClientConfig.endpoint + "/hcmRestApi/resources/latest/emps/"+userId+"/child/assignments/"+assignmentId;
+            LOGGER.info("Endpoint del assignment: "+endpoint);
+
+        }else{
+            LOGGER.info("No se pudo obtener el endpoint del assignment, usuario no encontrado");
+        }
+        return endpoint;
     }
 
 }
