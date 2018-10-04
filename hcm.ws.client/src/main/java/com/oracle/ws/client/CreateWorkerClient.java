@@ -97,7 +97,10 @@ public class CreateWorkerClient
     private HashMap<String,String> PositionIds = HashMaps.positionIds;
 
     private HashMap<String,String> DepartmentId = HashMaps.departmentIds;
+    
+    
     private HashMap<String,String> JobId = HashMaps.jobIds;
+    
 
     private HashMap<String,String> LocationId = new HashMap<String, String>()
     {{
@@ -180,7 +183,7 @@ public class CreateWorkerClient
                 {
                     String getEmpEndpoint = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps?q=PersonNumber="+rs.getString("no_persona");
 
-                    LOGGER.info("Version: 27 sep 2018");
+                    LOGGER.info("Version: 02-oct-2018");
                     LOGGER.info("### Ejecutando el metodo: getWorkerInformationByPersonNumber");
 
                     RequestEmployee newEmp = new RequestEmployee();
@@ -251,7 +254,6 @@ public class CreateWorkerClient
                         assignment.setAssignmentName(rs.getString("nombre_asignacion"));
                         assignment.setBusinessUnitId(BussinesUnitCodes.get(bussinesUnit));
                         assignment.setWorkerCategory("WC");
-                        assignment.setAssignmentCategory("FR");
                         assignment.setWorkingAtHome("N");
                         assignment.setWorkingAsManager("N");
                         assignment.setSalaryCode("H");
@@ -262,6 +264,8 @@ public class CreateWorkerClient
                         assignment.setActionCode(rs.getString("accion"));
                         assignment.setActionReasonCode(rs.getString("estado").trim());
                         assignment.setAssignmentStatus("ACTIVE");
+                        //assignment.setEffectiveStartDate(rs.getString("fecha_vigencia"));
+       
 
                         RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
 
@@ -272,7 +276,17 @@ public class CreateWorkerClient
                         extraInfo.setCentroFuncionalDepartamento(rs.getString("centro_funcional_dep"));
                         extraInfo.setCentroFuncionalContable(rs.getString("centro_funcional_cont"));
 
+                        if (rs.getString("estado").equals("NOT"))  // Nombramiento temporal.
+                        {
+                        	/* Fecha_Final */
+                        	//emp.setTerminationDate(rs.getString("fecha_vencimiento"));
+                        	assignment.setEffectiveEndDate(rs.getString("fecha_vencimiento"));
+                        	assignment.setAssignmentCategory("FT");
+                        }
+                        else
+                        	 assignment.setAssignmentCategory("FR");
 
+                       
                         List<RequestAssignmentDFF> assignmentsDFF = new ArrayList<RequestAssignmentDFF>();
                         assignmentsDFF.add(extraInfo);
                         assignment.setAssignmentDFF(assignmentsDFF);
@@ -280,38 +294,33 @@ public class CreateWorkerClient
                         List<RequestAssignment> assignments = new ArrayList<RequestAssignment>();
                         assignments.add(assignment);
                         emp.setAssignments(assignments);
+                        
 
-                        try {
+                        try
+                        {
                             String json = new ObjectMapper().writeValueAsString(emp);
                             System.out.println(json);
                             LOGGER.info("Insertando colaborador con el siguiente objeto: " + json);
-                        } catch (JsonProcessingException e) {
+                        } 
+                        catch (JsonProcessingException e)
+                        {
                             e.printStackTrace();
                         }
-
-
-                        if (rs.getString("estado").equals("CT"))  // Nombramiento temporal.
-                        {
-//        	  /* Fecha_Final */
-//        	   w.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
-//        	   workTerms.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
-//        	   assignment.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
-//        	   /* Accion estado? */
-//        	   al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "NOT"));
-                        }
-
+                        
+                        
                         LOGGER.info("Creando el Request");
                         HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(emp,httpHeaders);
                         LOGGER.info("Request info:" + request.toString());
 
-                        try {
+                        try 
+                        {
                             ResponseEntity<ResponseEmployee> postEmpResponse = restTemplate.exchange(url, HttpMethod.POST, request, ResponseEmployee.class);
                             System.out.println(postEmpResponse.toString());
                             LOGGER.info("Respuesta HCM: " + postEmpResponse.toString());
 
 
-                            al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));  /* comportamiento */
-                            al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "NOM"));  /* accion  estado? */
+                           // al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));  /* comportamiento */
+                           // al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "NOM"));  /* accion  estado? */  
 //
                             LOGGER.info("Enviando datos al web service.");
                             LOGGER.info("### Ejecutando el metodo: createWorker");
@@ -426,7 +435,8 @@ public class CreateWorkerClient
                 }
                 //  Inicio de if de actualización
 
-                else if((rs.getString("accion").equals("ASG_CHANGE"))){
+                else if((rs.getString("accion").equals("ASG_CHANGE"))) /* Procesa Cambios */
+                {
 
 
 //                    wsse = new WSSESOAPHandler();
@@ -450,10 +460,10 @@ public class CreateWorkerClient
 
 
 
-                    if (rs.getString("estado").equals("U"))  /* actualiza */
+                    if (rs.getString("estado").equals("U"))  /* actualiza datos personales */
                     {
 
-                        LOGGER.info("Version: 27 sep 2018");
+                        LOGGER.info("Version: 02-oct-2018");
                         LOGGER.info("Proceso de actualizacion de un trabajador");
 
                         PatchEmployee emp = new PatchEmployee();
@@ -550,7 +560,8 @@ public class CreateWorkerClient
 
 
 //                        if ((mergeResponse.getResult() != null) && (mergeResponse.getResult().getValue().size() > 0)) {
-                                if (((ResponseEntity<ResponseEmployee>) patchResponse).getStatusCode().equals(HttpStatus.OK)) {
+                                if (((ResponseEntity<ResponseEmployee>) patchResponse).getStatusCode().equals(HttpStatus.OK)) 
+                                {
                                     LOGGER.info("Se ejecuto con exito el metodo");
                                     LOGGER.info("Obteniendo respuesta exitosa.");
                                     LOGGER.info("PersonId: " + patchResponse.getBody().getPersonId());
@@ -558,7 +569,8 @@ public class CreateWorkerClient
 //                                cambia el estado en HCM_colaboradores a "CP"
                                     int exito = updateResponseTable(id_number, "PersonId: " + patchResponse.getBody().getPersonId(), "OK", metodo, patchResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
 
-                                    if (exito == 1) {
+                                    if (exito == 1)
+                                    {
                                         LOGGER.info("Datos actualizados correctamente en la base de datos.");
                                     }
                                 }
@@ -574,8 +586,9 @@ public class CreateWorkerClient
                         }
 
 //                        Preguntar a LUIS!!!##
-                    }else {
-
+                    }else
+                    {
+                    	LOGGER.info("Versión: 02-oct-2018");
                         LOGGER.info("### Ejecutando el metodo: getWorkerInformationByPersonNumber");
 
 
@@ -608,13 +621,13 @@ public class CreateWorkerClient
                         PatchAssignment assignment = new PatchAssignment();
 //                        assignment.setDepartmentId();
                         assignment.setAssignmentName(rs.getString("nombre_asignacion"));
-                        assignment.setDepartmentId("19");
+                        assignment.setDepartmentId(DepartmentId.get(rs.getString("departamento")));
                         assignment.setActionCode(rs.getString("accion"));
-                        assignment.setActionReasonCode(rs.getString("estado"));
+                        assignment.setActionReasonCode(rs.getString("estado").trim());
                         assignment.setBusinessUnitId(BussinesUnitCodes.get(rs.getString("unidad_negocio")));
-                        assignment.setJobId("73");
+                        assignment.setJobId(JobId.get(rs.getString("nombre_asignacion")));
                         assignment.setSalaryAmount(rs.getString("salario"));
-                        assignment.setPositionId("149");
+                        assignment.setPositionId(PositionIds.get(rs.getString("codigo_posicion")));
 
 //                        assignment.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_inicio")));
 
@@ -652,6 +665,7 @@ public class CreateWorkerClient
                             String json = new ObjectMapper().writeValueAsString(assignment);
                             System.out.println(json);
                             LOGGER.info("Datos a actualizar:"+json);
+                            LOGGER.info("URL:"+assignmentPatch);
                         }
                         catch (JsonProcessingException e)
                         {
@@ -772,13 +786,13 @@ public class CreateWorkerClient
 
                     LOGGER.info("Fin del proceso de historial de accion");
                 }
-                
+                /* esta parte procesa ausencias (Absence) */
                 else if ((rs.getString("accion").equals("INABILITY")) || (rs.getString("accion").equals("PERMISSION")) || (rs.getString("accion").equals("VACATION")))    
                 {
                 	
                 	 String PostAbsenceEndpoint = ClientConfig.endpoint+"/hcmRestApi/resources/latest/absences";
 
-                     LOGGER.info("Version: 27 sep 2018");
+                     LOGGER.info("Version: 02-Oct-2018");
                      LOGGER.info("### Ejecutando el metodo: POST Absences");
 
                      RequestAbsence Ausencias = new RequestAbsence();

@@ -155,9 +155,6 @@ public class ResponseEmployee {
     private String workerType;
 
 
-
-
-
     public String getSalutation() {
         return salutation;
     }
@@ -749,4 +746,5 @@ public class ResponseEmployee {
     public void setWorkerType(String workerType) {
         this.workerType = workerType;
     }
+    
 }
