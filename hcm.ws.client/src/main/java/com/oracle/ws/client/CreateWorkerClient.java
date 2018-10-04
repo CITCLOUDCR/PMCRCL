@@ -527,10 +527,7 @@ public class CreateWorkerClient
 
                                 LOGGER.info("Endpoint para actualizar informacion de una persona: " + patchUrl);
 
-                                HttpHeaders headers = createHeaders();
-                                headers.setContentType(MediaType.APPLICATION_JSON);
-                                headers.set("Effective-Of","RangeMode=UPDATE");
-                                headers.set("RangeStartDate","2000-01-01");
+                                HttpHeaders headers = createPatchHeaders();
 
                                 HttpEntity<PatchEmployee> request = new HttpEntity<PatchEmployee>(emp, headers);
 
@@ -603,10 +600,7 @@ public class CreateWorkerClient
 //                        xmlGenerado2 = wsse.getXml_generated();
 
                         RestTemplate restPatch = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
-                        HttpHeaders headers = createHeaders();
-                        headers.setContentType(MediaType.APPLICATION_JSON);
-                        headers.set("Effective-Of","RangeMode=UPDATE");
-                        headers.set("RangeStartDate","2000-01-01");
+                        HttpHeaders headers = createPatchHeaders();
 
                         LOGGER.info("### Ejecutando el metodo: updateAssignment");
 //                        updateAssignmentResponse = new UpdateAssignmentResponse();
@@ -1008,6 +1002,13 @@ public class CreateWorkerClient
         }};
     }
 
+    private HttpHeaders createPatchHeaders(){
+        HttpHeaders headers = createHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Effective-Of","RangeMode=UPDATE");
+        headers.set("RangeStartDate","2000-01-01");
+        return headers;
+    }
 
     private String getUserHCMIdByEmpNumber(String nUsuario){
         RestTemplate restTemplate = new RestTemplate();
