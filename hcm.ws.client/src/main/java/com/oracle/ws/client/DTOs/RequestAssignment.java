@@ -50,6 +50,11 @@ public class RequestAssignment {
     private String actionReasonCode;
     @JsonProperty("AssignmentStatus")
     private String assignmentStatus;
+    @JsonProperty("EffectiveEndDate")
+    private String effectiveEndDate;
+    @JsonProperty("EffectiveStartDate")
+    private String effectiveStartDate;
+    
 
     @JsonProperty("assignmentDFF")
     private List<RequestAssignmentDFF> assignmentDFF = null;
@@ -228,4 +233,27 @@ public class RequestAssignment {
     public void setPrimaryAssignmentFlag(String primaryAssignmentFlag) {
         this.primaryAssignmentFlag = primaryAssignmentFlag;
     }
+    
+    
+    public String getEffectiveEndDate()
+    {
+        return effectiveEndDate;
+    }
+
+    public void setEffectiveEndDate(String effectiveEndDate) 
+    {
+        this.effectiveEndDate = effectiveEndDate;
+    }
+    
+    
+    public String getEffectiveStartDate()
+    {
+        return effectiveStartDate;
+    }
+
+    public void setEffectiveStartDate(String effectiveStartDate) 
+    {
+        this.effectiveStartDate = effectiveStartDate;
+    }
+    
 }

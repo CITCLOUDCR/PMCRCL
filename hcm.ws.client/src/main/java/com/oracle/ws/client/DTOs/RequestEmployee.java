@@ -63,6 +63,9 @@ public class RequestEmployee{
     private String nationalIdCountry;
     @JsonProperty("EffectiveStartDate")
     private String effectiveStartDate;
+   /* @JsonProperty("TerminationDate")
+    private String terminationDate;*/
+    
     @JsonProperty("UserName")
     private String userName;
     @JsonProperty("assignments")
@@ -287,6 +290,16 @@ public class RequestEmployee{
     public void setUserName(String userName) {
         this.userName = userName;
     }
+    
+    /*public String getTerminationDate()
+    {
+        return terminationDate;
+    }
+
+    public void setTerminationDate(String terminationDate) 
+    {
+        this.terminationDate = terminationDate;
+    }*/
 
     public List<RequestAssignment> getAssignments() {
         return assignments;
