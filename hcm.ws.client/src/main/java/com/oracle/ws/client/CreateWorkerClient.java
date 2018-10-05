@@ -710,12 +710,24 @@ public class CreateWorkerClient
 //                    TerminateWorkRelationship terminateWorkRelationship = new TerminateWorkRelationship();
 
                     String assignmentPatchEndpoint = getPrimaryAssignmentEndpoint(rs.getString("no_persona"));
-                    LOGGER.info("Obteniendo datos del trabajador: " + rs.getString("nombre"));
-
+                    LOGGER.info("Obteniendo datos del trabajador: " + rs.getString("nombre") + '-'  + rs.getString("no_persona"));
+                    
                     PatchTerminationAssignment terminationAssignment = new PatchTerminationAssignment();
-                    terminationAssignment.setActionCode(rs.getString("action_code"));
-                    terminationAssignment.setActionReasonCode(rs.getString("reason_code"));
-//                    terminationAssignment.setAssignmentStatus("INACTIVE");
+                    terminationAssignment.setActionCode(rs.getString("accion").trim());
+                    terminationAssignment.setActionReasonCode(rs.getString("estado").trim());
+                    terminationAssignment.setAssignmentStatus("INACTIVE");
+                    
+                    try
+                    {
+                        String json = new ObjectMapper().writeValueAsString(terminationAssignment);
+                        System.out.println(json);
+                        LOGGER.info("Datos a actualizar:"+json);
+                        LOGGER.info("URL:"+assignmentPatchEndpoint);
+                    }
+                    catch (JsonProcessingException e)
+                    {
+                        e.printStackTrace();
+                    }
 
                     HttpHeaders headers = createPatchHeaders();
                     HttpEntity<PatchTerminationAssignment> request = new HttpEntity<PatchTerminationAssignment>(terminationAssignment,headers);
@@ -731,18 +743,19 @@ public class CreateWorkerClient
                             LOGGER.info("Mensaje: Actualizacion de datos exitoso");
                             respuesta = respuesta + " / Mensaje: Actualizacion de datos exitoso";
 
-                            String requestJson = "{\"TerminationDate\":\""+rs.getString("fecha_vencimiento")+"\"}";
+                          /*  String requestJson = "{\"TerminationDate\":\""+rs.getString("fecha_inicio")+"\"}";
 
                             HttpEntity<String> patchrequest = new HttpEntity<String>(requestJson,headers);
-                            HttpEntity<ResponseEmployee> empResponse = restPatch.exchange(ClientConfig.endpoint + "/hcmRestApi/resources/latest/emps/" + getUserHCMIdByEmpNumber(rs.getString("no_person")),HttpMethod.PATCH,patchrequest,ResponseEmployee.class);
+                            HttpEntity<ResponseEmployee> empResponse = restPatch.exchange(ClientConfig.endpoint + "/hcmRestApi/resources/latest/emps/" + getUserHCMIdByEmpNumber(rs.getString("no_persona")),HttpMethod.PATCH,patchrequest,ResponseEmployee.class);
 
-                            if(((ResponseEntity<ResponseEmployee>) empResponse).getStatusCode().equals(HttpStatus.OK)) {
+                            if(((ResponseEntity<ResponseEmployee>) empResponse).getStatusCode().equals(HttpStatus.OK)) {*/
                                 // cambia el estado a "CP"
                                 int exito = updateResponseTable(id_number, respuesta, "OK", "updateAssignment", assignmentResponse.getBody().toString(), null, null);
-                                if (exito == 1) {
+                                if (exito == 1) 
+                                {
                                     LOGGER.info("Datos actualizados correctamente en la base de datos.");
                                 }
-                            }
+                            //}
 
                         }
                     }catch (HttpClientErrorException e){
