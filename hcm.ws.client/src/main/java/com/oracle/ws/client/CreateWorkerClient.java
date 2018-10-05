@@ -245,7 +245,7 @@ public class CreateWorkerClient
                         String bussinesUnit = rs.getString("unidad_negocio");
 
                         assignment.setPositionId(PositionIds.get(rs.getString("codigo_posicion")));
-                        assignment.setJobId(JobId.get(rs.getString("nombre_asignacion")));
+                        assignment.setJobId(JobId.get(rs.getString("codigo_posicion"))+"-"+rs.getString("nombre_asignacion")+"-"+rs.getString("departamento"));
                         assignment.setDepartmentId(DepartmentId.get(rs.getString("departamento")));
                         //assignment.setLocationId("300000001543539");
                         assignment.setAssignmentNumber(rs.getString("NumeroAsignacion"));
@@ -619,7 +619,7 @@ public class CreateWorkerClient
                         assignment.setActionCode(rs.getString("accion"));
                         assignment.setActionReasonCode(rs.getString("estado").trim());
                         assignment.setBusinessUnitId(BussinesUnitCodes.get(rs.getString("unidad_negocio")));
-                        assignment.setJobId(JobId.get(rs.getString("nombre_asignacion")));
+                        assignment.setJobId(JobId.get(JobId.get(rs.getString("codigo_posicion"))+"-"+rs.getString("nombre_asignacion")+"-"+rs.getString("departamento")));
                         assignment.setSalaryAmount(rs.getString("salario"));
                         assignment.setPositionId(PositionIds.get(rs.getString("codigo_posicion")));
 
