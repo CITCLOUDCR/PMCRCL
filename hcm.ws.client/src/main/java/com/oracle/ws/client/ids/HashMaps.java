@@ -695,14 +695,14 @@ public class HashMaps {
     }};
     public static HashMap<String, String> departmentIds = new HashMap<String, String>() {{
         put("PMCALLANA - PM - Analista Call Center", "21");
-        put("PMCATG2 - PM - Repuestos Categorías Grupo 2", "35");
+        put("PMCATG2 - PM - Repuestos CategorÃ­as Grupo 2", "35");
         put("PMMERCDIGI - PM - Mercadeo Digital", "13");
         put("PSFIAD - PS - Financiero Administrativo", "300000003129940");
         put("PCPCOBO - Purdy C&P - Compras Bodega", "178");
         put("PCPADM - Purdy C&P - Administrativo", "177");
-        put("PCPTA7BCV - Purdy C&P - Taller B° Corazón Variable G7", "187");
-        put("PMADPC - PM - Administración PC", "57");
-        put("PMADSC - PM - Administración San Carlos", "86");
+        put("PCPTA7BCV - Purdy C&P - Taller BÂ° CorazÃ³n Variable G7", "187");
+        put("PMADPC - PM - AdministraciÃ³n PC", "57");
+        put("PMADSC - PM - AdministraciÃ³n San Carlos", "86");
         put("PMNUFIAVES - PM - Veh. Nuevos Fijos Avenida Escazu", "141");
         put("PMTAFIPP - PM - Taller Purdy Particular Adm. Fijos", "131");
         put("PMVECOFIPT - PM - Veh. Comerciales Fijos Purdy Trabajo", "109");
@@ -710,128 +710,98 @@ public class HashMaps {
         put("PMVENUFILE - PM - Veh. Nuevos Fijos Lexus", "101");
         put("PMVENUFIPP - PM - Veh. Nuevos Fijos Ciudad Toyota", "123");
         put("PMVEUSFIZA - PM - Veh. Usados Fijos Zapote", "5");
-        put("PMVUVPD - PM - Vehículos Usados Variables Premium Distribuidor", "30");
+        put("PMVUVPD - PM - VehÃ­culos Usados Variables Premium Distribuidor", "30");
         put("PMVEUSFILE - PM - Veh. Usados Fijos Lexus", "300000003129870");
-        put("PCPTA3BCV - Purdy C&P - Taller B° Corazón Variable G3", "183");
-        put("PCPTA4BCV - Purdy C&P - Taller B° Corazón Variable G4", "184");
-        put("PCPTA6BCV - Purdy C&P - Taller B° Corazón Variable G6", "186");
-        put("PCPTA8BCV - Purdy C&P - Taller B° Corazón Variable G8", "188");
+        put("PCPTA3BCV - Purdy C&P - Taller BÂ° CorazÃ³n Variable G3", "183");
+        put("PCPTA4BCV - Purdy C&P - Taller BÂ° CorazÃ³n Variable G4", "184");
+        put("PCPTA6BCV - Purdy C&P - Taller BÂ° CorazÃ³n Variable G6", "186");
+        put("PCPTA8BCV - Purdy C&P - Taller BÂ° CorazÃ³n Variable G8", "188");
         put("PMREVADIS - PM - Repuestos Venta Variable Distribuidor", "37");
-        put("PMCAPA - PM - Capacitación Distribuidor", "49");
-        put("PMTECDIST - PM - Área Técnica Repuestos Distr.", "39");
+        put("PMCAPA - PM - CapacitaciÃ³n Distribuidor", "49");
+        put("PMTECDIST - PM - Ã�rea TÃ©cnica Repuestos Distr.", "39");
         put("PMTAVAPPG1 - PM - Taller P. Particular Serv. Variable", "134");
         put("PMTAVAPPG3 - PM - Taller P. Particular Serv. Variable", "136");
         put("PMTAVAPPG4 - PM - Taller P. Particular Serv. Variable", "137");
         put("PMTAVAPTG2 - PM - Taller P. Trabajo Serv. Variable", "116");
         put("PMTAVAPTG1 - PM - Taller P. Trabajo Serv. Variable", "115");
-
-        put("PMVUFD - PM - Vehículos Usados Fijos Distribuidor", "27");
+        put("PMVUFD - PM - VehÃ­culos Usados Fijos Distribuidor", "27");
         put("PMPTPOST - PM - Post Venta P. Trabajo", "120");
-
-
-        put("PMREVAPZ - PM - Repuestos Vta. Variable Pérez Zeledón", "96");
+        put("PMREVAPZ - PM - Repuestos Vta. Variable PÃ©rez ZeledÃ³n", "96");
         put("PMREVASC - PM - Repuestos Vta. Variable San Carlos", "88");
         put("PMGEPP - PM - Gerencia Purdy Particular CT", "121");
-
         put("PMVECOVAPT - PM - Veh. Comerciales Variable Purdy Trabajo", "110");
         put("PMVENUFIZA - PM - Veh. Nuevos Fijos Zapote", "66");
         put("PMVENUVALI - PM - Veh. Nuevos Variables Liberia", "78");
-        put("PMVENUVAPZ - PM - Veh. Nuevos Variables Pérez Zeledón", "93");
+        put("PMVENUVAPZ - PM - Veh. Nuevos Variables PÃ©rez ZeledÃ³n", "93");
         put("PMVENUVASC - PM - Veh. Nuevos Variables San Carlos", "85");
         put("PMVNUVAPC1 - PM - Veh. Nuevos Variables PC", "191");
-
         put("PMSEGUR - Purdy Seguros", "189");
-        put("PSSEGVAR - PS - Pólizas de Seguros Variables", "300000003130008");
-        put("PMINSZA - PM - Servicio Instalación Zapote", "72");
-        put("PMSERVPC - PM - Servicio Paseo Colón", "56");
+        put("PSSEGVAR - PS - PÃ³lizas de Seguros Variables", "300000003130008");
+        put("PMINSZA - PM - Servicio InstalaciÃ³n Zapote", "72");
+        put("PMSERVPC - PM - Servicio Paseo ColÃ³n", "56");
         put("PMTAFICU - PM - Taller Curridabat Adm. Fijos", "148");
         put("PMTAFIDIST - PM - Taller Fijo Dist. Veh. Usados", "28");
         put("PMTAFILI - PM - Taller Liberia Adm. Fijos", "82");
-
-        put("PMTAFIPZ - PM - Taller Pérez Zeledón Adm. Fijos", "98");
+        put("PMTAFIPZ - PM - Taller PÃ©rez ZeledÃ³n Adm. Fijos", "98");
         put("PMTAFISC - PM - Taller San Carlos Adm. Fijos", "90");
         put("PMTAVAPPG2 - PM - Taller P. Particular Serv. Variable", "135");
-
-
         put("PMTAVAZAG1 - PM - Taller Zapote Serv. Variable", "74");
         put("PMTAVAZAG2 - PM - Taller Zapote Serv. Variable", "75");
         put("PMTAFIZA - PM - Taller Zapote Adm. Fijos", "71");
         put("PMSERVPP - PM - Servicio Purdy Particular", "133");
         put("CMPRES - CM - Presidencia", "150");
-
         put("CMVICEP - CM - Vicepresidencia", "152");
         put("PMNUVAAVES - PM - Veh. Nuevos Variables Avenida Escazu", "140");
         put("PMNUVAPP1 - PM - Veh. Nuevos Variables Ciudad Toyota", "124");
-
         put("PMNUVAPP2 - PM - Veh. Nuevos Variables Ciudad Toyota", "125");
-
         put("PMNUVAZA1 - PM - Veh. Nuevos Variables Zapote", "64");
-
         put("PMNUVAZA2 - PM - Veh. Nuevos Variables Zapote", "65");
-
-
         put("PMVENUVACU - PM - Veh. Nuevos Variables Curridabat", "144");
-
-
         put("PMVEUSVAGR - PM - Veh. Usados Variables Grecia", "7");
         put("PMVEUSVAPC - PM - Veh. Usados Variables PC", "61");
         put("PMVEUSVAPP - PM - Veh. Usados Variables Ciudad Toyota", "128");
-
-        put("PMVEUSVATI - PM - Veh. Usados Variables Tibás", "192");
-
+        put("PMVEUSVATI - PM - Veh. Usados Variables TibÃ¡s", "192");
         put("PMVNUVAPC2 - PM - Veh. Nuevos Variables PC", "58");
-
         put("PMVEUSVAPT - PM - Veh. Usados Variables Purdy Trabajo", "193");
         put("PMVEUSVALE - PM - Veh. Usados Variables Lexus", "300000003129887");
         put("PMCALLVC - PM - Ventas -MRS Citas Call Center", "20");
         put("PMCALLVTA - PM - Ventas Call Center", "300000003129813");
-
-
-        put("PMVUVD - PM - Vehículos Usados Variables Distribuidor", "15");
-
+        put("PMVUVD - PM - VehÃ­culos Usados Variables Distribuidor", "15");
         put("PMRENT - PM - Veh. Nuevos Variables Rent a Car", "118");
-        put("CMDIFI - CM - Dirección Financiera", "156");
+        put("CMDIFI - CM - DirecciÃ³n Financiera", "156");
         put("CMVICESADM - CM - Vicepresidencia Asist. Administrativa", "153");
-        put("PMADCT - PM - Administración CT", "122");
-        put("PMADDIST - PM - Administración Distribuidor", "25");
-        put("PMADZA - PM - Administración Zapote", "63");
+        put("PMADCT - PM - AdministraciÃ³n CT", "122");
+        put("PMADDIST - PM - AdministraciÃ³n Distribuidor", "25");
+        put("PMADZA - PM - AdministraciÃ³n Zapote", "63");
         put("PMCOBO - PM - Compras/Bodega", "24");
         put("PMDIGE - PM - Direcccion General PMCR", "9");
         put("PMFILIC - PM - Veh. Nuevos Fijos Licitaciones", "119");
-
         put("PMTAPTENG1 - PM - Taller P. Trabajo Ensamble", "114");
         put("PMVECODIST - PM - Veh. Comercial Variables Dist.", "107");
-
-
         put("PMOPER - PM - Operaciones", "43");
         put("SCCONTCOOR - SC - Coordinador Contabilidad", "158");
         put("SCCONTPLAN - SC - Planillas", "161");
         put("CMRECL - CM - Relaciones CL", "164");
-        put("CMAUIN - CM - Auditoría Interna", "154");
+        put("CMAUIN - CM - AuditorÃ­a Interna", "154");
         put("PMREBO - PM - Repuestos Bodega", "42");
-
         put("SCCYC - SC - CyC", "162");
-
         put("PMGESU - PM - Gerencia de Sucursales", "52");
-        put("PMOPERIMP - PM - Importación de Vehículos", "44");
+        put("PMOPERIMP - PM - ImportaciÃ³n de VehÃ­culos", "44");
         put("PMREIMPO - PM - Repuestos Importaciones", "38");
-        put("PMOPERLOG - PM - Logística", "45");
+        put("PMOPERLOG - PM - LogÃ­stica", "45");
         put("PMMERC - PM - Mercadeo", "11");
-
         put("CMPRESADM - CM - Presidencia Asist. Administrativa", "151");
-
         put("SCRH - SC - RRHH", "169");
-
-        put("PMTESO - PM - Tesorería", "23");
-        put("PMVEFIVATI - PM - Veh. Usados Fijos Tibás", "3");
-        put("PMGEPC - PM - Gerencia Paseo Colón", "55");
+        put("PMTESO - PM - TesorerÃ­a", "23");
+        put("PMVEFIVATI - PM - Veh. Usados Fijos TibÃ¡s", "3");
+        put("PMGEPC - PM - Gerencia Paseo ColÃ³n", "55");
 
 
         put("CMVICESADM - CM - Vicepresidencia Administrativo", "300000003129779");
 
 
         put("CMRSE - CM - Responsabilidad Social Empresarial", "2");
-        put("PMADLI - PM - Administración Liberia", "77");
+        put("PMADLI - PM - AdministraciÃ³n Liberia", "77");
 
 
         put("SCCONTANAL - SC - Analista Financiero Contabilidad", "160");
@@ -842,7 +812,7 @@ public class HashMaps {
 
 
         put("PMMERCEVE - PM - Mercadeo - Eventos Especiales", "17");
-        put("PMGAR - PM - Garantías", "48");
+        put("PMGAR - PM - GarantÃ­as", "48");
 
 
         put("PMMANT - PM - Mantenimiento", "26");
@@ -852,7 +822,7 @@ public class HashMaps {
         put("SCADM - SC - Administrativo", "167");
 
 
-        put("PMVENUFIPZ - PM - Veh. Nuevos Fijos Pérez Zeledón", "95");
+        put("PMVENUFIPZ - PM - Veh. Nuevos Fijos PÃ©rez ZeledÃ³n", "95");
 
         put("PMREFIPP - PM - Repuestos Adm. Fijos Ciudad Toyota", "130");
         put("PMREFIPT - PM - Repuestos Adm. Fijos Purdy Trabajo", "113");
@@ -868,26 +838,26 @@ public class HashMaps {
 
 
         put("PMADPT - PM - Administrativo Purdy Trabajo", "108");
-        put("PMADPZ - PM - Administración Pérez Zeledón", "94");
+        put("PMADPZ - PM - AdministraciÃ³n PÃ©rez ZeledÃ³n", "94");
 
 
         put("PMGEALA - PM - Gerencia Alajuela", "103");
         put("PMGEAVESC - PM - Gerencia Avenida Escazu", "138");
         put("PMGECU - PM - Gerencia Curridabat", "142");
-        put("PMSINC - PM - Sincronización", "33");
+        put("PMSINC - PM - SincronizaciÃ³n", "33");
 
-        put("PCPTA2BCV - Purdy C&P - Taller B° Corazón Variable G2", "182");
+        put("PCPTA2BCV - Purdy C&P - Taller BÂ° CorazÃ³n Variable G2", "182");
         put("SCTI - SC - TI", "172");
 
 
-        put("PMREDIST - PM - Repuestos Distribución", "41");
+        put("PMREDIST - PM - Repuestos DistribuciÃ³n", "41");
 
 
         put("PMVENUFILI - PM - Veh. Nuevos Fijos Liberia", "79");
 
 
         put("PMENTR - PM - Entrega", "46");
-        put("PCPGERPROD - Purdy C&P - Gerencia de Producción", "180");
+        put("PCPGERPROD - Purdy C&P - Gerencia de ProducciÃ³n", "180");
 
 
         put("PMVEUSFIPC - PM - Veh. Usados Fijos PC", "60");
@@ -898,10 +868,10 @@ public class HashMaps {
 
         put("PMCOIN - PM - Control Interno", "32");
 
-        put("PMADAVE - PM - Administración Avenida Escazú", "139");
+        put("PMADAVE - PM - AdministraciÃ³n Avenida EscazÃº", "139");
 
 
-        put("CMDIRH - CM - Dirección RRHH", "163");
+        put("CMDIRH - CM - DirecciÃ³n RRHH", "163");
 
 
         put("PMREADFIDI - PM - Repuestos Adm. Fijos Distribuidor", "34");
@@ -918,25 +888,25 @@ public class HashMaps {
         put("PMMERCPUB - PM - Mercadeo - Promociones y Publicidad", "16");
         put("PMDMTOVER - PM - DMT Overhaul", "117");
 
-        put("PSSEGFIJ - PS - Pólizas de Seguros Fijos", "300000003129991");
+        put("PSSEGFIJ - PS - PÃ³lizas de Seguros Fijos", "300000003129991");
 
 
-        put("PMCOMIN - PM - Planeación Compras e Inventarios", "36");
+        put("PMCOMIN - PM - PlaneaciÃ³n Compras e Inventarios", "36");
 
 
-        put("CMDIGE - CM - Dirección General", "149");
+        put("CMDIGE - CM - DirecciÃ³n General", "149");
 
-        put("PMDIPV - PM - Dirección de Post Venta", "31");
-        put("PMDICARRPR - PM - Dirección Carrocería y Protección de Vehículos", "10");
-        put("CMDIRPRO - CM - Dirección Proyectos", "174");
+        put("PMDIPV - PM - DirecciÃ³n de Post Venta", "31");
+        put("PMDICARRPR - PM - DirecciÃ³n CarrocerÃ­a y ProtecciÃ³n de VehÃ­culos", "10");
+        put("CMDIRPRO - CM - DirecciÃ³n Proyectos", "174");
 
-        put("CMDITI - CM - Dirección TI", "170");
+        put("CMDITI - CM - DirecciÃ³n TI", "170");
 
 
         put("PMREFIALA - PM - Repuestos Adm. Fijos Alajuela", "105");
         put("PMREFICU - PM - Repuestos Adm. Fijos Curridabat", "145");
 
-        put("PMREFIPZ - PM - Repuestos Adm. Fijos Pérez Zeledón", "97");
+        put("PMREFIPZ - PM - Repuestos Adm. Fijos PÃ©rez ZeledÃ³n", "97");
         put("PMREFIZA - PM - Repuestos Adm. Fijos Zapote", "70");
 
 
@@ -954,25 +924,25 @@ public class HashMaps {
 
         put("PMFIAD - PM - Financiero Administativo", "22");
 
-        put("GERDIS-CPD - PM - Gerencia Repuestos Distribución - CPD", "40");
+        put("GERDIS-CPD - PM - Gerencia Repuestos DistribuciÃ³n - CPD", "40");
 
         put("PSGERSEG - PS - Gerencia de Comercializadora de Seguros", "300000003129957");
         put("SCCONT - SC - Contabilidad", "157");
         put("PMCALL - PM - Call Center", "18");
 
-        put("PMVUWEB - PM - Vehículos Usados WEB", "29");
+        put("PMVUWEB - PM - VehÃ­culos Usados WEB", "29");
 
 
         put("PMOFIPRO - PM - Oficina de Proyectos", "300000003129847");
         put("PCPGERE - Purdy C&P - Gerencia", "176");
 
-        put("CMVENUCA - CM - Vehículos Nuevos Capacitación", "175");
+        put("CMVENUCA - CM - VehÃ­culos Nuevos CapacitaciÃ³n", "175");
 
 
         put("PMGEPA - PM - Gerencia de Purdy Accesorios", "53");
 
         put("SCRHPMCR - SC - RRHHPMCR", "166");
-        put("CMGERRPP - CM - Gerencia de Relaciones Públicas", "8");
+        put("CMGERRPP - CM - Gerencia de Relaciones PÃºblicas", "8");
 
 
         put("PMGESE - PM - Gerencia de Servicio", "47");
@@ -981,17 +951,17 @@ public class HashMaps {
         put("PMGELI - PM - Gerencia Liberia", "76");
 
 
-        put("PMGEPZ - PM - Gerencia Pérez Zeledón", "92");
+        put("PMGEPZ - PM - Gerencia PÃ©rez ZeledÃ³n", "92");
         put("PMGESC - PM - Gerencia San Carlos", "84");
 
 
         put("PMTAFIPT - PM - Taller Purdy Trabajo Adm. Fijos", "111");
 
 
-        put("CMCAPA - CM - Capacitación", "168");
+        put("CMCAPA - CM - CapacitaciÃ³n", "168");
 
 
-        put("SCRS - SC - Reclutamiento y Selección", "165");
+        put("SCRS - SC - Reclutamiento y SelecciÃ³n", "165");
 
 
         put("PMREVALI - PM - Repuestos Vta. Variable Liberia", "81");
@@ -1010,11 +980,11 @@ public class HashMaps {
         put("PMTAVACU - PM - Taller Curridabat Serv. Variable", "147");
 
 
-        put("PMTAVAPZ - PM - Taller Pérez Zeledón Serv. Variable", "99");
+        put("PMTAVAPZ - PM - Taller PÃ©rez ZeledÃ³n Serv. Variable", "99");
         put("PMTAVASC - PM - Taller San Carlos Serv. Variable", "91");
 
 
-        put("PMESCU - PM - Escudería", "54");
+        put("PMESCU - PM - EscuderÃ­a", "54");
 
 
         put("PMTAADMPP - PM - Taller Purdy Particular Administrativo", "132");
@@ -1028,13 +998,11 @@ public class HashMaps {
         put("PMREVAPT - PM - Repuestos Vta. Variable Purdy Trabajo", "112");
 
 
-        put("PCPTA1BCV - Purdy C&P - Taller B° Corazón Variable G1", "181");
+        put("PCPTA1BCV - Purdy C&P - Taller BÂ° CorazÃ³n Variable G1", "181");
 
 
         put("PMREVAALA - PM - Repuestos Vta. Variable Alajuela", "104");
         put("PMREVACU - PM - Repuestos Vta. Variable Curridabat", "146");
-
-
     }};
 
     public static HashMap<String, String> positionIds = new HashMap<String, String>() {{
@@ -1288,7 +1256,7 @@ public class HashMaps {
         put("01-4-2-2-CHOF-PMTAFIDIST", "14221");
         put("13-3-1-0-CHOF-PMADCT", "133101");
         put("07-4-1-2-CHOFALIS-PMVENUFIPZ", "524");
-        put("01-4-4-4-CHOFARAÑA-PMENTR", "183");
+        put("01-4-4-4-CHOFARAÃ‘A-PMENTR", "183");
         put("02-5-4-2-CHOFPAT-PCPGERPROD", "20");
         put("95-3-3-0-COBRA-SCCYC", "597");
         put("95-3-3-0-COBDCREDIT-SCCYC", "596");
