@@ -198,7 +198,6 @@ public class CreateWorkerClient
                     {
 
                         LOGGER.info("Proceso de creacion de un trabajador");
-
                         LOGGER.info("Obteniendo datos del trabajador: " + rs.getString("nombre")+" "+rs.getString("apellido_paterno"));
 
                         RequestEmployee emp = new RequestEmployee();
@@ -246,7 +245,11 @@ public class CreateWorkerClient
                         String bussinesUnit = rs.getString("unidad_negocio");
 
                         assignment.setPositionId(PositionIds.get(rs.getString("codigo_posicion")));
-                        assignment.setJobId(JobId.get(rs.getString("codigo_posicion"))+"-"+rs.getString("nombre_asignacion")+"-"+rs.getString("departamento"));
+                        String codPos = rs.getString("codigo_posicion");
+                        String nomAssign = rs.getString("nombre_asignacion");
+                        String department = rs.getString("departamento");
+
+                        assignment.setJobId(JobId.get(codPos+"-"+nomAssign+"-"+department));
                         assignment.setDepartmentId(DepartmentId.get(rs.getString("departamento")));
                         //assignment.setLocationId("300000001543539");
                         assignment.setAssignmentNumber(rs.getString("NumeroAsignacion"));
@@ -620,7 +623,13 @@ public class CreateWorkerClient
                         assignment.setActionCode(rs.getString("accion"));
                         assignment.setActionReasonCode(rs.getString("estado").trim());
                         assignment.setBusinessUnitId(BussinesUnitCodes.get(rs.getString("unidad_negocio")));
-                        assignment.setJobId(JobId.get(rs.getString("codigo_posicion")+"-"+rs.getString("nombre_asignacion")+"-"+rs.getString("departamento")));
+
+                        String codPos = rs.getString("codigo_posicion");
+                        String nomAssign = rs.getString("nombre_asignacion");
+                        String department = rs.getString("departamento");
+
+                        assignment.setJobId(JobId.get(codPos+"-"+nomAssign+"-"+department));
+
                         assignment.setSalaryAmount(rs.getString("salario"));
                         assignment.setPositionId(PositionIds.get(rs.getString("codigo_posicion")));
 
