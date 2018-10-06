@@ -13,7 +13,9 @@ import org.springframework.web.client.RestTemplate;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class test {
@@ -21,6 +23,10 @@ public class test {
 //    private RestTemplate restTemplate = new RestTemplate();
 
     public static void main (String[] args){
+
+        SimpleDateFormat formatofecha = new SimpleDateFormat("yyyy-MM-dd") ;
+        String fechadehoy = formatofecha.format(new Date());
+
         RestTemplate restTemplate = new RestTemplate();
 //        String url = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/00020000000EACED00057708000110D931C4B2130000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B5974190300007870770800000165B67A680078/child/assignments";
 ////        String url2 = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps?q=PersonNumber="+"34056";

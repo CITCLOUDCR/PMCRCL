@@ -51,10 +51,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Response;
@@ -140,6 +138,9 @@ public class CreateWorkerClient
             Class.forName(properties.getProperty("db.driver"));
             cn = DriverManager.getConnection(properties.getProperty("db.url"), properties.getProperty("db.user"), properties.getProperty("db.password"));
 
+            SimpleDateFormat formatofecha = new SimpleDateFormat("yyyy-MM-dd") ;
+            String fechadehoy = formatofecha.format(new Date());
+
             String sql = "SELECT id_number, no_persona, fecha_contratacion, fecha_inicio, fecha_nacimiento,tipo_sangre, accion,"
                     + " codigo_legislacion, sexo, estado_civil,apellido_paterno, apellido_materno, nombre, segundo_nombre,"
                     + " correo_empresa,correo_personal, tipo_direccion, pais, direccion, telefono_particular1,telefono_particular2, "
@@ -150,7 +151,7 @@ public class CreateWorkerClient
                     + "cuenta_cliente_bco, centro_funcional_dep,centro_funcional_cont, usuario, envia_credenciales, estado,"
                     + " metodo_ws,fecha_registro, fecha_procesamiento, respuesta_ws, flag_status,xml_enviado1, xml_enviado2,"
                     + " xml_enviado3, salario, bloqueo, fecha_aplicacion,fecha_vigencia, fecha_vencimiento, DescripcionAccion , TipoCese ,Recomendacion,NumeroAsignacion"
-                    + " FROM hcm_colaboradores where estado not in (?)";
+                    + " FROM hcm_colaboradores where estado <> ? and accion <> 'LOCK' or (estado <> ? and fecha_vencimiento='"+fechadehoy+"')";
 
 
             ps = cn.prepareStatement(sql);
