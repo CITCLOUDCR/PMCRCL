@@ -619,7 +619,7 @@ public class CreateWorkerClient
                         assignment.setActionCode(rs.getString("accion"));
                         assignment.setActionReasonCode(rs.getString("estado").trim());
                         assignment.setBusinessUnitId(BussinesUnitCodes.get(rs.getString("unidad_negocio")));
-                        assignment.setJobId(JobId.get(JobId.get(rs.getString("codigo_posicion"))+"-"+rs.getString("nombre_asignacion")+"-"+rs.getString("departamento")));
+                        assignment.setJobId(JobId.get(rs.getString("codigo_posicion")+"-"+rs.getString("nombre_asignacion")+"-"+rs.getString("departamento")));
                         assignment.setSalaryAmount(rs.getString("salario"));
                         assignment.setPositionId(PositionIds.get(rs.getString("codigo_posicion")));
 
@@ -896,10 +896,10 @@ public class CreateWorkerClient
                 
                 else if (rs.getString("accion").equals("LOCK"))
                 {
-                    LOGGER.info("Proceso de Bloqueo de Usuario para las acciones temporales");
+                    //LOGGER.info("Proceso de Bloqueo de Usuario para las acciones temporales");
                     // crear metodo que bloquee a usuario
 
-                    LOGGER.info("Fin del Proceso de Bloqueo de Usuario para las acciones temporales");
+                   // LOGGER.info("Fin del Proceso de Bloqueo de Usuario para las acciones temporales");
                 }
 
             }  // fin while
