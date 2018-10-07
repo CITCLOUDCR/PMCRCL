@@ -286,6 +286,8 @@ public class CreateWorkerClient
                         	//emp.setTerminationDate(rs.getString("fecha_vencimiento"));
                         	assignment.setEffectiveEndDate(rs.getString("fecha_vencimiento"));
                         	assignment.setAssignmentCategory("FT");
+                        	assignment.setAssignmentProjectedEndDate(rs.getString("fecha_vencimiento"));
+                        	assignment.setRegularTemporary("T");
                         }
                         else
                         	 assignment.setAssignmentCategory("FR");

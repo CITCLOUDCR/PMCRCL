@@ -54,7 +54,13 @@ public class RequestAssignment {
     private String effectiveEndDate;
     @JsonProperty("EffectiveStartDate")
     private String effectiveStartDate;
-    
+
+    @JsonProperty("AssignmentProjectedEndDate")
+    private String assignmentProjectedEndDate;
+
+    @JsonProperty("RegularTemporary")
+    private String regularTemporary;
+
 
     @JsonProperty("assignmentDFF")
     private List<RequestAssignmentDFF> assignmentDFF = null;
@@ -255,5 +261,20 @@ public class RequestAssignment {
     {
         this.effectiveStartDate = effectiveStartDate;
     }
-    
+
+    public String getAssignmentProjectedEndDate() {
+        return assignmentProjectedEndDate;
+    }
+
+    public void setAssignmentProjectedEndDate(String assignmentProjectedEndDate) {
+        this.assignmentProjectedEndDate = assignmentProjectedEndDate;
+    }
+
+    public String getRegularTemporary() {
+        return regularTemporary;
+    }
+
+    public void setRegularTemporary(String regularTemporary) {
+        this.regularTemporary = regularTemporary;
+    }
 }

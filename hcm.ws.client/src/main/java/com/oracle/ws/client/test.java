@@ -10,6 +10,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.Console;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -24,8 +25,8 @@ public class test {
 
     public static void main (String[] args){
 
-        SimpleDateFormat formatofecha = new SimpleDateFormat("yyyy-MM-dd") ;
-        String fechadehoy = formatofecha.format(new Date());
+//        SimpleDateFormat formatofecha = new SimpleDateFormat("yyyy-MM-dd") ;
+//        String fechadehoy = formatofecha.format(new Date());
 
         RestTemplate restTemplate = new RestTemplate();
 //        String url = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/00020000000EACED00057708000110D931C4B2130000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B5974190300007870770800000165B67A680078/child/assignments";
@@ -261,23 +262,49 @@ public class test {
 //
 //        Response id
 
+//        String findUserLink = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps?q=PersonNumber="+"1905";
+//        HttpEntity getHeaders = new HttpEntity(createHeaders());
+//        HttpEntity<ResponseLinkListUser> response = restTemplate.exchange(findUserLink,HttpMethod.GET,getHeaders,ResponseLinkListUser.class);
+//        String userId = null;
+//        if(response.getBody().getItems().size()!=0){
+//            userId = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/")[7];
+//            String userPrimaryAssignment = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps/"+userId+"/child/assignments?q=PrimaryAssignmentFlag=true";
+//            response = restTemplate.exchange(userPrimaryAssignment,HttpMethod.GET,getHeaders,ResponseLinkListUser.class);
+//            String[] links = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/");
+//             String assignmentId = links[10];
+//        }else {
+//            System.out.println("No se pudo realizar el patch, usuario no encontrado");
+//        }
 
-        String findUserLink = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps?q=PersonNumber="+"1905";
+//        Block user access
+        String findUserLink = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps?q=PersonNumber="+"4273";
         HttpEntity getHeaders = new HttpEntity(createHeaders());
         HttpEntity<ResponseLinkListUser> response = restTemplate.exchange(findUserLink,HttpMethod.GET,getHeaders,ResponseLinkListUser.class);
-        String userId = null;
+        String userIdUrl = null;
         if(response.getBody().getItems().size()!=0){
-            userId = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/")[7];
-            String userPrimaryAssignment = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps/"+userId+"/child/assignments?q=PrimaryAssignmentFlag=true";
-            response = restTemplate.exchange(userPrimaryAssignment,HttpMethod.GET,getHeaders,ResponseLinkListUser.class);
-            String[] links = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/");
-             String assignmentId = links[10];
+            userIdUrl = response.getBody().getItems().get(0).getLinks().get(0).getHref();
+            String userRolesUrl = userIdUrl+"/child/roles";
+
+            HttpEntity<ResponseRolesEmp> rolesEmpResponse = restTemplate.exchange(userRolesUrl,HttpMethod.GET,getHeaders,ResponseRolesEmp.class);
+
+            for (ResponseRole rol:rolesEmpResponse.getBody().getItems()) {
+                String deleteRolUrl = userRolesUrl+"/"+rol.getRoleGUID();
+                try {
+                    HttpEntity<String> deleteResult = restTemplate.exchange(deleteRolUrl, HttpMethod.DELETE, getHeaders, String.class);
+                    System.out.println(((ResponseEntity<String>) deleteResult).getStatusCode());
+                }catch(HttpClientErrorException e){
+                    System.out.println(e.getResponseBodyAsString());
+                }
+//                System.out.println("guao");
+            }
+
+
+//            response = restTemplate.exchange(userPrimaryAssignment,HttpMethod.GET,getHeaders,ResponseLinkListUser.class);
+//            String[] links = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/");
+//             String assignmentId = links[10];
         }else {
             System.out.println("No se pudo realizar el patch, usuario no encontrado");
         }
-
-
-
     }
 
     static HttpHeaders createHeaders(){
