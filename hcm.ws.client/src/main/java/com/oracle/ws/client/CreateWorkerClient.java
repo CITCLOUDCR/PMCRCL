@@ -201,6 +201,8 @@ public class CreateWorkerClient
                         LOGGER.info("Obteniendo datos del trabajador: " + rs.getString("nombre")+" "+rs.getString("apellido_paterno"));
 
                         RequestEmployee emp = new RequestEmployee();
+                        
+                        String reasoncode = rs.getString("estado").trim();
 
                         emp.setFirstName(rs.getString("nombre"));
                         emp.setMiddleName(rs.getString("segundo_nombre"));
@@ -280,7 +282,7 @@ public class CreateWorkerClient
                         extraInfo.setCentroFuncionalDepartamento(rs.getString("centro_funcional_dep"));
                         extraInfo.setCentroFuncionalContable(rs.getString("centro_funcional_cont"));
 
-                        if (rs.getString("estado").equals("NOT"))  // Nombramiento temporal.
+                        if (reasoncode.equals("NOT"))  // Nombramiento temporal.
                         {
                         	/* Fecha_Final */
                         	//emp.setTerminationDate(rs.getString("fecha_vencimiento"));
@@ -290,7 +292,11 @@ public class CreateWorkerClient
                         	assignment.setRegularTemporary("T");
                         }
                         else
+                        {
                         	 assignment.setAssignmentCategory("FR");
+                        	 assignment.setRegularTemporary("R");
+                        }
+                        	 
 
                        
                         List<RequestAssignmentDFF> assignmentsDFF = new ArrayList<RequestAssignmentDFF>();
