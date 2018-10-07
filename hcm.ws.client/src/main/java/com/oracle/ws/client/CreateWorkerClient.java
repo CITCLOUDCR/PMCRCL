@@ -151,7 +151,7 @@ public class CreateWorkerClient
                     + "cuenta_cliente_bco, centro_funcional_dep,centro_funcional_cont, usuario, envia_credenciales, estado,"
                     + " metodo_ws,fecha_registro, fecha_procesamiento, respuesta_ws, flag_status,xml_enviado1, xml_enviado2,"
                     + " xml_enviado3, salario, bloqueo, fecha_aplicacion,fecha_vigencia, fecha_vencimiento, DescripcionAccion , TipoCese ,Recomendacion,NumeroAsignacion"
-                    + " FROM hcm_colaboradores where estado <> ? and accion <> 'LOCK' or (estado <> ? and fecha_vencimiento='"+fechadehoy+"')";
+                    + " FROM hcm_colaboradores where estado <> ? and accion <> 'LOCK' or (estado <> 'CP' and fecha_vencimiento='"+fechadehoy+"')";
 
 
             ps = cn.prepareStatement(sql);
@@ -846,6 +846,8 @@ public class CreateWorkerClient
 
                      LOGGER.info("Version: 02-Oct-2018");
                      LOGGER.info("### Ejecutando el metodo: POST Absences");
+                     
+                     String incap = rs.getString("accion").trim();
 
                      RequestAbsence Ausencias = new RequestAbsence();
                      Ausencias.setPersonNumber(rs.getString("no_persona"));
@@ -857,7 +859,12 @@ public class CreateWorkerClient
                      Ausencias.setEndTime("17:00");
                      Ausencias.setAbsenceStatusCd("SUBMITTED");
                      Ausencias.setComments(rs.getString("DescripcionAccion"));
+                     if (incap.equals("INABILITY"))
+                     {
+                       Ausencias.setAbsenceReason("Ausencia por Incapacidad");
+                     }
                 	
+                     
                      try
                      {
                          String json = new ObjectMapper().writeValueAsString(Ausencias);

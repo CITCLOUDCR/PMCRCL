@@ -34,6 +34,9 @@ public class RequestAbsence
 	 @JsonProperty("comments")
 	 private String  Comments;
 	 
+	 @JsonProperty("absenceReason")
+	 private String  AbsenceReason;
+	 
 	 public String getAbsenceType()
 	 {
 	   return AbsenceType;
@@ -122,6 +125,16 @@ public class RequestAbsence
 	 public void setComments(String Comments)
 	 {
 	     this.Comments = Comments;
+	 }
+	 
+	 public String getAbsenceReason()
+	 {
+	   return AbsenceReason;
+	 }
+
+	 public void setAbsenceReason(String AbsenceReason)
+	 {
+	     this.AbsenceReason = AbsenceReason;
 	 }
 	 
 }
