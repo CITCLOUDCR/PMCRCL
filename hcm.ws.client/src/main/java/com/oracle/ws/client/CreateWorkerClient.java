@@ -855,7 +855,7 @@ public class CreateWorkerClient
                      LOGGER.info("Version: 02-Oct-2018");
                      LOGGER.info("### Ejecutando el metodo: POST Absences");
                      
-                     String incap = rs.getString("accion").trim();
+                     String incap = rs.getString("estado").trim();
 
                      RequestAbsence Ausencias = new RequestAbsence();
                      Ausencias.setPersonNumber(rs.getString("no_persona"));
@@ -867,11 +867,24 @@ public class CreateWorkerClient
                      Ausencias.setEndTime("17:00");
                      Ausencias.setAbsenceStatusCd("SUBMITTED");
                      Ausencias.setComments(rs.getString("DescripcionAccion"));
-                     if (incap.equals("INABILITY"))
+                     if (incap.equals("ICC") || incap.equals("INS"))
                      {
                        Ausencias.setAbsenceReason("Ausencia por Incapacidad");
                      }
-                	
+                     else if (incap.equals("LIM") || incap.equals("LCP") || incap.equals("LMA") || incap.equals("LIN") || incap.equals("LDU") )
+                     {
+                         Ausencias.setAbsenceReason("Ausencia por Licencia");
+                     }
+                     else if (incap.equals("PCO") || incap.equals("PSI") || incap.equals("PSG"))
+                     {
+                         Ausencias.setAbsenceReason("Ausencia por Permiso");
+                     }
+                     else if (incap.equals("VAC") || incap.equals("VAU"))
+                     {
+                    	 Ausencias.setAbsenceReason("Vacaciones");
+                     }
+                     
+                    
                      
                      try
                      {
