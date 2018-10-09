@@ -624,6 +624,20 @@ public class CreateWorkerClient
                         assignment.setSalaryAmount(rs.getString("salario"));
                         assignment.setPositionId(PositionIds.get(rs.getString("codigo_posicion")));
 
+                        RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
+
+                        extraInfo.setBanco(rs.getString("nombre_banco"));
+                        extraInfo.setCuenta(rs.getString("cuenta_bco"));
+                        extraInfo.setTipoCuenta(rs.getString("tipo_cuenta_bco"));
+                        extraInfo.setCuentaCliente(rs.getString("cuenta_cliente_bco").trim());
+                        extraInfo.setCentroFuncionalDepartamento(rs.getString("centro_funcional_dep"));
+                        extraInfo.setCentroFuncionalContable(rs.getString("centro_funcional_cont"));
+
+                        List<RequestAssignmentDFF> assignmentsDFF = new ArrayList<RequestAssignmentDFF>();
+                        assignmentsDFF.add(extraInfo);
+                        assignment.setAssignmentDFF(assignmentsDFF);
+
+
 //                        assignment.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_inicio")));
 
 //                        salario

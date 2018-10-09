@@ -37,6 +37,10 @@ public class PatchAssignment {
     @JsonProperty("ActionReasonCode")
     private String actionReasonCode;
 
+    @JsonProperty("assignmentDFF")
+    private List<RequestAssignmentDFF> assignmentDFF = null;
+
+
     public String getPositionId() {
         return positionId;
     }
@@ -99,6 +103,14 @@ public class PatchAssignment {
 
     public void setActionReasonCode(String actionReasonCode) {
         this.actionReasonCode = actionReasonCode;
+    }
+
+    public List<RequestAssignmentDFF> getAssignmentDFF() {
+        return assignmentDFF;
+    }
+
+    public void setAssignmentDFF(List<RequestAssignmentDFF> assignmentDFF) {
+        this.assignmentDFF = assignmentDFF;
     }
 //    @JsonProperty("AssignmentStatus")
 //    private String assignmentStatus;
