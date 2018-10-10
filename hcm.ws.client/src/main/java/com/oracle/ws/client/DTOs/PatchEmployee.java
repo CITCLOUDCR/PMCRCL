@@ -40,8 +40,8 @@ public class PatchEmployee {
     private String gender;
     @JsonProperty("MaritalStatus")
     private String maritalStatus;
-    @JsonProperty("NationalIdType")
-    private String nationalIdType;
+   // @JsonProperty("NationalIdType")
+   // private String nationalIdType;
     @JsonProperty("NationalId")
     private String nationalId;
     @JsonProperty("NationalIdCountry")
@@ -177,13 +177,13 @@ public class PatchEmployee {
         this.maritalStatus = maritalStatus;
     }
 
-    public String getNationalIdType() {
+   /* public String getNationalIdType() {
         return nationalIdType;
     }
 
     public void setNationalIdType(String nationalIdType) {
         this.nationalIdType = nationalIdType;
-    }
+    }*/
 
     public String getNationalId() {
         return nationalId;

@@ -515,7 +515,7 @@ public class CreateWorkerClient
                         emp.setLegalEntityId(LegalEntitiesIds.get(rs.getString("entidad_legal"))); /* devuelve null */
                         emp.setGender(rs.getString("sexo"));
                         emp.setMaritalStatus(rs.getString("estado_civil"));
-                        emp.setNationalIdType(rs.getString("tipo_identificador1"));
+                        //emp.setNationalIdType(rs.getString("tipo_identificador1"));
                         emp.setNationalId(rs.getString("numero_identificador1"));
                         emp.setNationalIdCountry(rs.getString("pais"));
                         emp.setUserName(rs.getString("usuario"));
@@ -553,22 +553,7 @@ public class CreateWorkerClient
                                 LOGGER.info("Enviando datos al web service.");
                                 LOGGER.info("### Ejecutando el metodo: mergePerson");
 
-//                        mergeResponse.setResult(port.mergePerson(attributeList));
 
-//                        xmlGenerado1 = wsse.getXml_generated();
-
-
-                                //                        metodo = metodo + "mergePerson";
-
-//                            LOGGER.info("Enviando datos al web service.");
-//                            LOGGER.info("### Ejecutando el metodo: mergePerson");
-
-//                        mergeResponse.setResult(port.mergePerson(attributeList));
-
-//                        xmlGenerado1 = wsse.getXml_generated();
-
-
-//                        if ((mergeResponse.getResult() != null) && (mergeResponse.getResult().getValue().size() > 0)) {
                                 if (((ResponseEntity<ResponseEmployee>) patchResponse).getStatusCode().equals(HttpStatus.OK)) 
                                 {
                                     LOGGER.info("Se ejecuto con exito el metodo");
@@ -576,12 +561,12 @@ public class CreateWorkerClient
                                     LOGGER.info("PersonId: " + patchResponse.getBody().getPersonId());
 //                                respuesta = respuesta + "PersonId: " + mergeResponse.getResult().getValue().get(0).getPersonId();
 //                                cambia el estado en HCM_colaboradores a "CP"
-                                    int exito = updateResponseTable(id_number, "PersonId: " + patchResponse.getBody().getPersonId(), "OK", metodo, patchResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
+                                    /*int exito = updateResponseTable(id_number, "PersonId: " + patchResponse.getBody().getPersonId(), "OK", metodo, patchResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
 
                                     if (exito == 1)
                                     {
                                         LOGGER.info("Datos actualizados correctamente en la base de datos.");
-                                    }
+                                    }*/
                                 }
 
                             } else {
@@ -594,9 +579,8 @@ public class CreateWorkerClient
                             LOGGER.info("Error en el servidor: "+ e.getResponseBodyAsString());
                         }
 
-//                        Preguntar a LUIS!!!##
-                    }else
-                    {
+
+                    }
                     	LOGGER.info("Versión: 02-oct-2018");
                         LOGGER.info("### Ejecutando el metodo: getWorkerInformationByPersonNumber");
 
@@ -626,25 +610,25 @@ public class CreateWorkerClient
 
                         PatchAssignment assignment = new PatchAssignment();
 //                        assignment.setDepartmentId();
-                        assignment.setAssignmentName(rs.getString("nombre_asignacion"));
-                        assignment.setDepartmentId(DepartmentId.get(rs.getString("departamento")));
+                        
+                        String codPos = rs.getString("codigo_posicion");
+                        String nomAssign = rs.getString("nombre_asignacion");
+                        String department = rs.getString("departamento");
+                        
+                        assignment.setAssignmentName(nomAssign);
+                        assignment.setDepartmentId(DepartmentId.get(department));
                         assignment.setActionCode(rs.getString("accion"));
                         assignment.setActionReasonCode(rs.getString("estado").trim());
                         assignment.setBusinessUnitId(BussinesUnitCodes.get(rs.getString("unidad_negocio")));
 
-                        String codPos = rs.getString("codigo_posicion");
-                        String nomAssign = rs.getString("nombre_asignacion");
-                        String department = rs.getString("departamento");
-
                         assignment.setJobId(JobId.get(codPos+"-"+nomAssign+"-"+department));
-
                         assignment.setSalaryAmount(rs.getString("salario"));
-                        assignment.setPositionId(PositionIds.get(rs.getString("codigo_posicion")));
+                        assignment.setPositionId(PositionIds.get(codPos));
 
                         RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
 
                         extraInfo.setBanco(rs.getString("nombre_banco"));
-                        extraInfo.setCuenta(rs.getString("cuenta_bco"));
+                        extraInfo.setCuenta(rs.getString("cuenta_bco").trim());
                         extraInfo.setTipoCuenta(rs.getString("tipo_cuenta_bco"));
                         extraInfo.setCuentaCliente(rs.getString("cuenta_cliente_bco").trim());
                         extraInfo.setCentroFuncionalDepartamento(rs.getString("centro_funcional_dep"));
@@ -655,33 +639,11 @@ public class CreateWorkerClient
                         assignment.setAssignmentDFF(assignmentsDFF);
 
 
-//                        assignment.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_inicio")));
-
-//                        salario
-//                        job
-//                        horario de trabajo
-//                        esquema salarial
-
-
-//                        assignment.setBusinessUnitShortCode(DocumentUtil.getXMLString("BusinessUnitShortCode", rs.getString("unidad_negocio")));
-//                        assignment.setPositionCode(DocumentUtil.getXMLString("PositionCode", rs.getString("codigo_posicion")));
-//                        assignment.setDepartmentName(DocumentUtil.getXMLString("DepartmentName", rs.getString("departamento")));
-//                        assignment.setAssignmentName(DocumentUtil.getXMLString("AssignmentName", rs.getString("nombre_asignacion")));
-//
-//                        BaseWorkerAsgDFF baseWorkerAsgDFF = new BaseWorkerAsgDFF();
-//                        baseWorkerAsgDFF.setBanco(DocumentUtil.getXMLStringBas("banco", rs.getString("nombre_banco")));
-//                        baseWorkerAsgDFF.setCuenta(DocumentUtil.getXMLStringBas("cuenta", rs.getString("cuenta_bco")));
-//                        baseWorkerAsgDFF.setTipoCuenta(DocumentUtil.getXMLStringBas("tipoCuenta", rs.getString("tipo_cuenta_bco")));
-//                        baseWorkerAsgDFF.setCuentaCliente(DocumentUtil.getXMLStringBas("cuentaCliente", rs.getString("cuenta_cliente_bco")));
-//                        baseWorkerAsgDFF.setCentroFuncionalDepartamento(DocumentUtil.getXMLStringBas("centroFuncionalDepartamento", rs.getString("centro_funcional_dep")));
-//                        baseWorkerAsgDFF.setCentroFuncionalContable(DocumentUtil.getXMLStringBas("centroFuncionalContable", rs.getString("centro_funcional_cont")));
-//                        assignment.setBaseWorkerAsgDFF(baseWorkerAsgDFF);
-
-
                         al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));
 
                         String estadoCode = rs.getString("estado");
-                        if (estadoCode.equals("AJT") || estadoCode.equals("CCT") || estadoCode.equals("TR1")){
+                        if (estadoCode.equals("AJT") || estadoCode.equals("CCT") || estadoCode.equals("TR1"))
+                        {
                             // configurar Fecha_final
 //                        assignment.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
                         }
@@ -729,7 +691,7 @@ public class CreateWorkerClient
 
 
                     }
-                }
+                
                 else if (rs.getString("accion").equals("TERMINATION"))
                 {
 
@@ -878,7 +840,7 @@ public class CreateWorkerClient
                      Ausencias.setStartDate(rs.getString("fecha_inicio"));
                      Ausencias.setStartTime("08:00");
                      Ausencias.setEndDate(rs.getString("fecha_vencimiento"));
-                     Ausencias.setEndTime("17:00");
+                     Ausencias.setEndTime("17:30");
                      Ausencias.setAbsenceStatusCd("SUBMITTED");
                      Ausencias.setComments(rs.getString("DescripcionAccion"));
                      if (incap.equals("ICC") || incap.equals("INS"))

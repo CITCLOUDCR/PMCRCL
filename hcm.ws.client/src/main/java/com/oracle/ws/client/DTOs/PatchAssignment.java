@@ -1,6 +1,7 @@
 package com.oracle.ws.client.DTOs;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -27,10 +28,10 @@ public class PatchAssignment {
 
 //    @JsonProperty("AssignmentCategory")
 //    private String assignmentCategory;
-
-
     @JsonProperty("SalaryAmount")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String salaryAmount;
+    
 
     @JsonProperty("ActionCode")
     private String actionCode;
