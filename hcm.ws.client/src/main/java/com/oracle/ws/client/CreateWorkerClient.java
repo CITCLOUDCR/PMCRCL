@@ -217,7 +217,9 @@ public class CreateWorkerClient
                         	emp.setWorkEmail(rs.getString("correo_empresa"));
                         }
                         else
+                        {
                         	emp.setWorkEmail(null);
+                        }
                         
                         emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
                         emp.setWorkMobilePhoneNumber(rs.getString("movil_particular1"));
@@ -330,123 +332,147 @@ public class CreateWorkerClient
                             System.out.println(postEmpResponse.toString());
                             LOGGER.info("Respuesta HCM: " + postEmpResponse.toString());
 
-
-                           // al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));  /* comportamiento */
-                           // al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "NOM"));  /* accion  estado? */  
-//
                             LOGGER.info("Enviando datos al web service.");
                             LOGGER.info("### Ejecutando el metodo: createWorker");
                             metodo = "createWorker";
 
-          /*     w = new Worker();
-                  al = new ActionsList();  */
-
-//          response.setResult(port.createWorker(w, al));
-//          xmlGenerado1 = wsse.getXml_generated();
-
-
-                            if (postEmpResponse.getStatusCode().equals(HttpStatus.CREATED)) {
+                            if (postEmpResponse.getStatusCode().equals(HttpStatus.CREATED))
+                            {
                                 LOGGER.info("Obteniendo respuesta exitosa.");
                                 LOGGER.info("PersonId: " + (postEmpResponse.getBody().getPersonId()));
 
 //             cambia el estado en HCM_colaboradores a "CP"
                                 int exito = updateResponseTable(id_number, "PersonId: " + postEmpResponse.getBody().getPersonId(), "OK", metodo, postEmpResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
-                                if (exito == 1) {
+                                if (exito == 1) 
+                                {
                                     LOGGER.info("Datos actualizados correctamente en la base de datos.");
                                 }
                             }
-                        }catch (HttpClientErrorException e){
+                        }
+                        catch (HttpClientErrorException e)
+                        {
                             LOGGER.info("Error en el servidor: "+ e.getResponseBodyAsString());
                         }
 
                     }
-
                     else   /* cuando el colaborador ya esta registrado (NuevaRelacion = false) */
                     {
+                    	  RequestAssignment assignment = new RequestAssignment();
 
+                          String bussinesUnit = rs.getString("unidad_negocio");
+                          String reasoncode = rs.getString("estado").trim();
 
+                          String codPos = rs.getString("codigo_posicion");
+                          String nomAssign = rs.getString("nombre_asignacion");
+                          String department = rs.getString("departamento");
 
+                          assignment.setPositionId(PositionIds.get(codPos));
+                          assignment.setJobId(JobId.get(codPos+"-"+nomAssign+"-"+department));
+                          assignment.setDepartmentId(DepartmentId.get(rs.getString("departamento")));
+                          //assignment.setLocationId("300000001543539");
+                          //assignment.setAssignmentNumber(rs.getString("NumeroAsignacion"));
+                          assignment.setPrimaryAssignmentFlag("Y");
 
-                        /*Verificar código Crear Nueva relación Laboral para Cese por Unidad de Negocio*/
+                          assignment.setAssignmentName(rs.getString("nombre_asignacion"));
+                          assignment.setBusinessUnitId(BussinesUnitCodes.get(bussinesUnit));
+                          assignment.setWorkerCategory("WC");
+                          assignment.setWorkingAtHome("N");
+                          assignment.setWorkingAsManager("N");
+                          assignment.setSalaryCode("H");
+                          assignment.setWorkingHours("8");
+                          assignment.setFrequency("D");
+                          assignment.setSalaryBasisId("300000005782807");
+                          assignment.setSalaryAmount(rs.getString("salario"));
+                          assignment.setActionCode(rs.getString("accion"));
+                          assignment.setActionReasonCode(rs.getString("estado").trim());
+                          assignment.setAssignmentStatus("ACTIVE");
+                          //assignment.setEffectiveStartDate(rs.getString("fecha_vigencia"));
+         
 
+                          RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
 
-                        WRresponse = new CreateWorkRelationshipResponse();
+                          extraInfo.setBanco(rs.getString("nombre_banco"));
+                          extraInfo.setCuenta(rs.getString("cuenta_bco"));
+                          extraInfo.setTipoCuenta(rs.getString("tipo_cuenta_bco"));
+                          extraInfo.setCuentaCliente(rs.getString("cuenta_cliente_bco").trim());
+                          extraInfo.setCentroFuncionalDepartamento(rs.getString("centro_funcional_dep"));
+                          extraInfo.setCentroFuncionalContable(rs.getString("centro_funcional_cont"));
 
-                        WorkRelationship workRelationship = new WorkRelationship();
-                        workRelationship.setWorkerNumber(DocumentUtil.getXMLString("PersonNumber", rs.getString("no_persona")));
-                        workRelationship.setDateStart(DatatypeFactory.newInstance().newXMLGregorianCalendar(rs.getString("fecha_contratacion")));
-                        workRelationship.setLegalEmployerName(DocumentUtil.getXMLString("LegalEmployerName", rs.getString("entidad_legal")));
-                        workRelationship.setWorkerType(rs.getString("tipo_trabajador"));
-                        workRelationship.setPrimaryFlag(true);
+                          if (reasoncode.equals("NOT"))  // Nombramiento temporal.
+                          {
+                          	/* Fecha_Final */
+                          	//emp.setTerminationDate(rs.getString("fecha_vencimiento"));
+                          	assignment.setEffectiveEndDate(rs.getString("fecha_vencimiento"));
+                          	assignment.setAssignmentCategory("FT");
+                          	assignment.setAssignmentProjectedEndDate(rs.getString("fecha_vencimiento"));
+                          	assignment.setRegularTemporary("T");
+                          }
+                          else
+                          {
+                          	 assignment.setAssignmentCategory("FR");
+                          	 assignment.setRegularTemporary("R");
+                          }
+                          	 
 
-                        WorkTerms workTerms = new WorkTerms();
-                        workTerms.setBusinessUnitShortCode(DocumentUtil.getXMLString("BusinessUnitShortCode", rs.getString("unidad_negocio")));
-                        workTerms.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
-                        workTerms.setPrimaryWorkTermsFlag(true);
+                         
+                          List<RequestAssignmentDFF> assignmentsDFF = new ArrayList<RequestAssignmentDFF>();
+                          assignmentsDFF.add(extraInfo);
+                          assignment.setAssignmentDFF(assignmentsDFF);
 
-                        Assignment assignment = new Assignment();
-                        assignment.setBusinessUnitShortCode(DocumentUtil.getXMLString("BusinessUnitShortCode", rs.getString("unidad_negocio")));
-                        assignment.setRangeStartDate(DocumentUtil.getXMLGregorianCalendar("RangeStartDate", rs.getString("fecha_contratacion")));
-                        assignment.setAssignmentName(DocumentUtil.getXMLString("AssignmentName", rs.getString("nombre_asignacion")));
-                        assignment.setDepartmentName(DocumentUtil.getXMLString("DepartmentName", rs.getString("departamento")));
-                        assignment.setPositionCode(DocumentUtil.getXMLString("PositionCode", rs.getString("codigo_posicion")));
-                        assignment.setPrimaryFlag(true);
+                          List<RequestAssignment> assignments = new ArrayList<RequestAssignment>();
+                          assignments.add(assignment);
+                          //emp.setAssignments(assignments);
+                          
 
+                          try
+                          {
+                              String json = new ObjectMapper().writeValueAsString(assignments);
+                              System.out.println(json);
+                              LOGGER.info("Insertando colaborador con el siguiente objeto: " + json);
+                          } 
+                          catch (JsonProcessingException e)
+                          {
+                              e.printStackTrace();
+                          }
+                          
+                          
+                          LOGGER.info("Creando el Request");
+                          HttpEntity<RequestAssignment> request = new HttpEntity<RequestAssignment>(assignment,httpHeaders);
+                          LOGGER.info("Request info:" + request.toString());
 
-                        BaseWorkerAsgDFF baseWorkerAsgDFF = new BaseWorkerAsgDFF();
-                        baseWorkerAsgDFF.setBanco(DocumentUtil.getXMLStringBas("banco", rs.getString("nombre_banco")));
-                        baseWorkerAsgDFF.setCuenta(DocumentUtil.getXMLStringBas("cuenta", rs.getString("cuenta_bco")));
-                        baseWorkerAsgDFF.setTipoCuenta(DocumentUtil.getXMLStringBas("tipoCuenta", rs.getString("tipo_cuenta_bco")));
-                        baseWorkerAsgDFF.setCuentaCliente(DocumentUtil.getXMLStringBas("cuentaCliente", rs.getString("cuenta_cliente_bco")));
-                        baseWorkerAsgDFF.setCentroFuncionalDepartamento(DocumentUtil.getXMLStringBas("centroFuncionalDepartamento", rs.getString("centro_funcional_dep")));
-                        baseWorkerAsgDFF.setCentroFuncionalContable(DocumentUtil.getXMLStringBas("centroFuncionalContable", rs.getString("centro_funcional_cont")));
-                        assignment.setBaseWorkerAsgDFF(baseWorkerAsgDFF);
+                      /*  try 
+                          {
+                              ResponseEntity<Response> postEmpResponse = restTemplate.exchange(url, HttpMethod.POST, request, ResponseEmployee.class);
+                              System.out.println(postEmpResponse.toString());
+                              LOGGER.info("Respuesta HCM: " + postEmpResponse.toString());
 
+                              LOGGER.info("Enviando datos al web service.");
+                              LOGGER.info("### Ejecutando el metodo: createWorker");
+                              metodo = "createWorker";
 
-                        workTerms.getAssignment().add(assignment);
+                              if (postEmpResponse.getStatusCode().equals(HttpStatus.CREATED))
+                              {
+                                  LOGGER.info("Obteniendo respuesta exitosa.");
+                                  LOGGER.info("PersonId: " + (postEmpResponse.getBody().getPersonId()));
 
+									// cambia el estado en HCM_colaboradores a "CP"
+                                  int exito = updateResponseTable(id_number, "PersonId: " + postEmpResponse.getBody().getPersonId(), "OK", metodo, postEmpResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
+                                  if (exito == 1)
+                                  {
+                                      LOGGER.info("Datos actualizados correctamente en la base de datos.");
+                                  }
+                              }
+                          }
+                          catch (HttpClientErrorException e)
+                          {
+                              LOGGER.info("Error en el servidor: "+ e.getResponseBodyAsString());
+                          } */
 
-                        workRelationship.getWorkTerms().add(workTerms);
-
-
-
-                        al = new ActionsList();
-
-
-                        al.setActionCode(DocumentUtil.getXMLString("ActionCode","HIRE_ADD_WORK_RELATION"));
-                        // al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "NOM"));
-
-                        LOGGER.info("Enviando datos del usuario al web service.");
-                        LOGGER.info("### Ejecutando el metodo: createWorker");
-                        metodo = "createWorker";
-
-                        // WRresponse.setResult(port.createWorkRelationship(workRelationship, al));
-                        // xmlGenerado1 = wsse.getXml_generated();
-
-                /*    if ((response.getResult() != null) && (WRresponse.getResult().getValue().size() > 0)) {
-                      LOGGER.info("Obteniendo respuesta exitosa.");
-                      LOGGER.info("PersonId: " + ((WorkRelationship)WRresponse.getResult().getValue().get(0)).getPersonId());
-
-
-                      int exito = updateResponseTable(id_number, "PersonId: " + ((WorkRelationship)WRresponse.getResult().getValue().get(0)).getPersonId().toString(), "OK", metodo, xmlGenerado1, xmlGenerado2, xmlGenerado3);
-
-                      if (exito == 1) {
-                        LOGGER.info("Datos actualizados correctamente en la base de datos.");
-
-                      }
-
-
-                    }
-                      */
-
-                        /*Verificar código*/
-
-                    }
 
                     /*Fin de Contratación HIRE */
+                  }
                 }
-                //  Inicio de if de actualización
-
+                  //  Inicio de if de actualización
                 else if((rs.getString("accion").equals("ASG_CHANGE"))) /* Procesa Cambios */
                 {
 
@@ -836,13 +862,13 @@ public class CreateWorkerClient
                      RequestAbsence Ausencias = new RequestAbsence();
                      Ausencias.setPersonNumber(rs.getString("no_persona"));
                      Ausencias.setEmployer(rs.getString("entidad_legal"));
-                     Ausencias.setAbsenceType(rs.getString("Recomendacion"));
+                     Ausencias.setAbsenceType(rs.getString("Recomendacion").toUpperCase());
                      Ausencias.setStartDate(rs.getString("fecha_inicio"));
-                     Ausencias.setStartTime("08:00");
                      Ausencias.setEndDate(rs.getString("fecha_vencimiento"));
-                     Ausencias.setEndTime("17:30");
                      Ausencias.setAbsenceStatusCd("SUBMITTED");
                      Ausencias.setComments(rs.getString("DescripcionAccion"));
+                     Ausencias.setStartTime("08:00");
+                     Ausencias.setEndTime("17:30");
                      if (incap.equals("ICC") || incap.equals("INS"))
                      {
                        Ausencias.setAbsenceReason("Ausencia por Incapacidad");
@@ -850,10 +876,14 @@ public class CreateWorkerClient
                      else if (incap.equals("LIM") || incap.equals("LCP") || incap.equals("LMA") || incap.equals("LIN") || incap.equals("LDU") )
                      {
                          Ausencias.setAbsenceReason("Ausencia por Licencia");
+                         Ausencias.setStartTime("08:00");
+                         Ausencias.setEndTime("17:30");
                      }
                      else if (incap.equals("PCO") || incap.equals("PSI") || incap.equals("PSG"))
                      {
                          Ausencias.setAbsenceReason("Ausencia por Permiso");
+                         Ausencias.setStartTime("08:00");
+                         Ausencias.setEndTime("17:30");
                      }
                      else if (incap.equals("VAC") || incap.equals("VAU"))
                      {
