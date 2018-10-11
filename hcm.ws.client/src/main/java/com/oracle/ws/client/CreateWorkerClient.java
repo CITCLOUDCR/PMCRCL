@@ -440,9 +440,11 @@ public class CreateWorkerClient
                           HttpEntity<RequestAssignment> request = new HttpEntity<RequestAssignment>(assignment,httpHeaders);
                           LOGGER.info("Request info:" + request.toString());
 
-                      /*  try 
+                        url = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/"+getUserHCMIdByEmpNumber(rs.getString("no_persona"));
+                      try
                           {
-                              ResponseEntity<Response> postEmpResponse = restTemplate.exchange(url, HttpMethod.POST, request, ResponseEmployee.class);
+                              url = url+"/child/assignments";
+                              ResponseEntity<String> postEmpResponse = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
                               System.out.println(postEmpResponse.toString());
                               LOGGER.info("Respuesta HCM: " + postEmpResponse.toString());
 
@@ -453,10 +455,10 @@ public class CreateWorkerClient
                               if (postEmpResponse.getStatusCode().equals(HttpStatus.CREATED))
                               {
                                   LOGGER.info("Obteniendo respuesta exitosa.");
-                                  LOGGER.info("PersonId: " + (postEmpResponse.getBody().getPersonId()));
+                                  LOGGER.info("PersonId: " + rs.getString("no_persona"));
 
 									// cambia el estado en HCM_colaboradores a "CP"
-                                  int exito = updateResponseTable(id_number, "PersonId: " + postEmpResponse.getBody().getPersonId(), "OK", metodo, postEmpResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
+                                  int exito = updateResponseTable(id_number, "PersonId: " + rs.getString("no_persona"), "OK", metodo, postEmpResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
                                   if (exito == 1)
                                   {
                                       LOGGER.info("Datos actualizados correctamente en la base de datos.");
@@ -466,7 +468,7 @@ public class CreateWorkerClient
                           catch (HttpClientErrorException e)
                           {
                               LOGGER.info("Error en el servidor: "+ e.getResponseBodyAsString());
-                          } */
+                          }
 
 
                     /*Fin de Contratación HIRE */
