@@ -49,8 +49,20 @@ public class RequestAbsence
 	 @JsonInclude(JsonInclude.Include.NON_NULL)
 	 private String  EndDateDuration;
 	 
+	 @JsonProperty("plannedEndDate")
+	 @JsonInclude(JsonInclude.Include.NON_NULL)
+	 private String  PlannedEndDate;
+	 
+	 @JsonProperty("confirmedDate")
+	 @JsonInclude(JsonInclude.Include.NON_NULL)
+	 private String ConfirmedDate;
+	 
 	 @JsonProperty("frequency")
 	 private String  Frequency;
+	 
+	 @JsonProperty("establishmentDate")
+	 @JsonInclude(JsonInclude.Include.NON_NULL)
+	 private String EstablishmentDate;
 	 
 	 
 	 public String getAbsenceType()
@@ -192,6 +204,36 @@ public class RequestAbsence
 	public void setFrequency(String Frequency)
 	{
 	     this.Frequency = Frequency;
+	}
+	
+	public String getPlannedEndDate()
+	{
+	   return PlannedEndDate;
+	}
+
+	public void setPlannedEndDate(String PlannedEndDate)
+	{
+	     this.PlannedEndDate = PlannedEndDate;
+	}
+	
+	public String getConfirmedDate()
+	{
+	   return ConfirmedDate;
+	}
+
+	public void setConfirmedDate(String ConfirmedDate)
+	{
+	     this.ConfirmedDate = ConfirmedDate;
+	}
+	
+	public String getEstablishmentDate()
+	{
+	   return EstablishmentDate;
+	}
+
+	public void setEstablishmentDate(String EstablishmentDate)
+	{
+	     this.EstablishmentDate = EstablishmentDate;
 	}
 	
 }

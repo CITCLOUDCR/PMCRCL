@@ -856,7 +856,8 @@ public class CreateWorkerClient
                      String incap = rs.getString("estado").trim();
                      Date fi = formatter.parse(rs.getString("fecha_inicio"));       
                      Date ff =  formatter.parse(rs.getString("fecha_vencimiento"));
-                     int dias=(int) ((ff.getTime()-fi.getTime())/86400000);
+                     int dias=(int) ((ff.getTime()-fi.getTime())/86400000) + 1;
+                     int mitad = (int) (dias/8);
                      
 
                      RequestAbsence Ausencias = new RequestAbsence();
@@ -869,7 +870,7 @@ public class CreateWorkerClient
                      Ausencias.setComments(rs.getString("DescripcionAccion"));
                      Ausencias.setStartTime("08:00");
                      Ausencias.setEndTime("17:30");
-                     Ausencias.setFrequency("daily");
+                     //Ausencias.setFrequency("daily");
                      if (incap.equals("ICC") || incap.equals("INS"))
                      {
                        Ausencias.setAbsenceReason("Ausencia por Incapacidad");
@@ -878,11 +879,14 @@ public class CreateWorkerClient
                      else if (incap.equals("LIM") || incap.equals("LCP") || incap.equals("LMA") || incap.equals("LIN") || incap.equals("LDU") )
                      {
                          Ausencias.setAbsenceReason("Ausencia por Licencia");
-                         Ausencias.setDuration(Integer.toString(1));
-                         Ausencias.setStartDateDuration(Integer.toString(0));
-                         Ausencias.setEndDateDuration(Integer.toString(dias));
+                         //Ausencias.setDuration(Integer.toString(1));
+                         Ausencias.setStartDateDuration(Integer.toString(2));
+                         Ausencias.setEndDateDuration(Integer.toString(0));
+                         Ausencias.setPlannedEndDate(rs.getString("fecha_vencimiento"));
+                         Ausencias.setConfirmedDate(rs.getString("fecha_inicio"));
+                         Ausencias.setEstablishmentDate(rs.getString("fecha_inicio"));
                      }
-                     else if (incap.equals("PCO") || incap.equals("PSI") || incap.equals("PSG"))
+                     else if (incap.equals("PCO") || incap.equals("PSI") || incap.equals("PSG") ||  incap.equals("SUS"))
                      {
                          Ausencias.setAbsenceReason("Ausencia por Permiso");
                          Ausencias.setDuration(Integer.toString(dias + 1));
