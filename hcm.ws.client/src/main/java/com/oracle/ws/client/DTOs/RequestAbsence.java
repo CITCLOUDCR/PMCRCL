@@ -1,6 +1,7 @@
 package com.oracle.ws.client.DTOs;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
@@ -36,6 +37,21 @@ public class RequestAbsence
 	 
 	 @JsonProperty("absenceReason")
 	 private String  AbsenceReason;
+	 
+	  @JsonProperty("duration")
+	  private String  Duration;
+		 
+	 @JsonProperty("startDateDuration")
+	 @JsonInclude(JsonInclude.Include.NON_NULL)
+	 private String  StartDateDuration;
+	 
+	 @JsonProperty("endDateDuration")
+	 @JsonInclude(JsonInclude.Include.NON_NULL)
+	 private String  EndDateDuration;
+	 
+	 @JsonProperty("frequency")
+	 private String  Frequency;
+	 
 	 
 	 public String getAbsenceType()
 	 {
@@ -137,4 +153,45 @@ public class RequestAbsence
 	     this.AbsenceReason = AbsenceReason;
 	 }
 	 
+	public String getStartDateDuration()
+	 {
+	   return StartDateDuration;
+	 }
+
+	 public void setStartDateDuration(String StartDateDuration)
+	 {
+	     this.StartDateDuration = StartDateDuration;
+	 }
+	 
+	 public String getDuration()
+	 {
+	   return Duration;
+	 }
+
+	 public void setDuration(String Duration)
+	 {
+	     this.Duration = Duration;
+	 }
+	 
+	public String getEndDateDuration()
+	{
+	   return EndDateDuration;
+	}
+
+	public void setEndDateDuration(String EndDateDuration)
+	{
+	     this.EndDateDuration = EndDateDuration;
+	}
+	
+	
+	public String getFrequency()
+	{
+	   return Frequency;
+	}
+
+	public void setFrequency(String Frequency)
+	{
+	     this.Frequency = Frequency;
+	}
+	
 }

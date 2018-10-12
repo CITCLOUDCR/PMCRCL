@@ -478,27 +478,12 @@ public class CreateWorkerClient
                 else if((rs.getString("accion").equals("ASG_CHANGE"))) /* Procesa Cambios */
                 {
 
-
-//                    wsse = new WSSESOAPHandler();
-//                    wsse.setWSSE(properties.getProperty("ws.user"), properties.getProperty("ws.password"));
-//                    wsseHR = new WSSESOAPHandlerResolver(wsse);
-//                    Service service = Service.create(new URL(properties.getProperty("ws.endpoint")), new QName(properties.getProperty("ws.qname"), properties.getProperty("ws.name")));
-//                    service.setHandlerResolver(wsseHR);
-//                    WorkerService port = service.getPort(WorkerService.class);
-
                     respuesta = "";
                     id_number = rs.getInt("id_number");
-//                    mergeResponse = new MergePersonResponse();
-//                    Person attributeList = null;
-//                    attributeList = new Person();
 
                     LOGGER.info("Obteniendo datos del trabajador: " + rs.getString("nombre"));
 
-
-
                     String userId = getUserHCMIdByEmpNumber(rs.getString("no_persona"));
-
-
 
                     if (rs.getString("estado").equals("U"))  /* actualiza datos personales */
                     {
@@ -562,7 +547,8 @@ public class CreateWorkerClient
 
                         try {
 
-                            if (userId!=null) {
+                            if (userId!=null) 
+                            {
                                 String patchUrl = ClientConfig.endpoint + "/hcmRestApi/resources/latest/emps/" + userId;
 
                                 LOGGER.info("Endpoint para actualizar informacion de una persona: " + patchUrl);
@@ -587,23 +573,19 @@ public class CreateWorkerClient
                                     LOGGER.info("Se ejecuto con exito el metodo");
                                     LOGGER.info("Obteniendo respuesta exitosa.");
                                     LOGGER.info("PersonId: " + patchResponse.getBody().getPersonId());
-//                                respuesta = respuesta + "PersonId: " + mergeResponse.getResult().getValue().get(0).getPersonId();
-//                                cambia el estado en HCM_colaboradores a "CP"
-                                    /*int exito = updateResponseTable(id_number, "PersonId: " + patchResponse.getBody().getPersonId(), "OK", metodo, patchResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
-
-                                    if (exito == 1)
-                                    {
-                                        LOGGER.info("Datos actualizados correctamente en la base de datos.");
-                                    }*/
                                 }
 
-                            } else {
+                            } 
+                            else
+                            {
                                 System.out.println("No se pudo realizar el patch, usuario no encontrado");
                                 LOGGER.info("No se pudo realizar el patch, usuario no encontrado");
 
                             }
 
-                        }catch (HttpClientErrorException e){
+                        }
+                        catch (HttpClientErrorException e)
+                        {
                             LOGGER.info("Error en el servidor: "+ e.getResponseBodyAsString());
                         }
 
@@ -619,25 +601,18 @@ public class CreateWorkerClient
                         String assignmentId = links[10];
 
                         String assignmentPatch = ClientConfig.endpoint + "/hcmRestApi/resources/latest/emps/"+userId+"/child/assignments/"+assignmentId;
-//                        informationResponse.setResult(port.getWorkerInformationByPersonNumber(rs.getString("no_persona"), null));
-
-//                        xmlGenerado2 = wsse.getXml_generated();
 
                         RestTemplate restPatch = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
                         HttpHeaders headers = createPatchHeaders();
 
                         LOGGER.info("### Ejecutando el metodo: updateAssignment");
-//                        updateAssignmentResponse = new UpdateAssignmentResponse();
 
-                        al = new ActionsList();
+//                        al = new ActionsList();
 
-
-//                        Assignment assignment = new Assignment();
 
 //                    PrimaryAssignmentFlag: boolean -> true
 
                         PatchAssignment assignment = new PatchAssignment();
-//                        assignment.setDepartmentId();
                         
                         String codPos = rs.getString("codigo_posicion");
                         String nomAssign = rs.getString("nombre_asignacion");
@@ -656,9 +631,27 @@ public class CreateWorkerClient
                         RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
 
                         extraInfo.setBanco(rs.getString("nombre_banco"));
-                        extraInfo.setCuenta(rs.getString("cuenta_bco").trim());
+                      
+                        if (isNotNullOrEmpty(rs.getString("cuenta_bco")))
+                        {
+                        	 extraInfo.setCuenta(rs.getString("cuenta_bco").trim());
+                        }
+                        else
+                        {
+                        	 extraInfo.setCuenta(rs.getString("cuenta_bco"));
+                        }
+                       
                         extraInfo.setTipoCuenta(rs.getString("tipo_cuenta_bco"));
-                        extraInfo.setCuentaCliente(rs.getString("cuenta_cliente_bco").trim());
+                        if (isNotNullOrEmpty(rs.getString("cuenta_cliente_bco")))
+                        {
+                        	extraInfo.setCuentaCliente(rs.getString("cuenta_cliente_bco").trim());
+                        }
+                        else
+                        {
+                        	extraInfo.setCuentaCliente(rs.getString("cuenta_cliente_bco"));	
+                        }
+                        
+                        
                         extraInfo.setCentroFuncionalDepartamento(rs.getString("centro_funcional_dep"));
                         extraInfo.setCentroFuncionalContable(rs.getString("centro_funcional_cont"));
 
@@ -667,7 +660,7 @@ public class CreateWorkerClient
                         assignment.setAssignmentDFF(assignmentsDFF);
 
 
-                        al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));
+                        //al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));
 
                         String estadoCode = rs.getString("estado");
                         if (estadoCode.equals("AJT") || estadoCode.equals("CCT") || estadoCode.equals("TR1"))
@@ -859,7 +852,12 @@ public class CreateWorkerClient
                      LOGGER.info("Version: 02-Oct-2018");
                      LOGGER.info("### Ejecutando el metodo: POST Absences");
                      
+                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
                      String incap = rs.getString("estado").trim();
+                     Date fi = formatter.parse(rs.getString("fecha_inicio"));       
+                     Date ff =  formatter.parse(rs.getString("fecha_vencimiento"));
+                     int dias=(int) ((ff.getTime()-fi.getTime())/86400000);
+                     
 
                      RequestAbsence Ausencias = new RequestAbsence();
                      Ausencias.setPersonNumber(rs.getString("no_persona"));
@@ -871,25 +869,28 @@ public class CreateWorkerClient
                      Ausencias.setComments(rs.getString("DescripcionAccion"));
                      Ausencias.setStartTime("08:00");
                      Ausencias.setEndTime("17:30");
+                     Ausencias.setFrequency("daily");
                      if (incap.equals("ICC") || incap.equals("INS"))
                      {
                        Ausencias.setAbsenceReason("Ausencia por Incapacidad");
+                       Ausencias.setDuration(Integer.toString(dias + 1));
                      }
                      else if (incap.equals("LIM") || incap.equals("LCP") || incap.equals("LMA") || incap.equals("LIN") || incap.equals("LDU") )
                      {
                          Ausencias.setAbsenceReason("Ausencia por Licencia");
-                         Ausencias.setStartTime("08:00");
-                         Ausencias.setEndTime("17:30");
+                         Ausencias.setDuration(Integer.toString(1));
+                         Ausencias.setStartDateDuration(Integer.toString(0));
+                         Ausencias.setEndDateDuration(Integer.toString(dias));
                      }
                      else if (incap.equals("PCO") || incap.equals("PSI") || incap.equals("PSG"))
                      {
                          Ausencias.setAbsenceReason("Ausencia por Permiso");
-                         Ausencias.setStartTime("08:00");
-                         Ausencias.setEndTime("17:30");
+                         Ausencias.setDuration(Integer.toString(dias + 1));
                      }
                      else if (incap.equals("VAC") || incap.equals("VAU"))
                      {
                     	 Ausencias.setAbsenceReason("Vacaciones");
+                    	 Ausencias.setDuration(Integer.toString(dias + 1));
                      }
                      
                     

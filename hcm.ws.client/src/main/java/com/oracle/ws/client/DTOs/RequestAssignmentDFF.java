@@ -1,22 +1,35 @@
 package com.oracle.ws.client.DTOs;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RequestAssignmentDFF {
-
+	
     @JsonProperty("banco")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Object banco;
+	
     @JsonProperty("cuenta")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String cuenta;
+    
     @JsonProperty("tipoCuenta")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String tipoCuenta;
+    
     @JsonProperty("cuentaCliente")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String cuentaCliente;
+    
     @JsonProperty("centroFuncionalDepartamento")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String centroFuncionalDepartamento;
+    
+	
     @JsonProperty("centroFuncionalContable")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String centroFuncionalContable;
 
     public Object getBanco() {
