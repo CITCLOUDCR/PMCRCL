@@ -2,22 +2,16 @@ package com.oracle.ws.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oracle.ws.client.DTOs.*;
+import com.oracle.ws.client.DTOs.CommonFeaturesOracle.BlockUserRequest;
+import com.oracle.ws.client.DTOs.CommonFeaturesOracle.UserOracleResponse;
 import org.apache.commons.codec.binary.Base64;
-import org.omg.CORBA.TIMEOUT;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.Console;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class test {
 
@@ -277,34 +271,101 @@ public class test {
 //        }
 
 //        Block user access
-        String findUserLink = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps?q=PersonNumber="+"4273";
+//        String findUserLink = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps?q=PersonNumber="+"4273";
+//        HttpEntity getHeaders = new HttpEntity(createHeaders());
+//        HttpEntity<ResponseLinkListUser> response = restTemplate.exchange(findUserLink,HttpMethod.GET,getHeaders,ResponseLinkListUser.class);
+//        String userIdUrl = null;
+//        if(response.getBody().getItems().size()!=0){
+//            userIdUrl = response.getBody().getItems().get(0).getLinks().get(0).getHref();
+//            String userRolesUrl = userIdUrl+"/child/roles";
+//
+//            HttpEntity<ResponseRolesEmp> rolesEmpResponse = restTemplate.exchange(userRolesUrl,HttpMethod.GET,getHeaders,ResponseRolesEmp.class);
+//
+//            for (ResponseRole rol:rolesEmpResponse.getBody().getItems()) {
+//                String deleteRolUrl = userRolesUrl+"/"+rol.getRoleGUID();
+//                try {
+//                    HttpEntity<String> deleteResult = restTemplate.exchange(deleteRolUrl, HttpMethod.DELETE, getHeaders, String.class);
+//                    System.out.println(((ResponseEntity<String>) deleteResult).getStatusCode());
+//                }catch(HttpClientErrorException e){
+//                    System.out.println(e.getResponseBodyAsString());
+//                }
+////                System.out.println("guao");
+//            }
+//
+//
+////            response = restTemplate.exchange(userPrimaryAssignment,HttpMethod.GET,getHeaders,ResponseLinkListUser.class);
+////            String[] links = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/");
+////             String assignmentId = links[10];
+//        }else {
+//            System.out.println("No se pudo realizar el patch, usuario no encontrado");
+//        }
+
+//        BlockUser Version 2
+
+
+        String oracleUserId = "https://hdes-test.fa.us2.oraclecloud.com:443/hcmRestApi/scim/Users/?filter=username eq \"Jonathan.Calderon B\"";
+
+        System.out.println(oracleUserId);
+
         HttpEntity getHeaders = new HttpEntity(createHeaders());
-        HttpEntity<ResponseLinkListUser> response = restTemplate.exchange(findUserLink,HttpMethod.GET,getHeaders,ResponseLinkListUser.class);
-        String userIdUrl = null;
-        if(response.getBody().getItems().size()!=0){
-            userIdUrl = response.getBody().getItems().get(0).getLinks().get(0).getHref();
-            String userRolesUrl = userIdUrl+"/child/roles";
+        HttpEntity<UserOracleResponse> response = restTemplate.exchange(oracleUserId,HttpMethod.GET,getHeaders,UserOracleResponse.class);
 
-            HttpEntity<ResponseRolesEmp> rolesEmpResponse = restTemplate.exchange(userRolesUrl,HttpMethod.GET,getHeaders,ResponseRolesEmp.class);
+        if(response.getBody()!=null) {
 
-            for (ResponseRole rol:rolesEmpResponse.getBody().getItems()) {
-                String deleteRolUrl = userRolesUrl+"/"+rol.getRoleGUID();
-                try {
-                    HttpEntity<String> deleteResult = restTemplate.exchange(deleteRolUrl, HttpMethod.DELETE, getHeaders, String.class);
-                    System.out.println(((ResponseEntity<String>) deleteResult).getStatusCode());
-                }catch(HttpClientErrorException e){
-                    System.out.println(e.getResponseBodyAsString());
-                }
-//                System.out.println("guao");
+            oracleUserId = "https://hdes-test.fa.us2.oraclecloud.com:443/hcmRestApi/scim/Users/"+response.getBody().getResourses().get(0).getId();
+
+            HttpHeaders headers = createPatchHeaders();
+
+            BlockUserRequest blockUser = new BlockUserRequest(){{setActive(true);}};
+
+            HttpEntity<BlockUserRequest> request = new HttpEntity<BlockUserRequest>(blockUser, headers);
+
+            HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+
+            restTemplate.setRequestFactory(requestFactory);
+
+            HttpEntity<String> patchResponse = restTemplate.exchange(oracleUserId, HttpMethod.PATCH, request, String.class);
+            System.out.println(patchResponse);
+
+            try {
+                String json = new ObjectMapper().writeValueAsString(blockUser);
+                System.out.println(json);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
             }
-
-
-//            response = restTemplate.exchange(userPrimaryAssignment,HttpMethod.GET,getHeaders,ResponseLinkListUser.class);
-//            String[] links = response.getBody().getItems().get(0).getLinks().get(0).getHref().split("/");
-//             String assignmentId = links[10];
-        }else {
-            System.out.println("No se pudo realizar el patch, usuario no encontrado");
         }
+
+
+        // crear metodo que bloquee a usuario
+//        String lockUser = ClientConfig.endpoint+"/hcmRestApi/scim/Users/"+getUserHCMIdByEmpNumber(rs.getString("no_persona"));
+
+
+//        HttpHeaders headers = createPatchHeaders();
+
+//        HttpEntity<String> request = new HttpEntity<String>("{active:true}", headers);
+
+//        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+
+//        restTemplate.setRequestFactory(requestFactory);
+
+//        HttpEntity<String> patchResponse = restTemplate.exchange(lockUser, HttpMethod.PATCH, request, String.class);
+//        System.out.println(patchResponse);
+
+
+
+//        if (((ResponseEntity<String>) patchResponse).getStatusCode().equals(HttpStatus.OK))
+//        {
+//            System.out.println("Nice");
+//        }
+
+    }
+
+    static HttpHeaders createPatchHeaders(){
+        HttpHeaders headers = createHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Effective-Of","RangeMode=UPDATE");
+        headers.set("RangeStartDate","2000-01-01");
+        return headers;
     }
 
     static HttpHeaders createHeaders(){
