@@ -947,10 +947,36 @@ public class CreateWorkerClient
                 
                 else if (rs.getString("accion").equals("LOCK"))
                 {
-                    //LOGGER.info("Proceso de Bloqueo de Usuario para las acciones temporales");
+                    LOGGER.info("Proceso de Bloqueo de Usuario para las acciones temporales");
                     // crear metodo que bloquee a usuario
+                    String lockUser = ClientConfig.endpoint+"/hcmRestApi/scim/Users/"+getUserHCMIdByEmpNumber(rs.getString("no_persona"));
 
-                   // LOGGER.info("Fin del Proceso de Bloqueo de Usuario para las acciones temporales");
+                    LOGGER.info("Endpoint para actualizar informacion de una persona: " + lockUser);
+
+                    HttpHeaders headers = createPatchHeaders();
+
+                    HttpEntity<String> request = new HttpEntity<String>("{active:true}", headers);
+
+                    HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+
+                    restTemplate.setRequestFactory(requestFactory);
+
+                    HttpEntity<String> patchResponse = restTemplate.exchange(lockUser, HttpMethod.PATCH, request, String.class);
+                    System.out.println(patchResponse);
+
+                    LOGGER.info("Enviando datos al web service.");
+                    LOGGER.info("### Ejecutando el metodo: mergePerson");
+
+
+                    if (((ResponseEntity<String>) patchResponse).getStatusCode().equals(HttpStatus.OK))
+                    {
+                        LOGGER.info("Se ejecuto con exito el metodo");
+                        LOGGER.info("Obteniendo respuesta exitosa.");
+                        LOGGER.info("PersonId: ");
+                    }
+
+
+                     LOGGER.info("Fin del Proceso de Bloqueo de Usuario para las acciones temporales");
                 }
 
             }  // fin while
