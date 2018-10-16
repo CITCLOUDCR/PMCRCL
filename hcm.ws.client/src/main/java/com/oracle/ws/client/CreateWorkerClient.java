@@ -985,6 +985,12 @@ public class CreateWorkerClient
                             LOGGER.info("Se ejecuto con exito el metodo");
                             LOGGER.info("Obteniendo respuesta exitosa.");
                             LOGGER.info("PersonId: "+ rs.getString("no_persona"));
+                            int exito = updateResponseTable(id_number, "PersonId: " + rs.getString("no_persona"), "OK", metodo, patchResponse.getBody(), xmlGenerado2, xmlGenerado3);
+                            if (exito == 1)
+                            {
+                                LOGGER.info("Datos actualizados correctamente en la base de datos.");
+                            }
+
                         }
 
                         LOGGER.info("Fin del Proceso de Bloqueo de Usuario para las acciones temporales");
