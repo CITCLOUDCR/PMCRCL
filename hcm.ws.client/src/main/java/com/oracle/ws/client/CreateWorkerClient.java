@@ -325,10 +325,12 @@ public class CreateWorkerClient
                         
                         
                         LOGGER.info("Creando el Request");
+                        String fechainicio = rs.getString("fecha_inicio");
+                        httpHeaders.set("Effective-Of","RangeStartDate="+fechainicio);
                         HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(emp,httpHeaders);
                         LOGGER.info("Request info:" + request.toString());
 
-                        try 
+                        try
                         {
                             ResponseEntity<ResponseEmployee> postEmpResponse = restTemplate.exchange(url, HttpMethod.POST, request, ResponseEmployee.class);
                             System.out.println(postEmpResponse.toString());
@@ -779,36 +781,56 @@ public class CreateWorkerClient
                         System.out.println(e.getResponseBodyAsString());
                         LOGGER.info(e.getResponseBodyAsString());
                     }
-
-//                    WorkRelationshipUserKey workRelationshipUserKey = new WorkRelationshipUserKey();
-//                    workRelationshipUserKey.setPersonNumber(DocumentUtil.getXMLString("PersonNumber", rs.getString("no_persona")));
-//                    workRelationshipUserKey.setStartDate(DocumentUtil.getXMLGregorianCalendar("StartDate", rs.getString("fecha_contratacion")));
-//                    workRelationshipUserKey.setWorkerType(DocumentUtil.getXMLString("WorkerType", rs.getString("tipo_trabajador")));
-//                    workRelationshipUserKey.setLegalEmployerName(DocumentUtil.getXMLString("LegalEmployerName", rs.getString("entidad_legal")));
-
-//                    terminateWorkRelationship.setWorkRelationshipUserKey(workRelationshipUserKey);
-
-
-
-//                    Termination termination = new Termination();
-//                    termination.setActualTerminationDate(DocumentUtil.getXMLGregorianCalendar("ActualTerminationDate", rs.getString("fecha_inicio")));
-//
-//                    termination.setRehireRecommendation(DocumentUtil.getXMLString("RehireRecommendation","No"));
-//                    /*termination.setNotifiedTerminationDate(DocumentUtil.getXMLGregorianCalendar("NotifiedTerminationDate", rs.getString("fecha_inicio")));*/
-//
-//                    termination.setRevokeUserAccess(DocumentUtil.getXMLString("RevokeUserAccess","I"));
-//
-//                    terminateWorkRelationship.setTerminationDetails(termination);
-//                    al = new ActionsList();
-
                   
-                    if (rs.getString("estado").contains("CE5"))
+                    if (!(rs.getString("estado").contains("CE5")))
                     {
+                        LOGGER.info("Proceso de Bloqueo de Usuario para las acciones temporales");
+
+                        String username = rs.getString("usuario");
+                        String oracleUserId = ClientConfig.endpoint+"/hcmRestApi/scim/Users/?filter=username eq \""+username+"\"";
+
+                        System.out.println(oracleUserId);
+
+                        HttpEntity<UserOracleResponse> response = restTemplate.exchange(oracleUserId,HttpMethod.GET,authenticationHeaders,UserOracleResponse.class);
+
+                        if(response.getBody()!=null) {
+
+                            oracleUserId = ClientConfig.endpoint + "/hcmRestApi/scim/Users/" + response.getBody().getResourses().get(0).getId();
+
+                            HttpHeaders headerslock = createPatchHeaders();
+
+                            BlockUserRequest blockUser = new BlockUserRequest() {{
+                                setActive(false);
+                            }};
+
+                            HttpEntity<BlockUserRequest> requestlock = new HttpEntity<BlockUserRequest>(blockUser, headerslock);
+
+                            HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+
+                            restTemplate.setRequestFactory(requestFactory);
+
+                            LOGGER.info("Enviando datos al web service.");
+                            LOGGER.info("### Ejecutando el metodo: blockPerson");
+
+                            HttpEntity<String> patchResponse = restTemplate.exchange(oracleUserId, HttpMethod.PATCH, request, String.class);
+
+                            System.out.println(patchResponse);
+
+
+//                            if (((ResponseEntity<String>) patchResponse).getStatusCode().equals(HttpStatus.OK)) {
+//                                LOGGER.info("Se ejecuto con exito el metodo");
+//                                LOGGER.info("Obteniendo respuesta exitosa.");
+//                                LOGGER.info("PersonId: " + rs.getString("no_persona"));
+//                                int exito = updateResponseTable(id_number, "PersonId: " + rs.getString("no_persona"), "OK", metodo, patchResponse.getBody(), xmlGenerado2, xmlGenerado3);
+//                                if (exito == 1) {
+//                                    LOGGER.info("Datos actualizados correctamente en la base de datos.");
+//                                }
+//
+//                            }
+                        }
 //                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CE5"));
                     } 
-                    else
-                    {
-                    }
+
 
 //                    al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));
 
@@ -1164,6 +1186,8 @@ public class CreateWorkerClient
         headers.set("RangeStartDate","2000-01-01");
         return headers;
     }
+
+
 
     private String getUserHCMIdByEmpNumber(String nUsuario){
         RestTemplate restTemplate = new RestTemplate();
