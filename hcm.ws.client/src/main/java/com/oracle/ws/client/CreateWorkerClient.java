@@ -512,11 +512,12 @@ public class CreateWorkerClient
                         }
                         else
                             emp.setHomePhoneNumber(" ");
-//                        emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
 
-                        if (isNotNullOrEmpty(rs.getString("movil_particular1"))) {
+                        if (isNotNullOrEmpty(rs.getString("movil_particular1")))
+                        {
                             emp.setWorkMobilePhoneNumber(rs.getString("movil_particular1"));
-                        }else
+                        }
+                        else
                             emp.setWorkMobilePhoneNumber(" ");
 
                         emp.setDriverLicenseExpirationDate(rs.getString("fecha_licencia1"));
@@ -524,12 +525,12 @@ public class CreateWorkerClient
                         emp.setFirstName(rs.getString("nombre"));
                         emp.setLastName(rs.getString("apellido_paterno"));
                         emp.setPreviousLastName(rs.getString("apellido_materno"));
-                        emp.setDisplayName(rs.getString("nombre")+" "+rs.getString("apellido_paterno")); /* devuelve null */
+                        emp.setDisplayName(rs.getString("nombre")+" "+rs.getString("apellido_paterno")); 
 //                        emp.setPersonNumber(rs.getString("no_persona"));
                         emp.setAddressLine1(rs.getString("direccion"));
                         emp.setCountry(rs.getString("pais"));
                         emp.setDateOfBirth(rs.getString("fecha_nacimiento"));
-                        emp.setLegalEntityId(LegalEntitiesIds.get(rs.getString("entidad_legal"))); /* devuelve null */
+                        emp.setLegalEntityId(LegalEntitiesIds.get(rs.getString("entidad_legal")));
                         emp.setGender(rs.getString("sexo"));
                         emp.setMaritalStatus(rs.getString("estado_civil"));
                         //emp.setNationalIdType(rs.getString("tipo_identificador1"));
@@ -549,7 +550,8 @@ public class CreateWorkerClient
                         }
 
 
-                        try {
+                        try 
+                        {
 
                             if (userId!=null) 
                             {
@@ -611,9 +613,6 @@ public class CreateWorkerClient
 
                         LOGGER.info("### Ejecutando el metodo: updateAssignment");
 
-//                        al = new ActionsList();
-
-
 //                    PrimaryAssignmentFlag: boolean -> true
 
                         PatchAssignment assignment = new PatchAssignment();
@@ -631,6 +630,8 @@ public class CreateWorkerClient
                         assignment.setJobId(JobId.get(codPos+"-"+nomAssign+"-"+department));
                         assignment.setSalaryAmount(rs.getString("salario"));
                         assignment.setPositionId(PositionIds.get(codPos));
+                       /* assignment.setEffectiveStartDate(rs.getString("fecha_inicio"));
+                        assignment.setEffectiveEndDate(rs.getString("fecha_vencimiento"));*/
 
                         RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
 

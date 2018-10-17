@@ -37,6 +37,12 @@ public class PatchAssignment {
     private String actionCode;
     @JsonProperty("ActionReasonCode")
     private String actionReasonCode;
+    
+    /*@JsonProperty("EffectiveEndDate")
+    private String effectiveEndDate;
+    @JsonProperty("EffectiveStartDate")
+    private String effectiveStartDate;*/
+    
 
     @JsonProperty("assignmentDFF")
     private List<RequestAssignmentDFF> assignmentDFF = null;
@@ -113,11 +119,25 @@ public class PatchAssignment {
     public void setAssignmentDFF(List<RequestAssignmentDFF> assignmentDFF) {
         this.assignmentDFF = assignmentDFF;
     }
-//    @JsonProperty("AssignmentStatus")
-//    private String assignmentStatus;
+    
+    /*public String getEffectiveEndDate()
+    {
+        return effectiveEndDate;
+    }
 
-//    @JsonProperty("assignmentDFF")
-//    private List<RequestAssignmentDFF> assignmentDFF = null;
+    public void setEffectiveEndDate(String effectiveEndDate)
+    {
+        this.effectiveEndDate = effectiveEndDate;
+    }
+    
+    public String getEffectiveStartDate()
+    {
+        return effectiveStartDate;
+    }
 
+    public void setEffectiveStartDate(String effectiveStartDate)
+    {
+        this.effectiveStartDate = effectiveStartDate;
+    }*/
 
 }
