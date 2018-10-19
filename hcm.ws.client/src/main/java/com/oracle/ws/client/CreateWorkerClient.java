@@ -325,7 +325,7 @@ public class CreateWorkerClient
                         
                         
                         LOGGER.info("Creando el Request");
-                        String fechainicio = rs.getString("fecha_inicio");
+                        String fechainicio = rs.getString("fecha_contratacion");
                         httpHeaders.set("Effective-Of","RangeStartDate="+fechainicio);
                         HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(emp,httpHeaders);
                         LOGGER.info("Request info:" + request.toString());
@@ -561,7 +561,7 @@ public class CreateWorkerClient
 
                                 HttpHeaders headers = createPatchHeaders();
 
-                                headers.set("Effective-Of:","RangeMode=UPDATE;RangeStartDate="+rs.getString("fecha_inicio"));
+                                headers.set("Effective-Of","RangeMode=UPDATE;RangeStartDate="+rs.getString("fecha_inicio"));
 
                                 HttpEntity<PatchEmployee> request = new HttpEntity<PatchEmployee>(emp, headers);
 
@@ -764,14 +764,8 @@ public class CreateWorkerClient
                             LOGGER.info("Obteniendo respuesta exitosa.");
                             LOGGER.info("Mensaje: Actualizacion de datos exitoso");
                             respuesta = respuesta + " / Mensaje: Actualizacion de datos exitoso";
-
-                          /*  String requestJson = "{\"TerminationDate\":\""+rs.getString("fecha_inicio")+"\"}";
-
-                            HttpEntity<String> patchrequest = new HttpEntity<String>(requestJson,headers);
-                            HttpEntity<ResponseEmployee> empResponse = restPatch.exchange(ClientConfig.endpoint + "/hcmRestApi/resources/latest/emps/" + getUserHCMIdByEmpNumber(rs.getString("no_persona")),HttpMethod.PATCH,patchrequest,ResponseEmployee.class);
-
-                            if(((ResponseEntity<ResponseEmployee>) empResponse).getStatusCode().equals(HttpStatus.OK)) {*/
-                                // cambia el estado a "CP"
+ 
+                           // cambia el estado a "CP"
                                 int exito = updateResponseTable(id_number, respuesta, "OK", "updateAssignment", assignmentResponse.getBody().toString(), null, null);
                                 if (exito == 1) 
                                 {
@@ -1179,7 +1173,7 @@ public class CreateWorkerClient
                     auth.getBytes(Charset.forName("US-ASCII")) );
             String authHeader = "Basic " + new String( encodedAuth );
             set( "Authorization", authHeader );
-            set("Effective-Of:","RangeStartDate=4712-12-31");
+            set("Effective-Of","RangeStartDate=4712-12-31");
         }};
     }
 
