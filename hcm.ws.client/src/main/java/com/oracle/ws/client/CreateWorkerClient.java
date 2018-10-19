@@ -561,6 +561,8 @@ public class CreateWorkerClient
 
                                 HttpHeaders headers = createPatchHeaders();
 
+                                headers.set("Effective-Of:","RangeMode=UPDATE;RangeStartDate="+rs.getString("fecha_inicio"));
+
                                 HttpEntity<PatchEmployee> request = new HttpEntity<PatchEmployee>(emp, headers);
 
                                 HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
@@ -1177,6 +1179,7 @@ public class CreateWorkerClient
                     auth.getBytes(Charset.forName("US-ASCII")) );
             String authHeader = "Basic " + new String( encodedAuth );
             set( "Authorization", authHeader );
+            set("Effective-Of:","RangeStartDate=4712-12-31");
         }};
     }
 
