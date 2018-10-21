@@ -561,7 +561,7 @@ public class CreateWorkerClient
 
                                 HttpHeaders headers = createCleanPatchHeaders();
 
-                                headers.set("Effective-Of","RangeMode=UPDATE;RangeStartDate="+rs.getString("fecha_inicio"));
+                                headers.set("Effective-Of","RangeMode = UPDATE;RangeStartDate = "+rs.getString("fecha_inicio"));
 
                                 HttpEntity<PatchEmployee> request = new HttpEntity<PatchEmployee>(emp, headers);
 
@@ -611,7 +611,10 @@ public class CreateWorkerClient
                         String assignmentPatch = ClientConfig.endpoint + "/hcmRestApi/resources/latest/emps/"+userId+"/child/assignments/"+assignmentId;
 
                         RestTemplate restPatch = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
-                        HttpHeaders headers = createPatchHeaders();
+                        //HttpHeaders headers = createPatchHeaders();
+                        HttpHeaders headers = createCleanPatchHeaders();
+
+                        headers.set("Effective-Of","RangeMode = UPDATE;RangeStartDate = "+rs.getString("fecha_inicio"));
 
                         LOGGER.info("### Ejecutando el metodo: updateAssignment");
 
@@ -1013,19 +1016,7 @@ public class CreateWorkerClient
                         }
 
                         LOGGER.info("Fin del Proceso de Bloqueo de Usuario para las acciones temporales");
-
-//                        try {
-//                            String json = new ObjectMapper().writeValueAsString(blockUser);
-//                            System.out.println(json);
-//                        } catch (JsonProcessingException e) {
-//                            e.printStackTrace();
-//                        }
-                    }
-
-                    
-
-
-
+                    }  
                 }
 
             }  // fin while
