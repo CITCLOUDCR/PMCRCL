@@ -153,7 +153,7 @@ public class CreateWorkerClient
                     + "cuenta_cliente_bco, centro_funcional_dep,centro_funcional_cont, usuario, envia_credenciales, estado,"
                     + " metodo_ws,fecha_registro, fecha_procesamiento, respuesta_ws, flag_status,xml_enviado1, xml_enviado2,"
                     + " xml_enviado3, salario, bloqueo, fecha_aplicacion,fecha_vigencia, fecha_vencimiento, DescripcionAccion , TipoCese ,Recomendacion,NumeroAsignacion"
-                    + " FROM hcm_colaboradores where estado <> ? and accion <> 'LOCK' or (estado <> 'CP' and fecha_vencimiento='"+fechadehoy+"')";
+                    + " FROM hcm_colaboradores where estado <> ? and accion <> 'LOCK' and estado not in('AJU','CAC','TRA') or (estado <> 'CP' and fecha_vencimiento='"+fechadehoy+"')";
 
 
             ps = cn.prepareStatement(sql);
