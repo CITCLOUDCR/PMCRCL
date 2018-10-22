@@ -602,7 +602,7 @@ public class CreateWorkerClient
                     	LOGGER.info("Versión: 02-oct-2018");
                         LOGGER.info("### Ejecutando el metodo: getWorkerInformationByPersonNumber");
 
-
+                        HttpHeaders headers = new HttpHeaders();
                         String userPrimaryAssignment = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/"+userId+"/child/assignments?q=PrimaryAssignmentFlag=true";
                         HttpEntity<ResponseLinkListUser> assignmentIdRequest = restTemplate.exchange(userPrimaryAssignment,HttpMethod.GET,authenticationHeaders,ResponseLinkListUser.class);
                         String[] links = assignmentIdRequest.getBody().getItems().get(0).getLinks().get(0).getHref().split("/");
@@ -612,10 +612,7 @@ public class CreateWorkerClient
 
                         RestTemplate restPatch = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
                         //HttpHeaders headers = createPatchHeaders();
-                        HttpHeaders headers = createCleanPatchHeaders();
-
-                        headers.set("Effective-Of","RangeMode = UPDATE;RangeStartDate = "+rs.getString("fecha_inicio"));
-
+                      
                         LOGGER.info("### Ejecutando el metodo: updateAssignment");
 
 //                    PrimaryAssignmentFlag: boolean -> true
@@ -635,6 +632,7 @@ public class CreateWorkerClient
                         assignment.setJobId(JobId.get(codPos+"-"+nomAssign+"-"+department));
                         assignment.setSalaryAmount(rs.getString("salario"));
                         assignment.setPositionId(PositionIds.get(codPos));
+                        assignment.setSalaryBasisId("300000005782807");
                        /* assignment.setEffectiveStartDate(rs.getString("fecha_inicio"));
                         assignment.setEffectiveEndDate(rs.getString("fecha_vencimiento"));*/
 
@@ -669,15 +667,20 @@ public class CreateWorkerClient
                         assignmentsDFF.add(extraInfo);
                         assignment.setAssignmentDFF(assignmentsDFF);
 
-
-                        //al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));
-
                         String estadoCode = rs.getString("estado");
                         if (estadoCode.equals("AJT") || estadoCode.equals("CCT") || estadoCode.equals("TR1"))
                         {
-                            // configurar Fecha_final
-//                        assignment.setRangeEndDate(DocumentUtil.getXMLGregorianCalendar("RangeEndDate", rs.getString("fecha_vencimiento")));
+                         // configurar Fecha_final.
+                            headers = createCleanPatchHeaders();
+                            headers.set("Effective-Of","RangeMode = UPDATE;RangeStartDate = " + rs.getString("fecha_inicio") + ";RangeEndDate = " + rs.getString("fecha_vencimiento"));
                         }
+                        else
+                        {
+                         // en los permanentes no se configura fecha final. 
+                            headers = createCleanPatchHeaders();
+                            headers.set("Effective-Of","RangeMode = UPDATE;RangeStartDate = " + rs.getString("fecha_inicio"));	
+                        }
+                        
 
                         try
                         {

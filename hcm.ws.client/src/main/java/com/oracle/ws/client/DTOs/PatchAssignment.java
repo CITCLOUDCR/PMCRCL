@@ -38,9 +38,9 @@ public class PatchAssignment {
     @JsonProperty("ActionReasonCode")
     private String actionReasonCode;
     
-    /*@JsonProperty("EffectiveEndDate")
-    private String effectiveEndDate;
-    @JsonProperty("EffectiveStartDate")
+    @JsonProperty("SalaryBasisId")
+    private String salaryBasisId;
+    /*@JsonProperty("EffectiveStartDate")
     private String effectiveStartDate;*/
     
 
@@ -120,17 +120,17 @@ public class PatchAssignment {
         this.assignmentDFF = assignmentDFF;
     }
     
-    /*public String getEffectiveEndDate()
+    public String getSalaryBasisId()
     {
-        return effectiveEndDate;
+        return salaryBasisId;
     }
 
-    public void setEffectiveEndDate(String effectiveEndDate)
+    public void setSalaryBasisId(String salaryBasisId)
     {
-        this.effectiveEndDate = effectiveEndDate;
+        this.salaryBasisId = salaryBasisId;
     }
     
-    public String getEffectiveStartDate()
+    /*public String getEffectiveStartDate()
     {
         return effectiveStartDate;
     }
