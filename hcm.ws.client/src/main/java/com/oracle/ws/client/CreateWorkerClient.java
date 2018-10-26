@@ -223,8 +223,8 @@ public class CreateWorkerClient
                         	emp.setWorkEmail(null);
                         }
                         
-                        emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
-                        emp.setWorkMobilePhoneNumber(rs.getString("movil_particular1"));
+                        emp.setHomePhoneNumber(rs.getString("telefono_particular1") + "/" + rs.getString("movil_particular1") );
+                        //emp.setWorkMobilePhoneNumber(rs.getString("movil_particular1"));
                         emp.setDriverLicenseExpirationDate(rs.getString("fecha_licencia1"));
 
                         emp.setPersonNumber(rs.getString("no_persona"));
@@ -508,17 +508,17 @@ public class CreateWorkerClient
 
                         if (isNotNullOrEmpty(rs.getString("telefono_particular1"))) 
                         {
-                            emp.setHomePhoneNumber(rs.getString("telefono_particular1"));
+                            emp.setHomePhoneNumber(rs.getString("telefono_particular1") + "/" + rs.getString("movil_particular1") );
                         }
                         else
                             emp.setHomePhoneNumber(" ");
 
-                        if (isNotNullOrEmpty(rs.getString("movil_particular1")))
+                        /*if (isNotNullOrEmpty(rs.getString("movil_particular1")))
                         {
                             emp.setWorkMobilePhoneNumber(rs.getString("movil_particular1"));
                         }
                         else
-                            emp.setWorkMobilePhoneNumber(" ");
+                            emp.setWorkMobilePhoneNumber(" ");*/
 
                         emp.setDriverLicenseExpirationDate(rs.getString("fecha_licencia1"));
 
