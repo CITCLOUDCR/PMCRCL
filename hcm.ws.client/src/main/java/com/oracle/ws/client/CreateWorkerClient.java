@@ -251,9 +251,9 @@ public class CreateWorkerClient
                         String bussinesUnit = rs.getString("unidad_negocio");
 
                         assignment.setPositionId(PositionIds.get(rs.getString("codigo_posicion")));
-                        String codPos = rs.getString("codigo_posicion");
-                        String nomAssign = rs.getString("nombre_asignacion");
-                        String department = rs.getString("departamento");
+                        String codPos = rs.getString("codigo_posicion").trim();
+                        String nomAssign = rs.getString("nombre_asignacion").trim();
+                        String department = rs.getString("departamento").trim();
 
                         assignment.setJobId(JobId.get(codPos+"-"+nomAssign+"-"+department));
                         assignment.setDepartmentId(DepartmentId.get(rs.getString("departamento")));
@@ -267,13 +267,14 @@ public class CreateWorkerClient
                         assignment.setWorkingAtHome("N");
                         assignment.setWorkingAsManager("N");
                         assignment.setSalaryCode("H");
-                        assignment.setWorkingHours("8");
-                        assignment.setFrequency("D");
+                        assignment.setWorkingHours("48");
+                        assignment.setFrequency("W");
                         assignment.setSalaryBasisId("300000005782807");
                         assignment.setSalaryAmount(rs.getString("salario"));
                         assignment.setActionCode(rs.getString("accion"));
                         assignment.setActionReasonCode(rs.getString("estado").trim());
                         assignment.setAssignmentStatus("ACTIVE");
+                        assignment.setFullPartTime("FULL_TIME");
                         //assignment.setEffectiveStartDate(rs.getString("fecha_vigencia"));
        
 
@@ -301,8 +302,6 @@ public class CreateWorkerClient
                         	 assignment.setRegularTemporary("R");
                         }
                         	 
-
-                       
                         List<RequestAssignmentDFF> assignmentsDFF = new ArrayList<RequestAssignmentDFF>();
                         assignmentsDFF.add(extraInfo);
                         assignment.setAssignmentDFF(assignmentsDFF);
@@ -366,9 +365,9 @@ public class CreateWorkerClient
                           String bussinesUnit = rs.getString("unidad_negocio");
                           String reasoncode = rs.getString("estado").trim();
 
-                          String codPos = rs.getString("codigo_posicion");
-                          String nomAssign = rs.getString("nombre_asignacion");
-                          String department = rs.getString("departamento");
+                          String codPos = rs.getString("codigo_posicion").trim();
+                          String nomAssign = rs.getString("nombre_asignacion").trim();
+                          String department = rs.getString("departamento").trim();
 
                           assignment.setPositionId(PositionIds.get(codPos));
                           assignment.setJobId(JobId.get(codPos+"-"+nomAssign+"-"+department));
@@ -492,7 +491,7 @@ public class CreateWorkerClient
                     if (rs.getString("estado").equals("U"))  /* actualiza datos personales */
                     {
 
-                        LOGGER.info("Version: 02-oct-2018");
+                        LOGGER.info("Version: 26-oct-2018");
                         LOGGER.info("Proceso de actualizacion de un trabajador");
 
                         PatchEmployee emp = new PatchEmployee();
@@ -619,9 +618,9 @@ public class CreateWorkerClient
 
                         PatchAssignment assignment = new PatchAssignment();
                         
-                        String codPos = rs.getString("codigo_posicion");
-                        String nomAssign = rs.getString("nombre_asignacion");
-                        String department = rs.getString("departamento");
+                        String codPos = rs.getString("codigo_posicion").trim();
+                        String nomAssign = rs.getString("nombre_asignacion").trim();
+                        String department = rs.getString("departamento").trim();
                         
                         assignment.setAssignmentName(nomAssign);
                         assignment.setDepartmentId(DepartmentId.get(department));
@@ -667,7 +666,7 @@ public class CreateWorkerClient
                         assignmentsDFF.add(extraInfo);
                         assignment.setAssignmentDFF(assignmentsDFF);
 
-                        String estadoCode = rs.getString("estado");
+                        String estadoCode = rs.getString("estado").trim();
                         if (estadoCode.equals("AJT") || estadoCode.equals("CCT") || estadoCode.equals("TR1"))
                         {
                          // configurar Fecha_final.
@@ -901,7 +900,9 @@ public class CreateWorkerClient
                      if (incap.equals("ICC") || incap.equals("INS"))
                      {
                        Ausencias.setAbsenceReason("Ausencia por Incapacidad");
-                       Ausencias.setDuration(Integer.toString(dias + 1));
+                       //Ausencias.setDuration(Integer.toString(dias + 1));
+                       Ausencias.setStartDateDuration(Integer.toString(2));
+                       Ausencias.setEndDateDuration(Integer.toString(0));
                      }
                      else if (incap.equals("LIM") || incap.equals("LCP") || incap.equals("LMA") || incap.equals("LIN") || incap.equals("LDU") )
                      {

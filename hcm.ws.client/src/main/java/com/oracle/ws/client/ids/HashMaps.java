@@ -700,7 +700,7 @@ public class HashMaps {
         put("PSFIAD - PS - Financiero Administrativo", "300000003129940");
         put("PCPCOBO - Purdy C&P - Compras Bodega", "178");
         put("PCPADM - Purdy C&P - Administrativo", "177");
-        put("PCPTA7BCV - Purdy C&P - Taller BÂ° CorazÃ³n Variable G7", "187");
+        put("PCPTA7BCV - Purdy C&P - Taller B° Corazón Variable G7", "187");
         put("PMADPC - PM - AdministraciÃ³n PC", "57");
         put("PMADSC - PM - AdministraciÃ³n San Carlos", "86");
         put("PMNUFIAVES - PM - Veh. Nuevos Fijos Avenida Escazu", "141");

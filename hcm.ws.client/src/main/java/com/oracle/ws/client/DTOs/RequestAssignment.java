@@ -60,6 +60,12 @@ public class RequestAssignment {
 
     @JsonProperty("RegularTemporary")
     private String regularTemporary;
+    
+    @JsonProperty("FullPartTime")
+    private String fullPartTime;
+	
+    @JsonProperty("ProjectedStartDate")
+    private String projectedStartDate;
 
 
     @JsonProperty("assignmentDFF")
@@ -277,4 +283,17 @@ public class RequestAssignment {
     public void setRegularTemporary(String regularTemporary) {
         this.regularTemporary = regularTemporary;
     }
+    
+    public String getFullPartTime()
+    {
+        return fullPartTime;
+    }
+
+    public void setFullPartTime(String fullPartTime) 
+    {
+        this.fullPartTime = fullPartTime;
+    }
+    
+    
+    
 }
