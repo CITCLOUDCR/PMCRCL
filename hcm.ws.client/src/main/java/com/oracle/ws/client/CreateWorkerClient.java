@@ -8,44 +8,14 @@ import com.oracle.ws.client.DTOs.CommonFeaturesOracle.UserOracleResponse;
 import com.oracle.ws.client.ids.HashMaps;
 import com.oracle.ws.handlers.WSSESOAPHandler;
 import com.oracle.ws.handlers.WSSESOAPHandlerResolver;
-import com.oracle.xmlns.apps.hcm.employment.core.flex.baseworkerassignmentdff.BaseWorkerAsgDFF;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.ActionsList;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.Assignment;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.Person;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.PersonAddress;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.PersonDetails;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.PersonDriversLicence;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.PersonEmail;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.PersonLegislativeData;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.PersonName;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.PersonNationalIdentifier;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.PersonPhone;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.PersonResult;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.PersonUserInformation;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.Termination;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.WorkRelationship;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.WorkRelationshipUserKey;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.WorkTerms;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.Worker;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.WorkerDetails;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.WorkerDetailsResult;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.WorkerResult;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.WorkerService;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.types.CreateWorkRelationship;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.types.CreateWorkRelationshipAsyncResponse;
 import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.types.CreateWorkRelationshipResponse;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.types.CreateWorkerResponse;
 import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.types.GetWorkerInformationByPersonNumberResponse;
 import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.types.MergePersonResponse;
-import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.types.TerminateWorkRelationship;
 import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.types.UpdateAssignmentResponse;
-import com.oracle.xmlns.apps.hcm.people.core.flex.driverslicensetypedff.DriversLicenseTypeDFF;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -55,15 +25,10 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.namespace.QName;
-import javax.xml.ws.Response;
-import javax.xml.ws.Service;
 import javax.xml.ws.WebServiceException;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.springframework.http.*;
@@ -123,13 +88,11 @@ public class CreateWorkerClient
         WSSESOAPHandlerResolver wsseHR = null;
 
         CreateWorkRelationshipResponse WRresponse = null;
-        // CreateWorkerResponse response = null;
         MergePersonResponse mergeResponse = null;
         GetWorkerInformationByPersonNumberResponse informationResponse = null;
         UpdateAssignmentResponse updateAssignmentResponse = null;
 
         int id_number = 0;
-        // String no_persona = "";
         String respuesta = "";
         String metodo = "";
         String xmlGenerado1 = null;String xmlGenerado2 = null;String xmlGenerado3 = null;
@@ -160,16 +123,6 @@ public class CreateWorkerClient
             ps.setString(1, "CP");
             rs = ps.executeQuery();
 
-            ActionsList al = null;
-
-            //new code
-            //RestTemplate restTemplate = new RestTemplate();
-            //  HttpEntity authenticationHeaders = new HttpEntity(createHeaders());
-
-            //  HttpHeaders postHeaders = createHeaders();
-            //  postHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-
             RestTemplate restTemplate = new RestTemplate();
             String url = "https://hdes-test.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/emps";
             HttpEntity authenticationHeaders = new HttpEntity(createHeaders());
@@ -191,8 +144,6 @@ public class CreateWorkerClient
 
                     RequestEmployee newEmp = new RequestEmployee();
 
-
-                    al = new ActionsList();
 
                     boolean existe = restTemplate.exchange(getEmpEndpoint, HttpMethod.GET, authenticationHeaders, ResponseListEmployee.class).getBody().getItems().size()!=0;
 
@@ -239,13 +190,6 @@ public class CreateWorkerClient
                         emp.setNationalIdCountry(rs.getString("pais"));
                         emp.setUserName(rs.getString("usuario"));
 
-                        //emp.setDriverLicenseId(rs.getString(""));
-                        //emp.setWorkPhoneNumber("");
-                        //emp.setSaludation(rs.getString("MR."));
-                        //emp.setHireDate(rs.getString("fecha_contratacion"));
-                        //emp.setEffectiveStartDate(rs.getString("fecha_contratacion"));
-
-
                         RequestAssignment assignment = new RequestAssignment();
 
                         String bussinesUnit = rs.getString("unidad_negocio");
@@ -257,7 +201,6 @@ public class CreateWorkerClient
 
                         assignment.setJobId(JobId.get(codPos+"-"+nomAssign+"-"+department));
                         assignment.setDepartmentId(DepartmentId.get(rs.getString("departamento")));
-                        //assignment.setLocationId("300000001543539");
                         assignment.setAssignmentNumber(rs.getString("NumeroAsignacion"));
                         assignment.setPrimaryAssignmentFlag("Y");
 
@@ -274,9 +217,7 @@ public class CreateWorkerClient
                         assignment.setActionCode(rs.getString("accion"));
                         assignment.setActionReasonCode(rs.getString("estado").trim());
                         assignment.setAssignmentStatus("ACTIVE");
-                        assignment.setFullPartTime("FULL_TIME");
-                        //assignment.setEffectiveStartDate(rs.getString("fecha_vigencia"));
-       
+
 
                         RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
 
@@ -290,7 +231,6 @@ public class CreateWorkerClient
                         if (reasoncode.equals("NOT"))  // Nombramiento temporal.
                         {
                         	/* Fecha_Final */
-                        	//emp.setTerminationDate(rs.getString("fecha_vencimiento"));
                         	assignment.setEffectiveEndDate(rs.getString("fecha_vencimiento"));
                         	assignment.setAssignmentCategory("FT");
                         	assignment.setAssignmentProjectedEndDate(rs.getString("fecha_vencimiento"));
@@ -344,7 +284,7 @@ public class CreateWorkerClient
                                 LOGGER.info("Obteniendo respuesta exitosa.");
                                 LOGGER.info("PersonId: " + (postEmpResponse.getBody().getPersonId()));
 
-//             cambia el estado en HCM_colaboradores a "CP"
+//                              cambia el estado en HCM_colaboradores a "CP"
                                 int exito = updateResponseTable(id_number, "PersonId: " + postEmpResponse.getBody().getPersonId(), "OK", metodo, postEmpResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
                                 if (exito == 1) 
                                 {
@@ -372,8 +312,6 @@ public class CreateWorkerClient
                           assignment.setPositionId(PositionIds.get(codPos));
                           assignment.setJobId(JobId.get(codPos+"-"+nomAssign+"-"+department));
                           assignment.setDepartmentId(DepartmentId.get(rs.getString("departamento")));
-                          //assignment.setLocationId("300000001543539");
-                          //assignment.setAssignmentNumber(rs.getString("NumeroAsignacion"));
                           assignment.setPrimaryAssignmentFlag("Y");
 
                           assignment.setAssignmentName(rs.getString("nombre_asignacion"));
@@ -389,8 +327,7 @@ public class CreateWorkerClient
                           assignment.setActionCode(rs.getString("accion"));
                           assignment.setActionReasonCode(rs.getString("estado").trim());
                           assignment.setAssignmentStatus("ACTIVE");
-                          //assignment.setEffectiveStartDate(rs.getString("fecha_vigencia"));
-         
+
 
                           RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
 
@@ -404,7 +341,6 @@ public class CreateWorkerClient
                           if (reasoncode.equals("NOT"))  // Nombramiento temporal.
                           {
                           	/* Fecha_Final */
-                          	//emp.setTerminationDate(rs.getString("fecha_vencimiento"));
                           	assignment.setEffectiveEndDate(rs.getString("fecha_vencimiento"));
                           	assignment.setAssignmentCategory("FT");
                           	assignment.setAssignmentProjectedEndDate(rs.getString("fecha_vencimiento"));
@@ -424,8 +360,7 @@ public class CreateWorkerClient
 
                           List<RequestAssignment> assignments = new ArrayList<RequestAssignment>();
                           assignments.add(assignment);
-                          //emp.setAssignments(assignments);
-                          
+
 
                           try
                           {
@@ -512,27 +447,18 @@ public class CreateWorkerClient
                         else
                             emp.setHomePhoneNumber(" ");
 
-                        /*if (isNotNullOrEmpty(rs.getString("movil_particular1")))
-                        {
-                            emp.setWorkMobilePhoneNumber(rs.getString("movil_particular1"));
-                        }
-                        else
-                            emp.setWorkMobilePhoneNumber(" ");*/
-
                         emp.setDriverLicenseExpirationDate(rs.getString("fecha_licencia1"));
 
                         emp.setFirstName(rs.getString("nombre"));
                         emp.setLastName(rs.getString("apellido_paterno"));
                         emp.setPreviousLastName(rs.getString("apellido_materno"));
                         emp.setDisplayName(rs.getString("nombre")+" "+rs.getString("apellido_paterno")); 
-//                        emp.setPersonNumber(rs.getString("no_persona"));
                         emp.setAddressLine1(rs.getString("direccion"));
                         emp.setCountry(rs.getString("pais"));
                         emp.setDateOfBirth(rs.getString("fecha_nacimiento"));
                         emp.setLegalEntityId(LegalEntitiesIds.get(rs.getString("entidad_legal")));
                         emp.setGender(rs.getString("sexo"));
                         emp.setMaritalStatus(rs.getString("estado_civil"));
-                        //emp.setNationalIdType(rs.getString("tipo_identificador1"));
                         emp.setNationalId(rs.getString("numero_identificador1"));
                         emp.setNationalIdCountry(rs.getString("pais"));
                         emp.setUserName(rs.getString("usuario"));
@@ -610,11 +536,10 @@ public class CreateWorkerClient
                         String assignmentPatch = ClientConfig.endpoint + "/hcmRestApi/resources/latest/emps/"+userId+"/child/assignments/"+assignmentId;
 
                         RestTemplate restPatch = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
-                        //HttpHeaders headers = createPatchHeaders();
-                      
+
                         LOGGER.info("### Ejecutando el metodo: updateAssignment");
 
-//                    PrimaryAssignmentFlag: boolean -> true
+//                      PrimaryAssignmentFlag: boolean -> true
 
                         PatchAssignment assignment = new PatchAssignment();
                         
@@ -632,8 +557,6 @@ public class CreateWorkerClient
                         assignment.setSalaryAmount(rs.getString("salario"));
                         assignment.setPositionId(PositionIds.get(codPos));
                         assignment.setSalaryBasisId("300000005782807");
-                       /* assignment.setEffectiveStartDate(rs.getString("fecha_inicio"));
-                        assignment.setEffectiveEndDate(rs.getString("fecha_vencimiento"));*/
 
                         RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
 
@@ -715,14 +638,6 @@ public class CreateWorkerClient
                             System.out.println(e.getResponseBodyAsString());
                             LOGGER.info(e.getResponseBodyAsString());
                         }
-
-
-//                        metodo = metodo + "/updateAssignment";
-//                    updateAssignmentResponse.setResult(port.updateAssignment(assignment, al));
-//                        xmlGenerado3 = wsse.getXml_generated();
-
-
-
                     }
                 
                 else if (rs.getString("accion").equals("TERMINATION"))
@@ -730,11 +645,8 @@ public class CreateWorkerClient
 
                     LOGGER.info("Proceso de cese de un trabajador");
 
-                    // String TypeRevokeUser = "";
-
                     respuesta = "";
                     id_number = rs.getInt("id_number");
-//                    TerminateWorkRelationship terminateWorkRelationship = new TerminateWorkRelationship();
 
                     String assignmentPatchEndpoint = getPrimaryAssignmentEndpoint(rs.getString("no_persona"));
                     LOGGER.info("Obteniendo datos del trabajador: " + rs.getString("nombre") + '-'  + rs.getString("no_persona"));
@@ -819,34 +731,14 @@ public class CreateWorkerClient
                             System.out.println(patchResponse);
 
 
-//                            if (((ResponseEntity<String>) patchResponse).getStatusCode().equals(HttpStatus.OK)) {
-//                                LOGGER.info("Se ejecuto con exito el metodo");
-//                                LOGGER.info("Obteniendo respuesta exitosa.");
-//                                LOGGER.info("PersonId: " + rs.getString("no_persona"));
-//                                int exito = updateResponseTable(id_number, "PersonId: " + rs.getString("no_persona"), "OK", metodo, patchResponse.getBody(), xmlGenerado2, xmlGenerado3);
-//                                if (exito == 1) {
-//                                    LOGGER.info("Datos actualizados correctamente en la base de datos.");
-//                                }
-//
-//                            }
                         }
-//                        al.setReasonCode(DocumentUtil.getXMLString("ReasonCode", "CE5"));
-                    } 
-
-
-//                    al.setActionCode(DocumentUtil.getXMLString("ActionCode", rs.getString("accion")));
-
-//                    terminateWorkRelationship.setActionList(al);
-
-
-
+                    }
 
                     LOGGER.info("Enviando datos al web service.");
                     LOGGER.info("### Ejecutando el metodo: terminateWorkRelationship");
 
 
                     metodo = "terminateWorkRelationship";
-//                    port.terminateWorkRelationship(workRelationshipUserKey, termination, al);
 
                     xmlGenerado1 = wsse.getXml_generated();
 
@@ -1048,27 +940,6 @@ public class CreateWorkerClient
         {
             LOGGER.info("error:"+ e.toString());
 
-//            if (wsse.getMessage() != null) {
-//                System.out.println(wsse.getXml_generated());
-//                LOGGER.error("\nException: " + wsse.getMessage());
-//
-//                if ((metodo.trim().equals("createWorker")) || (metodo.trim().equals("mergePerson"))) {
-//                    xmlGenerado1 = xmlGenerado1 == null ? wsse.getXml_generated() : xmlGenerado1;
-//                }
-//                else if (metodo.equals("mergePerson/getWorkerInformationByPersonNumber")) {
-//                    xmlGenerado2 = xmlGenerado2 == null ? wsse.getXml_generated() : xmlGenerado2;
-//                }
-//                else
-//                {
-//                    xmlGenerado3 = xmlGenerado3 == null ? wsse.getXml_generated() : xmlGenerado3;
-//                }
-//
-//                int exito = updateResponseTable(id_number, wsse.getMessage(), "ER", metodo, xmlGenerado1, xmlGenerado2, xmlGenerado3);
-//                if (exito == 1) {
-//                    LOGGER.info("Datos actualizados correctamente en la base de datos.");
-//                }
-//            }
-
             try
             {
                 if (rs != null) rs.close();
@@ -1183,8 +1054,6 @@ public class CreateWorkerClient
     private HttpHeaders createCleanPatchHeaders(){
         HttpHeaders headers = createHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.set("Effective-Of","RangeMode=UPDATE");
-//        headers.set("RangeStartDate","2000-01-01");
         return headers;
     }
 
