@@ -712,10 +712,10 @@ public class HashMaps {
         put("PMVEUSFIZA - PM - Veh. Usados Fijos Zapote", "5");
         put("PMVUVPD - PM - VehÃ­culos Usados Variables Premium Distribuidor", "30");
         put("PMVEUSFILE - PM - Veh. Usados Fijos Lexus", "300000003129870");
-        put("PCPTA3BCV - Purdy C&P - Taller BÂ° CorazÃ³n Variable G3", "183");
-        put("PCPTA4BCV - Purdy C&P - Taller BÂ° CorazÃ³n Variable G4", "184");
-        put("PCPTA6BCV - Purdy C&P - Taller BÂ° CorazÃ³n Variable G6", "186");
-        put("PCPTA8BCV - Purdy C&P - Taller BÂ° CorazÃ³n Variable G8", "188");
+        put("PCPTA3BCV - Purdy C&P - Taller B° CorazÃ³n Variable G3", "183");
+        put("PCPTA4BCV - Purdy C&P - Taller B° CorazÃ³n Variable G4", "184");
+        put("PCPTA6BCV - Purdy C&P - Taller B° CorazÃ³n Variable G6", "186");
+        put("PCPTA8BCV - Purdy C&P - Taller B° CorazÃ³n Variable G8", "188");
         put("PMREVADIS - PM - Repuestos Venta Variable Distribuidor", "37");
         put("PMCAPA - PM - CapacitaciÃ³n Distribuidor", "49");
         put("PMTECDIST - PM - Ã�rea TÃ©cnica Repuestos Distr.", "39");
@@ -795,212 +795,99 @@ public class HashMaps {
         put("PMTESO - PM - TesorerÃ­a", "23");
         put("PMVEFIVATI - PM - Veh. Usados Fijos TibÃ¡s", "3");
         put("PMGEPC - PM - Gerencia Paseo ColÃ³n", "55");
-
-
         put("CMVICESADM - CM - Vicepresidencia Administrativo", "300000003129779");
-
-
         put("CMRSE - CM - Responsabilidad Social Empresarial", "2");
         put("PMADLI - PM - AdministraciÃ³n Liberia", "77");
-
-
         put("SCCONTANAL - SC - Analista Financiero Contabilidad", "160");
-
         put("PMGEGRE - PM - Gerencia Grecia", "300000003129830");
         put("CMRSE - CM - Responsabilidad SocialEmpresarial", "2");
         put("SCCONTIMP - SC - Coordinador de Impuestos", "159");
-
-
         put("PMMERCEVE - PM - Mercadeo - Eventos Especiales", "17");
         put("PMGAR - PM - GarantÃ­as", "48");
-
-
         put("PMMANT - PM - Mantenimiento", "26");
-
         put("PCPUNSE - Purdy C&P - Unidades de Seguro", "179");
-
         put("SCADM - SC - Administrativo", "167");
-
-
         put("PMVENUFIPZ - PM - Veh. Nuevos Fijos PÃ©rez ZeledÃ³n", "95");
-
         put("PMREFIPP - PM - Repuestos Adm. Fijos Ciudad Toyota", "130");
         put("PMREFIPT - PM - Repuestos Adm. Fijos Purdy Trabajo", "113");
         put("PMREFISC - PM - Repuestos Adm. Fijos San Carlos", "89");
-
-
         put("PMREFILI - PM - Repuestos Adm. Fijos Liberia", "80");
-
-
         put("PMREVAPP - PM - Repuestos Vta. Variable Ciudad Toyota", "129");
         put("Ventas", "300000005731328");
         put("ASEPUM - ASEPUMOSA Administrativo", "190");
-
-
         put("PMADPT - PM - Administrativo Purdy Trabajo", "108");
         put("PMADPZ - PM - AdministraciÃ³n PÃ©rez ZeledÃ³n", "94");
-
-
         put("PMGEALA - PM - Gerencia Alajuela", "103");
         put("PMGEAVESC - PM - Gerencia Avenida Escazu", "138");
         put("PMGECU - PM - Gerencia Curridabat", "142");
         put("PMSINC - PM - SincronizaciÃ³n", "33");
-
         put("PCPTA2BCV - Purdy C&P - Taller BÂ° CorazÃ³n Variable G2", "182");
         put("SCTI - SC - TI", "172");
-
-
         put("PMREDIST - PM - Repuestos DistribuciÃ³n", "41");
-
-
         put("PMVENUFILI - PM - Veh. Nuevos Fijos Liberia", "79");
-
-
         put("PMENTR - PM - Entrega", "46");
         put("PCPGERPROD - Purdy C&P - Gerencia de ProducciÃ³n", "180");
-
-
         put("PMVEUSFIPC - PM - Veh. Usados Fijos PC", "60");
-
-
         put("PMVENUVALE - PM - Veh. Nuevos Variables Lexus", "102");
-
-
         put("PMCOIN - PM - Control Interno", "32");
-
         put("PMADAVE - PM - AdministraciÃ³n Avenida EscazÃº", "139");
-
-
-        put("CMDIRH - CM - DirecciÃ³n RRHH", "163");
-
-
+        put("CMDIRH - CM - Dirección RRHH", "163");
         put("PMREADFIDI - PM - Repuestos Adm. Fijos Distribuidor", "34");
-
-
         put("PSMARFIJOS - PS - Marchamos Fijos", "300000003129974");
-
-
         put("PMCALLREP - PM - Repuestos Call Center", "19");
-
         put("PMMERPROD - PM - Gerencia de Producto Mercadeo", "12");
-
         put("PMGELEX - PM - Gerencia Lexus", "100");
         put("PMMERCPUB - PM - Mercadeo - Promociones y Publicidad", "16");
         put("PMDMTOVER - PM - DMT Overhaul", "117");
-
         put("PSSEGFIJ - PS - PÃ³lizas de Seguros Fijos", "300000003129991");
-
-
         put("PMCOMIN - PM - PlaneaciÃ³n Compras e Inventarios", "36");
-
-
         put("CMDIGE - CM - DirecciÃ³n General", "149");
-
         put("PMDIPV - PM - DirecciÃ³n de Post Venta", "31");
         put("PMDICARRPR - PM - DirecciÃ³n CarrocerÃ­a y ProtecciÃ³n de VehÃ­culos", "10");
         put("CMDIRPRO - CM - DirecciÃ³n Proyectos", "174");
-
         put("CMDITI - CM - DirecciÃ³n TI", "170");
-
-
         put("PMREFIALA - PM - Repuestos Adm. Fijos Alajuela", "105");
         put("PMREFICU - PM - Repuestos Adm. Fijos Curridabat", "145");
-
         put("PMREFIPZ - PM - Repuestos Adm. Fijos PÃ©rez ZeledÃ³n", "97");
         put("PMREFIZA - PM - Repuestos Adm. Fijos Zapote", "70");
-
-
         put("PMVEUSFIGR - PM - Veh. Usados Fijos Grecia", "4");
-
-
         put("PMVEUSVAZA - PM - Veh. Usados Variables Zapote", "68");
         put("PMVNIFIPAT - PM - Veh. Nuevos Fijos CT - Patio", "126");
-
         put("PMGEZA - PM - Gerencia Zapote", "62");
-
-
         put("SCSOTI - SC - Soporte TI", "173");
-
-
         put("PMFIAD - PM - Financiero Administativo", "22");
-
         put("GERDIS-CPD - PM - Gerencia Repuestos DistribuciÃ³n - CPD", "40");
-
         put("PSGERSEG - PS - Gerencia de Comercializadora de Seguros", "300000003129957");
         put("SCCONT - SC - Contabilidad", "157");
         put("PMCALL - PM - Call Center", "18");
-
         put("PMVUWEB - PM - VehÃ­culos Usados WEB", "29");
-
-
         put("PMOFIPRO - PM - Oficina de Proyectos", "300000003129847");
         put("PCPGERE - Purdy C&P - Gerencia", "176");
-
         put("CMVENUCA - CM - VehÃ­culos Nuevos CapacitaciÃ³n", "175");
-
-
         put("PMGEPA - PM - Gerencia de Purdy Accesorios", "53");
-
         put("SCRHPMCR - SC - RRHHPMCR", "166");
         put("CMGERRPP - CM - Gerencia de Relaciones PÃºblicas", "8");
-
-
         put("PMGESE - PM - Gerencia de Servicio", "47");
-
-
         put("PMGELI - PM - Gerencia Liberia", "76");
-
-
         put("PMGEPZ - PM - Gerencia PÃ©rez ZeledÃ³n", "92");
         put("PMGESC - PM - Gerencia San Carlos", "84");
-
-
         put("PMTAFIPT - PM - Taller Purdy Trabajo Adm. Fijos", "111");
-
-
-        put("CMCAPA - CM - CapacitaciÃ³n", "168");
-
-
-        put("SCRS - SC - Reclutamiento y SelecciÃ³n", "165");
-
-
+        put("CMCAPA - CM - Capacitación", "168");
+        put("SCRS - SC - Reclutamiento y Selección", "165");
         put("PMREVALI - PM - Repuestos Vta. Variable Liberia", "81");
-
-
         put("PMREVAZA - PM - Repuestos Vta. Variable Zapote", "69");
-
-
         put("PMVEUSFIPP - PM - Veh. Usados Fijos Ciudad Toyota", "127");
-
-
         put("PMVENUFIPC - PM - Veh. Nuevos Fijos PC", "59");
-
-
         put("PMTAVAALA - PM - Taller Alajuela Serv. Variable", "106");
         put("PMTAVACU - PM - Taller Curridabat Serv. Variable", "147");
-
-
         put("PMTAVAPZ - PM - Taller PÃ©rez ZeledÃ³n Serv. Variable", "99");
         put("PMTAVASC - PM - Taller San Carlos Serv. Variable", "91");
-
-
         put("PMESCU - PM - EscuderÃ­a", "54");
-
-
         put("PMTAADMPP - PM - Taller Purdy Particular Administrativo", "132");
-
         put("CMVICEASIS - CM - Vicepresidencia Asist. Administrativo", "300000003129762");
-
-
         put("PMSERVZA - PM - Servicio Zapote", "73");
-
-
         put("PMREVAPT - PM - Repuestos Vta. Variable Purdy Trabajo", "112");
-
-
         put("PCPTA1BCV - Purdy C&P - Taller BÂ° CorazÃ³n Variable G1", "181");
-
-
         put("PMREVAALA - PM - Repuestos Vta. Variable Alajuela", "104");
         put("PMREVACU - PM - Repuestos Vta. Variable Curridabat", "146");
     }};

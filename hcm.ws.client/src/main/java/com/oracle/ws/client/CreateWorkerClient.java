@@ -668,7 +668,8 @@ public class CreateWorkerClient
                         e.printStackTrace();
                     }
 
-                    HttpHeaders headers = createPatchHeaders();
+                    HttpHeaders headers = createCleanPatchHeaders();   //createPatchHeaders();
+                    headers.set("Effective-Of","RangeMode = UPDATE;RangeStartDate = "+rs.getString("fecha_inicio"));
                     HttpEntity<PatchTerminationAssignment> request = new HttpEntity<PatchTerminationAssignment>(terminationAssignment,headers);
 
                     RestTemplate restPatch = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
