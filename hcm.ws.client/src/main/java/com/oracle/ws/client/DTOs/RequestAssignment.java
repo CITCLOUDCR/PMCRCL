@@ -66,6 +66,9 @@ public class RequestAssignment {
 	
     @JsonProperty("ProjectedStartDate")
     private String projectedStartDate;
+    
+    @JsonProperty("LegalEntityId")
+    private String legalEntityId;
 
 
     @JsonProperty("assignmentDFF")
@@ -294,6 +297,14 @@ public class RequestAssignment {
         this.fullPartTime = fullPartTime;
     }
     
-    
+    public String getLegalEntityId()
+    {
+        return legalEntityId;
+    }
+
+    public void setLegalEntityId(String legalEntityId) 
+    {
+        this.legalEntityId = legalEntityId;
+    }
     
 }

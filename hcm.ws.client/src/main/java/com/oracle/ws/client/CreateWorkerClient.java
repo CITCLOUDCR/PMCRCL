@@ -308,6 +308,7 @@ public class CreateWorkerClient
                           String codPos = rs.getString("codigo_posicion").trim();
                           String nomAssign = rs.getString("nombre_asignacion").trim();
                           String department = rs.getString("departamento").trim();
+                          String entidad = rs.getString("entidad_legal");
 
                           assignment.setPositionId(PositionIds.get(codPos));
                           assignment.setJobId(JobId.get(codPos+"-"+nomAssign+"-"+department));
@@ -316,6 +317,7 @@ public class CreateWorkerClient
 
                           assignment.setAssignmentName(rs.getString("nombre_asignacion"));
                           assignment.setBusinessUnitId(BussinesUnitCodes.get(bussinesUnit));
+                          assignment.setLegalEntityId(LegalEntitiesIds.get(entidad));
                           assignment.setWorkerCategory("WC");
                           assignment.setWorkingAtHome("N");
                           assignment.setWorkingAsManager("N");
@@ -327,6 +329,7 @@ public class CreateWorkerClient
                           assignment.setActionCode(rs.getString("accion"));
                           assignment.setActionReasonCode(rs.getString("estado").trim());
                           assignment.setAssignmentStatus("ACTIVE");
+                          
 
 
                           RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
@@ -721,13 +724,15 @@ public class CreateWorkerClient
                             HttpEntity<BlockUserRequest> requestlock = new HttpEntity<BlockUserRequest>(blockUser, headerslock);
 
                             HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+                            
+                            RestTemplate  restTemplatelock = new RestTemplate(requestFactory);
 
-                            restTemplate.setRequestFactory(requestFactory);
+                            //restTemplate.setRequestFactory(requestFactory);
 
-                            LOGGER.info("Enviando datos al web service.");
-                            LOGGER.info("### Ejecutando el metodo: blockPerson");
+                            //LOGGER.info("Enviando datos al web service.");
+                            //LOGGER.info("### Ejecutando el metodo: blockPerson");
 
-                            HttpEntity<String> patchResponse = restTemplate.exchange(oracleUserId, HttpMethod.PATCH, request, String.class);
+                            HttpEntity<String> patchResponse = restTemplatelock.exchange(oracleUserId, HttpMethod.PATCH, requestlock, String.class);
 
                             System.out.println(patchResponse);
 
@@ -739,7 +744,7 @@ public class CreateWorkerClient
                     LOGGER.info("### Ejecutando el metodo: terminateWorkRelationship");
 
 
-                    metodo = "terminateWorkRelationship";
+                  /*  metodo = "terminateWorkRelationship";
 
                     xmlGenerado1 = wsse.getXml_generated();
 
@@ -753,7 +758,8 @@ public class CreateWorkerClient
                         if (exito == 1) {
                             LOGGER.info("Datos actualizados correctamente en la base de datos.");
                         }
-                    }
+                    } */
+                    
                     LOGGER.info("Fin del proceso de CESE de un trabajador");
                 }
                 else if (rs.getString("estado").equals("HI"))
