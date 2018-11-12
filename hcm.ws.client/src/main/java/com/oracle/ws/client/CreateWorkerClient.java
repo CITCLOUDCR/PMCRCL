@@ -146,6 +146,9 @@ public class CreateWorkerClient
 
 
                     boolean existe = restTemplate.exchange(getEmpEndpoint, HttpMethod.GET, authenticationHeaders, ResponseListEmployee.class).getBody().getItems().size()!=0;
+                    
+                    String fechainicio = rs.getString("fecha_contratacion");
+                    httpHeaders.set("Effective-Of","RangeStartDate="+fechainicio);
 
                     if(!existe)
                     {
@@ -264,8 +267,8 @@ public class CreateWorkerClient
                         
                         
                         LOGGER.info("Creando el Request");
-                        String fechainicio = rs.getString("fecha_contratacion");
-                        httpHeaders.set("Effective-Of","RangeStartDate="+fechainicio);
+                        //String fechainicio = rs.getString("fecha_contratacion");
+                        //httpHeaders.set("Effective-Of","RangeStartDate="+fechainicio);
                         HttpEntity<RequestEmployee> request = new HttpEntity<RequestEmployee>(emp,httpHeaders);
                         LOGGER.info("Request info:" + request.toString());
 
@@ -659,7 +662,8 @@ public class CreateWorkerClient
                     terminationAssignment.setActionReasonCode(rs.getString("estado").trim());
                     terminationAssignment.setAssignmentStatus("INACTIVE");
 
-                    if(terminationAssignment.getActionReasonCode().equals("CE5")){
+                    if(terminationAssignment.getActionReasonCode().equals("CE5"))
+                    {
                         terminationAssignment.setPrimaryAssignmentFlag("N");
                         terminationAssignment.setPrimaryWorkRelationFlag("N");
                     }
@@ -683,10 +687,12 @@ public class CreateWorkerClient
                     RestTemplate restPatch = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
                     int exito = 0;
 
-                    try{
+                    try
+                    {
 
                         HttpEntity<RequestAssignment> assignmentResponse = restPatch.exchange(assignmentPatchEndpoint,HttpMethod.PATCH,request,RequestAssignment.class);
-                        if (((ResponseEntity<RequestAssignment>) assignmentResponse).getStatusCode().equals(HttpStatus.OK)) {
+                        if (((ResponseEntity<RequestAssignment>) assignmentResponse).getStatusCode().equals(HttpStatus.OK)) 
+                        {
                             LOGGER.info("Se ejecuto con exito el metodo");
                             LOGGER.info("Obteniendo respuesta exitosa.");
                             LOGGER.info("Mensaje: Actualizacion de datos exitoso");
@@ -701,13 +707,16 @@ public class CreateWorkerClient
                             //}
 
                         }
-                    }catch (HttpClientErrorException e){
+                    }
+                    catch (HttpClientErrorException e){
                         System.out.println(e.getResponseBodyAsString());
                         LOGGER.info(e.getResponseBodyAsString());
                     }
 
-                    if(exito == 1){
-                        if (!(rs.getString("estado").contains("CE5"))) {
+                    if(exito == 1)
+                    {
+                        if (!(rs.getString("estado").contains("CE5")))
+                        {
                             LOGGER.info("Proceso de Bloqueo de Usuario para las acciones temporales");
 
                             String username = rs.getString("usuario");
@@ -717,15 +726,14 @@ public class CreateWorkerClient
 
                             HttpEntity<UserOracleResponse> response = restTemplate.exchange(oracleUserId, HttpMethod.GET, authenticationHeaders, UserOracleResponse.class);
 
-                            if (response.getBody() != null) {
+                            if (response.getBody() != null) 
+                            {
 
                                 oracleUserId = ClientConfig.endpoint + "/hcmRestApi/scim/Users/" + response.getBody().getResourses().get(0).getId();
 
                                 HttpHeaders headerslock = createPatchHeaders();
 
-                                BlockUserRequest blockUser = new BlockUserRequest() {{
-                                    setActive(false);
-                                }};
+                                BlockUserRequest blockUser = new BlockUserRequest() {{ setActive(false); }};
 
                                 HttpEntity<BlockUserRequest> requestlock = new HttpEntity<BlockUserRequest>(blockUser, headerslock);
 
@@ -733,18 +741,15 @@ public class CreateWorkerClient
 
                                 RestTemplate restTemplatelock = new RestTemplate(requestFactory);
 
-                                //restTemplate.setRequestFactory(requestFactory);
-
-                                //LOGGER.info("Enviando datos al web service.");
-                                //LOGGER.info("### Ejecutando el metodo: blockPerson");
-
                                 HttpEntity<String> patchResponse = restTemplatelock.exchange(oracleUserId, HttpMethod.PATCH, requestlock, String.class);
 
                                 System.out.println(patchResponse);
 
 
                             }
-                        }else{
+                        }
+                        else
+                        {
                             //post de nueva relacion laboral
                             RequestAssignment assignment = new RequestAssignment();
 
@@ -770,11 +775,11 @@ public class CreateWorkerClient
                             assignment.setFrequency("D");
                             assignment.setSalaryBasisId("300000005782807");
                             assignment.setSalaryAmount(rs.getString("salario"));
-//                            assignment.setActionCode(rs.getString("accion"));
                             assignment.setActionCode("HIRE");
-//                            assignment.setActionReasonCode(rs.getString("estado").trim());
                             assignment.setActionReasonCode("NOM");
                             assignment.setAssignmentStatus("ACTIVE");
+                            assignment.setAssignmentCategory("FR");
+                            assignment.setRegularTemporary("R");
 
                             RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
 
@@ -784,22 +789,6 @@ public class CreateWorkerClient
                             extraInfo.setCuentaCliente(rs.getString("cuenta_cliente_bco").trim());
                             extraInfo.setCentroFuncionalDepartamento(rs.getString("centro_funcional_dep"));
                             extraInfo.setCentroFuncionalContable(rs.getString("centro_funcional_cont"));
-
-//                            if (reasoncode.equals("NOT"))  // Nombramiento temporal.
-//                            {
-//                                /* Fecha_Final */
-//                                assignment.setEffectiveEndDate(rs.getString("fecha_vencimiento"));
-//                                assignment.setAssignmentCategory("FT");
-//                                assignment.setAssignmentProjectedEndDate(rs.getString("fecha_vencimiento"));
-//                                assignment.setRegularTemporary("T");
-//                            }
-//                            else
-//                            {
-                                assignment.setAssignmentCategory("FR");
-                                assignment.setRegularTemporary("R");
-//                            }
-
-
 
                             List<RequestAssignmentDFF> assignmentsDFF = new ArrayList<RequestAssignmentDFF>();
                             assignmentsDFF.add(extraInfo);

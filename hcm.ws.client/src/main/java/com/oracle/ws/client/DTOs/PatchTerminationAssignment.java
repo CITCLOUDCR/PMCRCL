@@ -15,11 +15,11 @@ public class PatchTerminationAssignment {
 
     @JsonProperty("PrimaryWorkRelationFlag")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String PrimaryWorkRelationFlag;
+    private String primaryWorkRelationFlag;
 
     @JsonProperty("PrimaryAssignmentFlag")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String PrimaryAssignmentFlag;
+    private String primaryAssignmentFlag;
 
     public String getActionCode() {
         return actionCode;
@@ -46,18 +46,18 @@ public class PatchTerminationAssignment {
     }
 
     public String getPrimaryWorkRelationFlag() {
-        return PrimaryWorkRelationFlag;
+        return primaryWorkRelationFlag;
     }
 
     public void setPrimaryWorkRelationFlag(String primaryWorkRelationFlag) {
-        PrimaryWorkRelationFlag = primaryWorkRelationFlag;
+        primaryWorkRelationFlag = primaryWorkRelationFlag;
     }
 
     public String getPrimaryAssignmentFlag() {
-        return PrimaryAssignmentFlag;
+        return primaryAssignmentFlag;
     }
 
     public void setPrimaryAssignmentFlag(String primaryAssignmentFlag) {
-        PrimaryAssignmentFlag = primaryAssignmentFlag;
+        primaryAssignmentFlag = primaryAssignmentFlag;
     }
 }

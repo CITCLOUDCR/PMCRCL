@@ -701,8 +701,8 @@ public class HashMaps {
         put("PCPCOBO - Purdy C&P - Compras Bodega", "178");
         put("PCPADM - Purdy C&P - Administrativo", "177");
         put("PCPTA7BCV - Purdy C&P - Taller B° Corazón Variable G7", "187");
-        put("PMADPC - PM - AdministraciÃ³n PC", "57");
-        put("PMADSC - PM - AdministraciÃ³n San Carlos", "86");
+        put("PMADPC - PM - Administración PC", "57");
+        put("PMADSC - PM - Administración San Carlos", "86");
         put("PMNUFIAVES - PM - Veh. Nuevos Fijos Avenida Escazu", "141");
         put("PMTAFIPP - PM - Taller Purdy Particular Adm. Fijos", "131");
         put("PMVECOFIPT - PM - Veh. Comerciales Fijos Purdy Trabajo", "109");
@@ -770,9 +770,9 @@ public class HashMaps {
         put("PMRENT - PM - Veh. Nuevos Variables Rent a Car", "118");
         put("CMDIFI - CM - DirecciÃ³n Financiera", "156");
         put("CMVICESADM - CM - Vicepresidencia Asist. Administrativa", "153");
-        put("PMADCT - PM - AdministraciÃ³n CT", "122");
-        put("PMADDIST - PM - AdministraciÃ³n Distribuidor", "25");
-        put("PMADZA - PM - AdministraciÃ³n Zapote", "63");
+        put("PMADCT - PM - Administración CT", "122");
+        put("PMADDIST - PM - Administración Distribuidor", "25");
+        put("PMADZA - PM - Administración Zapote", "63");
         put("PMCOBO - PM - Compras/Bodega", "24");
         put("PMDIGE - PM - Direcccion General PMCR", "9");
         put("PMFILIC - PM - Veh. Nuevos Fijos Licitaciones", "119");
@@ -797,7 +797,7 @@ public class HashMaps {
         put("PMGEPC - PM - Gerencia Paseo ColÃ³n", "55");
         put("CMVICESADM - CM - Vicepresidencia Administrativo", "300000003129779");
         put("CMRSE - CM - Responsabilidad Social Empresarial", "2");
-        put("PMADLI - PM - AdministraciÃ³n Liberia", "77");
+        put("PMADLI - PM - Administración Liberia", "77");
         put("SCCONTANAL - SC - Analista Financiero Contabilidad", "160");
         put("PMGEGRE - PM - Gerencia Grecia", "300000003129830");
         put("CMRSE - CM - Responsabilidad SocialEmpresarial", "2");
@@ -816,7 +816,7 @@ public class HashMaps {
         put("Ventas", "300000005731328");
         put("ASEPUM - ASEPUMOSA Administrativo", "190");
         put("PMADPT - PM - Administrativo Purdy Trabajo", "108");
-        put("PMADPZ - PM - AdministraciÃ³n PÃ©rez ZeledÃ³n", "94");
+        put("PMADPZ - PM - Administración PÃ©rez ZeledÃ³n", "94");
         put("PMGEALA - PM - Gerencia Alajuela", "103");
         put("PMGEAVESC - PM - Gerencia Avenida Escazu", "138");
         put("PMGECU - PM - Gerencia Curridabat", "142");
@@ -830,7 +830,7 @@ public class HashMaps {
         put("PMVEUSFIPC - PM - Veh. Usados Fijos PC", "60");
         put("PMVENUVALE - PM - Veh. Nuevos Variables Lexus", "102");
         put("PMCOIN - PM - Control Interno", "32");
-        put("PMADAVE - PM - AdministraciÃ³n Avenida EscazÃº", "139");
+        put("PMADAVE - PM - Administración Avenida EscazÃº", "139");
         put("CMDIRH - CM - Dirección RRHH", "163");
         put("PMREADFIDI - PM - Repuestos Adm. Fijos Distribuidor", "34");
         put("PSMARFIJOS - PS - Marchamos Fijos", "300000003129974");
