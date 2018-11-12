@@ -658,7 +658,12 @@ public class CreateWorkerClient
                     terminationAssignment.setActionCode(rs.getString("accion").trim());
                     terminationAssignment.setActionReasonCode(rs.getString("estado").trim());
                     terminationAssignment.setAssignmentStatus("INACTIVE");
-                    
+
+                    if(terminationAssignment.getActionReasonCode().equals("CE5")){
+                        terminationAssignment.setPrimaryAssignmentFlag("N");
+                        terminationAssignment.setPrimaryWorkRelationFlag("N");
+                    }
+
                     try
                     {
                         String json = new ObjectMapper().writeValueAsString(terminationAssignment);
@@ -676,6 +681,7 @@ public class CreateWorkerClient
                     HttpEntity<PatchTerminationAssignment> request = new HttpEntity<PatchTerminationAssignment>(terminationAssignment,headers);
 
                     RestTemplate restPatch = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+                    int exito = 0;
 
                     try{
 
@@ -687,7 +693,7 @@ public class CreateWorkerClient
                             respuesta = respuesta + " / Mensaje: Actualizacion de datos exitoso";
  
                            // cambia el estado a "CP"
-                                int exito = updateResponseTable(id_number, respuesta, "OK", "updateAssignment", assignmentResponse.getBody().toString(), null, null);
+                            exito = updateResponseTable(id_number, respuesta, "OK", "updateAssignment", assignmentResponse.getBody().toString(), null, null);
                                 if (exito == 1) 
                                 {
                                     LOGGER.info("Datos actualizados correctamente en la base de datos.");
@@ -699,43 +705,155 @@ public class CreateWorkerClient
                         System.out.println(e.getResponseBodyAsString());
                         LOGGER.info(e.getResponseBodyAsString());
                     }
-                  
-                    if (!(rs.getString("estado").contains("CE5")))
-                    {
-                        LOGGER.info("Proceso de Bloqueo de Usuario para las acciones temporales");
 
-                        String username = rs.getString("usuario");
-                        String oracleUserId = ClientConfig.endpoint+"/hcmRestApi/scim/Users/?filter=username eq \""+username+"\"";
+                    if(exito == 1){
+                        if (!(rs.getString("estado").contains("CE5"))) {
+                            LOGGER.info("Proceso de Bloqueo de Usuario para las acciones temporales");
 
-                        System.out.println(oracleUserId);
+                            String username = rs.getString("usuario");
+                            String oracleUserId = ClientConfig.endpoint + "/hcmRestApi/scim/Users/?filter=username eq \"" + username + "\"";
 
-                        HttpEntity<UserOracleResponse> response = restTemplate.exchange(oracleUserId,HttpMethod.GET,authenticationHeaders,UserOracleResponse.class);
+                            System.out.println(oracleUserId);
 
-                        if(response.getBody()!=null) {
+                            HttpEntity<UserOracleResponse> response = restTemplate.exchange(oracleUserId, HttpMethod.GET, authenticationHeaders, UserOracleResponse.class);
 
-                            oracleUserId = ClientConfig.endpoint + "/hcmRestApi/scim/Users/" + response.getBody().getResourses().get(0).getId();
+                            if (response.getBody() != null) {
 
-                            HttpHeaders headerslock = createPatchHeaders();
+                                oracleUserId = ClientConfig.endpoint + "/hcmRestApi/scim/Users/" + response.getBody().getResourses().get(0).getId();
 
-                            BlockUserRequest blockUser = new BlockUserRequest() {{
-                                setActive(false);
-                            }};
+                                HttpHeaders headerslock = createPatchHeaders();
 
-                            HttpEntity<BlockUserRequest> requestlock = new HttpEntity<BlockUserRequest>(blockUser, headerslock);
+                                BlockUserRequest blockUser = new BlockUserRequest() {{
+                                    setActive(false);
+                                }};
 
-                            HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-                            
-                            RestTemplate  restTemplatelock = new RestTemplate(requestFactory);
+                                HttpEntity<BlockUserRequest> requestlock = new HttpEntity<BlockUserRequest>(blockUser, headerslock);
 
-                            //restTemplate.setRequestFactory(requestFactory);
+                                HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 
-                            //LOGGER.info("Enviando datos al web service.");
-                            //LOGGER.info("### Ejecutando el metodo: blockPerson");
+                                RestTemplate restTemplatelock = new RestTemplate(requestFactory);
 
-                            HttpEntity<String> patchResponse = restTemplatelock.exchange(oracleUserId, HttpMethod.PATCH, requestlock, String.class);
+                                //restTemplate.setRequestFactory(requestFactory);
 
-                            System.out.println(patchResponse);
+                                //LOGGER.info("Enviando datos al web service.");
+                                //LOGGER.info("### Ejecutando el metodo: blockPerson");
 
+                                HttpEntity<String> patchResponse = restTemplatelock.exchange(oracleUserId, HttpMethod.PATCH, requestlock, String.class);
+
+                                System.out.println(patchResponse);
+
+
+                            }
+                        }else{
+                            //post de nueva relacion laboral
+                            RequestAssignment assignment = new RequestAssignment();
+
+                            String bussinesUnit = rs.getString("unidad_negocio");
+                            String codPos = rs.getString("codigo_posicion").trim();
+                            String nomAssign = rs.getString("nombre_asignacion").trim();
+                            String department = rs.getString("departamento").trim();
+                            String entidad = rs.getString("entidad_legal");
+
+                            assignment.setPositionId(PositionIds.get(codPos));
+                            assignment.setJobId(JobId.get(codPos+"-"+nomAssign+"-"+department));
+                            assignment.setDepartmentId(DepartmentId.get(rs.getString("departamento")));
+                            assignment.setPrimaryAssignmentFlag("Y");
+
+                            assignment.setAssignmentName(rs.getString("nombre_asignacion"));
+                            assignment.setBusinessUnitId(BussinesUnitCodes.get(bussinesUnit));
+                            assignment.setLegalEntityId(LegalEntitiesIds.get(entidad));
+                            assignment.setWorkerCategory("WC");
+                            assignment.setWorkingAtHome("N");
+                            assignment.setWorkingAsManager("N");
+                            assignment.setSalaryCode("H");
+                            assignment.setWorkingHours("8");
+                            assignment.setFrequency("D");
+                            assignment.setSalaryBasisId("300000005782807");
+                            assignment.setSalaryAmount(rs.getString("salario"));
+//                            assignment.setActionCode(rs.getString("accion"));
+                            assignment.setActionCode("HIRE");
+//                            assignment.setActionReasonCode(rs.getString("estado").trim());
+                            assignment.setActionReasonCode("NOM");
+                            assignment.setAssignmentStatus("ACTIVE");
+
+                            RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
+
+                            extraInfo.setBanco(rs.getString("nombre_banco"));
+                            extraInfo.setCuenta(rs.getString("cuenta_bco"));
+                            extraInfo.setTipoCuenta(rs.getString("tipo_cuenta_bco"));
+                            extraInfo.setCuentaCliente(rs.getString("cuenta_cliente_bco").trim());
+                            extraInfo.setCentroFuncionalDepartamento(rs.getString("centro_funcional_dep"));
+                            extraInfo.setCentroFuncionalContable(rs.getString("centro_funcional_cont"));
+
+//                            if (reasoncode.equals("NOT"))  // Nombramiento temporal.
+//                            {
+//                                /* Fecha_Final */
+//                                assignment.setEffectiveEndDate(rs.getString("fecha_vencimiento"));
+//                                assignment.setAssignmentCategory("FT");
+//                                assignment.setAssignmentProjectedEndDate(rs.getString("fecha_vencimiento"));
+//                                assignment.setRegularTemporary("T");
+//                            }
+//                            else
+//                            {
+                                assignment.setAssignmentCategory("FR");
+                                assignment.setRegularTemporary("R");
+//                            }
+
+
+
+                            List<RequestAssignmentDFF> assignmentsDFF = new ArrayList<RequestAssignmentDFF>();
+                            assignmentsDFF.add(extraInfo);
+                            assignment.setAssignmentDFF(assignmentsDFF);
+
+                            List<RequestAssignment> assignments = new ArrayList<RequestAssignment>();
+                            assignments.add(assignment);
+
+
+                            try
+                            {
+                                String json = new ObjectMapper().writeValueAsString(assignments);
+                                System.out.println(json);
+                                LOGGER.info("Insertando assignment con el siguiente objeto: " + json);
+                            }
+                            catch (JsonProcessingException e)
+                            {
+                                e.printStackTrace();
+                            }
+
+
+                            LOGGER.info("Creando el Request");
+                            HttpEntity<RequestAssignment> requestas = new HttpEntity<RequestAssignment>(assignment,httpHeaders);
+                            LOGGER.info("Request info:" + requestas.toString());
+
+                            url = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps/"+getUserHCMIdByEmpNumber(rs.getString("no_persona"));
+                            try
+                            {
+                                url = url+"/child/assignments";
+                                ResponseEntity<String> postEmpResponse = restTemplate.exchange(url, HttpMethod.POST, requestas, String.class);
+                                System.out.println(postEmpResponse.toString());
+                                LOGGER.info("Respuesta HCM: " + postEmpResponse.toString());
+
+                                LOGGER.info("Enviando datos al web service.");
+                                LOGGER.info("### Ejecutando el metodo: createWorker");
+                                metodo = "createWorker";
+
+                                if (postEmpResponse.getStatusCode().equals(HttpStatus.CREATED))
+                                {
+                                    LOGGER.info("Obteniendo respuesta exitosa.");
+                                    LOGGER.info("PersonId: " + rs.getString("no_persona"));
+
+                                    // cambia el estado en HCM_colaboradores a "CP"
+                                    int exit = updateResponseTable(id_number, "PersonId: " + rs.getString("no_persona"), "OK", metodo, postEmpResponse.getBody().toString(), xmlGenerado2, xmlGenerado3);
+                                    if (exit == 1)
+                                    {
+                                        LOGGER.info("Datos actualizados correctamente en la base de datos.");
+                                    }
+                                }
+                            }
+                            catch (HttpClientErrorException e)
+                            {
+                                LOGGER.info("Error en el servidor: "+ e.getResponseBodyAsString());
+                            }
 
                         }
                     }
