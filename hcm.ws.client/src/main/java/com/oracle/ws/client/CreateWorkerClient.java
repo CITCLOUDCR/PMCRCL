@@ -96,6 +96,7 @@ public class CreateWorkerClient
         String respuesta = "";
         String metodo = "";
         String xmlGenerado1 = null;String xmlGenerado2 = null;String xmlGenerado3 = null;
+        String SalaryBasis = "300000004341192";
 
 
         try
@@ -215,7 +216,7 @@ public class CreateWorkerClient
                         assignment.setSalaryCode("H");
                         assignment.setWorkingHours("48");
                         assignment.setFrequency("W");
-                        assignment.setSalaryBasisId("300000005782807");
+                        assignment.setSalaryBasisId(SalaryBasis);
                         assignment.setSalaryAmount(rs.getString("salario"));
                         assignment.setActionCode(rs.getString("accion"));
                         assignment.setActionReasonCode(rs.getString("estado").trim());
@@ -327,7 +328,7 @@ public class CreateWorkerClient
                           assignment.setSalaryCode("H");
                           assignment.setWorkingHours("8");
                           assignment.setFrequency("D");
-                          assignment.setSalaryBasisId("300000005782807");
+                          assignment.setSalaryBasisId(SalaryBasis);
                           assignment.setSalaryAmount(rs.getString("salario"));
                           assignment.setActionCode(rs.getString("accion"));
                           assignment.setActionReasonCode(rs.getString("estado").trim());
@@ -558,11 +559,11 @@ public class CreateWorkerClient
                         assignment.setActionCode(rs.getString("accion"));
                         assignment.setActionReasonCode(rs.getString("estado").trim());
                         assignment.setBusinessUnitId(BussinesUnitCodes.get(rs.getString("unidad_negocio")));
-
+                        //
                         assignment.setJobId(JobId.get(codPos+"-"+nomAssign+"-"+department));
                         assignment.setSalaryAmount(rs.getString("salario"));
                         assignment.setPositionId(PositionIds.get(codPos));
-                        assignment.setSalaryBasisId("300000005782807");
+                        assignment.setSalaryBasisId(SalaryBasis);
 
                         RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
 
@@ -715,7 +716,7 @@ public class CreateWorkerClient
 
                     if(exito == 1)
                     {
-                        if (!(rs.getString("estado").contains("CE5")))
+                        if (!(rs.getString("estado").contains("CE5")) && !(rs.getString("estado").contains("CE9")))
                         {
                             LOGGER.info("Proceso de Bloqueo de Usuario para las acciones temporales");
 
@@ -773,7 +774,7 @@ public class CreateWorkerClient
                             assignment.setSalaryCode("H");
                             assignment.setWorkingHours("8");
                             assignment.setFrequency("D");
-                            assignment.setSalaryBasisId("300000005782807");
+                            assignment.setSalaryBasisId(SalaryBasis);
                             assignment.setSalaryAmount(rs.getString("salario"));
                             assignment.setActionCode("HIRE");
                             assignment.setActionReasonCode("NOM");
@@ -906,15 +907,22 @@ public class CreateWorkerClient
                      if (incap.equals("ICC") || incap.equals("INS"))
                      {
                        Ausencias.setAbsenceReason("Ausencia por Incapacidad");
-                       //Ausencias.setDuration(Integer.toString(dias + 1));
-                       Ausencias.setStartDateDuration(Integer.toString(2));
+                       if (dias == 1)
+                    	 Ausencias.setStartDateDuration(Integer.toString(1));
+                       else
+                         Ausencias.setStartDateDuration(Integer.toString(2));
+                       
                        Ausencias.setEndDateDuration(Integer.toString(0));
                      }
                      else if (incap.equals("LIM") || incap.equals("LCP") || incap.equals("LMA") || incap.equals("LIN") || incap.equals("LDU") )
                      {
                          Ausencias.setAbsenceReason("Ausencia por Licencia");
                          //Ausencias.setDuration(Integer.toString(1));
-                         Ausencias.setStartDateDuration(Integer.toString(2));
+                         if (incap.equals("LIN"))
+                           Ausencias.setStartDateDuration(Integer.toString(1));
+                         else
+                           Ausencias.setStartDateDuration(Integer.toString(2));
+                         
                          Ausencias.setEndDateDuration(Integer.toString(0));
                          Ausencias.setPlannedEndDate(rs.getString("fecha_vencimiento"));
                          Ausencias.setConfirmedDate(rs.getString("fecha_inicio"));
@@ -1148,7 +1156,7 @@ public class CreateWorkerClient
 
     private HttpHeaders createHeaders(){
         return new HttpHeaders() {{
-            String auth = "SOIN" + ":" + "Admin1234";
+            String auth = "SOIN.SOIN" + ":" + "Seguridad123";
             byte[] encodedAuth = Base64.encodeBase64(
                     auth.getBytes(Charset.forName("US-ASCII")) );
             String authHeader = "Basic " + new String( encodedAuth );
