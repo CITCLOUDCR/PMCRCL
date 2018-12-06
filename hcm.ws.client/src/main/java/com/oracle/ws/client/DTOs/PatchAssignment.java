@@ -40,8 +40,9 @@ public class PatchAssignment {
     
     @JsonProperty("SalaryBasisId")
     private String salaryBasisId;
-    /*@JsonProperty("EffectiveStartDate")
-    private String effectiveStartDate;*/
+    
+    @JsonProperty("AssignmentProjectedEndDate")
+    private String assignmentProjectedEndDate;
     
 
     @JsonProperty("assignmentDFF")
@@ -130,14 +131,14 @@ public class PatchAssignment {
         this.salaryBasisId = salaryBasisId;
     }
     
-    /*public String getEffectiveStartDate()
+    public String getAssignmentProjectedEndDate()
     {
-        return effectiveStartDate;
+        return assignmentProjectedEndDate;
     }
 
-    public void setEffectiveStartDate(String effectiveStartDate)
+    public void setAssignmentProjectedEndDate(String assignmentProjectedEndDate)
     {
-        this.effectiveStartDate = effectiveStartDate;
-    }*/
+        this.assignmentProjectedEndDate = assignmentProjectedEndDate;
+    }
 
 }

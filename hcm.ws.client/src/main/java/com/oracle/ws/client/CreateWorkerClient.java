@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.xml.ws.WebServiceException;
 
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTimeZone;
@@ -140,7 +141,7 @@ public class CreateWorkerClient
                 {
                     String getEmpEndpoint = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps?q=PersonNumber="+rs.getString("no_persona");
 
-                    LOGGER.info("Version: 02-oct-2018");
+                    LOGGER.info("Version: 26-nov-2018");
                     LOGGER.info("### Ejecutando el metodo: getWorkerInformationByPersonNumber");
 
                     RequestEmployee newEmp = new RequestEmployee();
@@ -197,14 +198,35 @@ public class CreateWorkerClient
                         RequestAssignment assignment = new RequestAssignment();
 
                         String bussinesUnit = rs.getString("unidad_negocio");
-
-                        assignment.setPositionId(PositionIds.get(rs.getString("codigo_posicion")));
                         String codPos = rs.getString("codigo_posicion").trim();
                         String nomAssign = rs.getString("nombre_asignacion").trim();
                         String department = rs.getString("departamento").trim();
 
-                        assignment.setJobId(JobId.get(codPos+"-"+nomAssign+"-"+department));
-                        assignment.setDepartmentId(DepartmentId.get(rs.getString("departamento")));
+                        String idPos = PositionIds.get(codPos);
+                        String idJob = JobId.get(codPos+"-"+nomAssign+"-"+department);
+                        String idDep = DepartmentId.get(department);
+                        
+                        if (!isNotNullOrEmpty(idPos))
+                        {
+                      	  LOGGER.info("Código de posición no es válido...");
+                      	  break;
+                        }
+                        
+                        if (!isNotNullOrEmpty(idJob))
+                        {
+                      	  LOGGER.info("Código de puesto no es válido...");
+                      	  break;
+                        }
+                      	  
+                        if (!isNotNullOrEmpty(idDep))
+                        {
+                      	  LOGGER.info("Código de departamento no es válido...");
+                      	  break;
+                        }
+
+                        assignment.setJobId(idJob);
+                        assignment.setDepartmentId(idDep);
+                        assignment.setPositionId(idPos);
                         assignment.setAssignmentNumber(rs.getString("NumeroAsignacion"));
                         assignment.setPrimaryAssignmentFlag("Y");
 
@@ -308,15 +330,37 @@ public class CreateWorkerClient
 
                           String bussinesUnit = rs.getString("unidad_negocio");
                           String reasoncode = rs.getString("estado").trim();
+                          String entidad = rs.getString("entidad_legal");
 
                           String codPos = rs.getString("codigo_posicion").trim();
                           String nomAssign = rs.getString("nombre_asignacion").trim();
                           String department = rs.getString("departamento").trim();
-                          String entidad = rs.getString("entidad_legal");
 
-                          assignment.setPositionId(PositionIds.get(codPos));
-                          assignment.setJobId(JobId.get(codPos+"-"+nomAssign+"-"+department));
-                          assignment.setDepartmentId(DepartmentId.get(rs.getString("departamento")));
+                          String idPos = PositionIds.get(codPos);
+                          String idJob = JobId.get(codPos+"-"+nomAssign+"-"+department);
+                          String idDep = DepartmentId.get(department);
+                          
+                          if (!isNotNullOrEmpty(idPos))
+                          {
+                        	  LOGGER.info("Código de posición no es válido...");
+                        	  break;
+                          }
+                          
+                          if (!isNotNullOrEmpty(idJob))
+                          {
+                        	  LOGGER.info("Código de puesto no es válido...");
+                        	  break;
+                          }
+                        	  
+                          if (!isNotNullOrEmpty(idDep))
+                          {
+                        	  LOGGER.info("Código de departamento no es válido...");
+                        	  break;
+                          }
+                         
+                          assignment.setPositionId(idPos);
+                          assignment.setJobId(idJob);
+                          assignment.setDepartmentId(idDep);
                           assignment.setPrimaryAssignmentFlag("Y");
 
                           assignment.setAssignmentName(rs.getString("nombre_asignacion"));
@@ -510,7 +554,7 @@ public class CreateWorkerClient
 
                                 if (((ResponseEntity<ResponseEmployee>) patchResponse).getStatusCode().equals(HttpStatus.OK)) 
                                 {
-                                    LOGGER.info("Se ejecuto con exito el metodo");
+                                    LOGGER.info("Se ejecutó con exito el metodo");
                                     LOGGER.info("Obteniendo respuesta exitosa.");
                                     LOGGER.info("PersonId: " + patchResponse.getBody().getPersonId());
                                 }
@@ -531,7 +575,7 @@ public class CreateWorkerClient
 
 
                     }
-                    	LOGGER.info("Versión: 02-oct-2018");
+                    	LOGGER.info("Versión: 26-nov-2018");
                         LOGGER.info("### Ejecutando el metodo: getWorkerInformationByPersonNumber");
 
                         HttpHeaders headers = new HttpHeaders();
@@ -554,15 +598,39 @@ public class CreateWorkerClient
                         String nomAssign = rs.getString("nombre_asignacion").trim();
                         String department = rs.getString("departamento").trim();
                         
+                        String idPos = PositionIds.get(codPos);
+                        String idJob = JobId.get(codPos+"-"+nomAssign+"-"+department);
+                        String idDep = DepartmentId.get(department);
+                        
+                        if (!isNotNullOrEmpty(idPos))
+                        {
+                      	  LOGGER.info("Código de posición no es válido...");
+                      	  break;
+                        }
+                        
+                        if (!isNotNullOrEmpty(idJob))
+                        {
+                      	  LOGGER.info("Código de puesto no es válido...");
+                      	  break;
+                        }
+                      	  
+                        if (!isNotNullOrEmpty(idDep))
+                        {
+                      	  LOGGER.info("Código de departamento no es válido...");
+                      	  break;
+                        }
+                        
                         assignment.setAssignmentName(nomAssign);
-                        assignment.setDepartmentId(DepartmentId.get(department));
+                        assignment.setDepartmentId(idDep);
+                        assignment.setJobId(idJob);
+                        assignment.setPositionId(PositionIds.get(idPos));
                         assignment.setActionCode(rs.getString("accion"));
                         assignment.setActionReasonCode(rs.getString("estado").trim());
                         assignment.setBusinessUnitId(BussinesUnitCodes.get(rs.getString("unidad_negocio")));
                         //
-                        assignment.setJobId(JobId.get(codPos+"-"+nomAssign+"-"+department));
+                      
                         assignment.setSalaryAmount(rs.getString("salario"));
-                        assignment.setPositionId(PositionIds.get(codPos));
+                       
                         assignment.setSalaryBasisId(SalaryBasis);
 
                         RequestAssignmentDFF extraInfo = new RequestAssignmentDFF();
@@ -592,16 +660,13 @@ public class CreateWorkerClient
                         extraInfo.setCentroFuncionalDepartamento(rs.getString("centro_funcional_dep"));
                         extraInfo.setCentroFuncionalContable(rs.getString("centro_funcional_cont"));
 
-                        List<RequestAssignmentDFF> assignmentsDFF = new ArrayList<RequestAssignmentDFF>();
-                        assignmentsDFF.add(extraInfo);
-                        assignment.setAssignmentDFF(assignmentsDFF);
-
                         String estadoCode = rs.getString("estado").trim();
                         if (estadoCode.equals("AJT") || estadoCode.equals("CCT") || estadoCode.equals("TR1"))
                         {
                          // configurar Fecha_final.
                             headers = createCleanPatchHeaders();
-                            headers.set("Effective-Of","RangeMode = UPDATE;RangeStartDate = " + rs.getString("fecha_inicio") + ";RangeEndDate = " + rs.getString("fecha_vencimiento"));
+                            headers.set("Effective-Of","RangeMode = UPDATE;RangeStartDate = " + rs.getString("fecha_inicio"));  // + ";RangeEndDate = " + rs.getString("fecha_vencimiento"));
+                            assignment.setAssignmentProjectedEndDate(rs.getString("fecha_vencimiento"));
                         }
                         else
                         {
@@ -610,6 +675,9 @@ public class CreateWorkerClient
                             headers.set("Effective-Of","RangeMode = UPDATE;RangeStartDate = " + rs.getString("fecha_inicio"));	
                         }
                         
+                        List<RequestAssignmentDFF> assignmentsDFF = new ArrayList<RequestAssignmentDFF>();
+                        assignmentsDFF.add(extraInfo);
+                        assignment.setAssignmentDFF(assignmentsDFF);
 
                         try
                         {
@@ -745,8 +813,6 @@ public class CreateWorkerClient
                                 HttpEntity<String> patchResponse = restTemplatelock.exchange(oracleUserId, HttpMethod.PATCH, requestlock, String.class);
 
                                 System.out.println(patchResponse);
-
-
                             }
                         }
                         else
@@ -755,14 +821,36 @@ public class CreateWorkerClient
                             RequestAssignment assignment = new RequestAssignment();
 
                             String bussinesUnit = rs.getString("unidad_negocio");
+                            String entidad = rs.getString("entidad_legal");
                             String codPos = rs.getString("codigo_posicion").trim();
                             String nomAssign = rs.getString("nombre_asignacion").trim();
                             String department = rs.getString("departamento").trim();
-                            String entidad = rs.getString("entidad_legal");
+                            
+                            String idPos = PositionIds.get(codPos);
+                            String idJob = JobId.get(codPos+"-"+nomAssign+"-"+department);
+                            String idDep = DepartmentId.get(department);
+                            
+                            if (!isNotNullOrEmpty(idPos))
+                            {
+                          	  LOGGER.info("Código de posición no es válido...");
+                          	  break;
+                            }
+                            
+                            if (!isNotNullOrEmpty(idJob))
+                            {
+                          	  LOGGER.info("Código de puesto no es válido...");
+                          	  break;
+                            }
+                          	  
+                            if (!isNotNullOrEmpty(idDep))
+                            {
+                          	  LOGGER.info("Código de departamento no es válido...");
+                          	  break;
+                            }
 
-                            assignment.setPositionId(PositionIds.get(codPos));
-                            assignment.setJobId(JobId.get(codPos+"-"+nomAssign+"-"+department));
-                            assignment.setDepartmentId(DepartmentId.get(rs.getString("departamento")));
+                            assignment.setPositionId(idPos);
+                            assignment.setJobId(idJob);
+                            assignment.setDepartmentId(idDep);
                             assignment.setPrimaryAssignmentFlag("Y");
 
                             assignment.setAssignmentName(rs.getString("nombre_asignacion"));
@@ -882,7 +970,7 @@ public class CreateWorkerClient
                 	
                 	 String PostAbsenceEndpoint = ClientConfig.endpoint+"/hcmRestApi/resources/latest/absences";
 
-                     LOGGER.info("Version: 02-Oct-2018");
+                     LOGGER.info("Version: 26-nov-2018");
                      LOGGER.info("### Ejecutando el metodo: POST Absences");
                      
                      SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -1128,23 +1216,33 @@ public class CreateWorkerClient
     }
 
 
-    private boolean initPropertyFile(){
+    private boolean initPropertyFile()
+    {
         InputStream io = null;
         try
         {
-            if(properties==null){
+            if(properties==null)
+            {
                 properties = new Properties();
                 io = new FileInputStream(System.getProperty("hcm.context")+"hcm.properties");
                 properties.load(io);
             }
-        }catch(IOException e){
+        }
+        catch(IOException e)
+        {
             return false;
-        }finally{
-            try{
-                if(io!=null){
+        }
+        finally
+        {
+            try
+            {
+                if(io!=null)
+                {
                     io.close();
                 }
-            }catch(IOException e){
+            }
+            catch(IOException e)
+            {
             }
         }
         return true;
