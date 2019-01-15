@@ -130,7 +130,7 @@ public class CreateWorkerClient
         
         try
         {
-        	LOGGER.info("Version: Ene-2019... leyendo driver");
+        	LOGGER.info("Version: Ene-2019... leyendo driver");  // esto es para ver cambios en GITHUB
             Class.forName(properties.getProperty("db.driver"));
             LOGGER.info("Version: Ene-2019... conectando a la BD");
             cn = DriverManager.getConnection(properties.getProperty("db.url"), properties.getProperty("db.user"), properties.getProperty("db.password"));
