@@ -1,8 +1,53 @@
 package com.oracle.ws.client;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+//import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
+
+import javax.xml.ws.WebServiceException;
+//import javax.sql.DataSource;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oracle.ws.client.DTOs.*;
+import com.oracle.ws.client.DTOs.PatchAssignment;
+import com.oracle.ws.client.DTOs.PatchEmployee;
+import com.oracle.ws.client.DTOs.PatchTerminationAssignment;
+import com.oracle.ws.client.DTOs.RequestAbsence;
+import com.oracle.ws.client.DTOs.RequestAssignment;
+import com.oracle.ws.client.DTOs.RequestAssignmentDFF;
+import com.oracle.ws.client.DTOs.RequestEmployee;
+import com.oracle.ws.client.DTOs.ResponseAbsence;
+import com.oracle.ws.client.DTOs.ResponseEmployee;
+import com.oracle.ws.client.DTOs.ResponseLinkListUser;
+import com.oracle.ws.client.DTOs.ResponseListEmployee;
 import com.oracle.ws.client.DTOs.CommonFeaturesOracle.BlockUserRequest;
 import com.oracle.ws.client.DTOs.CommonFeaturesOracle.UserOracleResponse;
 import com.oracle.ws.client.ids.HashMaps;
@@ -13,29 +58,11 @@ import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.types.GetWorker
 import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.types.MergePersonResponse;
 import com.oracle.xmlns.apps.hcm.employment.core.workerservicev2.types.UpdateAssignmentResponse;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import javax.xml.ws.WebServiceException;
+//import drv.oracle.ucp.jdbc.PoolDataSourceFactory;
+//import oracle.ucp.jdbc.PoolDataSource;
+//import oracle.jdbc.driver.*;
 
-
-import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDateTime;
-import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
+// Proyecto Purdy Motors - GITHUB.
 
 public class CreateWorkerClient
 {
@@ -99,10 +126,13 @@ public class CreateWorkerClient
         String xmlGenerado1 = null;String xmlGenerado2 = null;String xmlGenerado3 = null;
         String SalaryBasis = "300000004341192";
 
-
+       //DriverManager.registerDriver (oracle.jdbc.driver());  //oracle.jdbc.driver
+        
         try
         {
+        	LOGGER.info("Version: Ene-2019... leyendo driver");
             Class.forName(properties.getProperty("db.driver"));
+            LOGGER.info("Version: Ene-2019... conectando a la BD");
             cn = DriverManager.getConnection(properties.getProperty("db.url"), properties.getProperty("db.user"), properties.getProperty("db.password"));
 
             SimpleDateFormat formatofecha = new SimpleDateFormat("yyyy-MM-dd") ;
@@ -141,7 +171,7 @@ public class CreateWorkerClient
                 {
                     String getEmpEndpoint = ClientConfig.endpoint+"/hcmRestApi/resources/latest/emps?q=PersonNumber="+rs.getString("no_persona");
 
-                    LOGGER.info("Version: 26-nov-2018");
+                    LOGGER.info("Version: Ene-2019");
                     LOGGER.info("### Ejecutando el metodo: getWorkerInformationByPersonNumber");
 
                     RequestEmployee newEmp = new RequestEmployee();
@@ -156,7 +186,7 @@ public class CreateWorkerClient
                     {
 
                         LOGGER.info("Proceso de creacion de un trabajador");
-                        LOGGER.info("Obteniendo datos del trabajador: " + rs.getString("nombre")+" "+rs.getString("apellido_paterno"));
+                        LOGGER.info("Obteniendo datos del trabajador: " + rs.getString("nombre") + " " + rs.getString("apellido_paterno"));
 
                         RequestEmployee emp = new RequestEmployee();
                         
